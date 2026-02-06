@@ -5,3 +5,4 @@ vendor
 dist
 .phpunit.cache
 MEMORY.md
+AGENTS.md
