@@ -4,3 +4,4 @@ composer.lock
 vendor
 dist
 .phpunit.cache
+MEMORY.md
