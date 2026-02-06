@@ -1,0 +1,6 @@
+.phpintel
+.DS_Store
+composer.lock
+vendor
+dist
+.phpunit.cache

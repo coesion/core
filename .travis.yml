@@ -1,0 +1,11 @@
+language: php
+
+php:
+  - '8.5'
+  - nightly
+
+matrix:
+    allow_failures:
+        - php: nightly
+
+script: composer install -o ; vendor/bin/phpunit --color=always
