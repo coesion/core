@@ -1,4 +1,4 @@
-# Core Documentation
+# Coesion/Core Documentation
 
 Overview:
 This folder contains the authoritative reference for the Core framework. It includes class references and guides for common workflows.

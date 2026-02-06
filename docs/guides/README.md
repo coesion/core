@@ -1,4 +1,4 @@
-# Core Framework Overview
+# Coesion/Core Framework Overview
 
 This repository provides a lightweight PHP 8.5+ application core with routing, HTTP handling, persistence, configuration, and utilities.
 It is designed for small-to-medium services and web apps that need a clear request lifecycle without a full-stack framework.
