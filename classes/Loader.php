@@ -30,7 +30,7 @@ class Loader {
         if (ini_get('unserialize_callback_func') !== false) {
             ini_set('unserialize_callback_func', 'spl_autoload_call');
         }
-        spl_autoload_register(function($class){
+        spl_autoload_register(callback: function($class){
             $normalized = strtr($class, '\\', '/');
             $candidates = [$normalized . '.php'];
             if (strpos($normalized, '_') !== false) {

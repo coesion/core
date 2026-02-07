@@ -197,7 +197,7 @@ class HTTP_Request {
 
   public function __construct($method, $url, $headers=[], $data=null){
     $this->method   = strtoupper($method);
-    $this->url      = new URL($this->url);
+    $this->url      = new URL($url);
     $this->headers  = (array)$headers;
     if ($data) {
       if (isset($this->headers["Content-Type"]) && $this->headers["Content-Type"]=='application/json')
@@ -208,9 +208,25 @@ class HTTP_Request {
   }
 
   public function __toString(){
-    return "$this->method {$this->url->path}{$this->url->query} HTTP/1.1\r\n"
+    $path = $this->url->path ?: '';
+    $path = '/' . ltrim($path, '/');
+
+    $query = $this->url->query;
+    if (is_array($query)) {
+      $query = $query ? ('?' . http_build_query($query)) : '';
+    } else {
+      $query = $query ? (str_starts_with($query, '?') ? $query : '?' . $query) : '';
+    }
+
+    $headers = [];
+    foreach ((array)$this->headers as $key => $val) {
+      $headers[] = is_int($key) ? $val : ($key . ': ' . $val);
+    }
+    $header_block = $headers ? implode("\r\n", $headers) . "\r\n" : '';
+
+    return "$this->method {$path}{$query} HTTP/1.1\r\n"
           ."Host: {$this->url->host}\r\n"
-          .($this->headers ? implode("\r\n",$this->headers) . "\r\n" : '')
+          .$header_block
           ."\r\n{$this->body}";
   }
 }

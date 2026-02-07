@@ -32,12 +32,16 @@ class URL {
     $url          = $this->_origin;
     $tmp_url      = (strpos($url, '://') === false) ? "..N..://$url" : $url;
     if (mb_detect_encoding($tmp_url, 'UTF-8', true) || ($parsed = parse_url($tmp_url)) === false) {
-      preg_match('(^((?P<scheme>[^:/?#]+):(//))?((\\3|//)?(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^/?:#]*))(:(?P<port>\\d+))?(?P<path>[^?#]*)(\\?(?P<query>[^#]*))?(#(?P<fragment>.*))?)u', $tmp_url, $parsed);
+      preg_match(
+        pattern: '(^((?P<scheme>[^:/?#]+):(//))?((\\3|//)?(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^/?:#]*))(:(?P<port>\\d+))?(?P<path>[^?#]*)(\\?(?P<query>[^#]*))?(#(?P<fragment>.*))?)u',
+        subject: $tmp_url,
+        matches: $parsed
+      );
     }
     foreach($parsed as $k => $v) if(isset($this->$k)) $this->$k = $v;
     if ($this->scheme == '..N..') $this->scheme = null;
     if (!empty($this->query)) {
-      parse_str($this->query, $this->query);
+      parse_str(string: $this->query, result: $this->query);
     }
     $this->_parsed = true;
   }

@@ -69,7 +69,13 @@ class Session {
     if (array_key_exists('samesite', $args)) {
       session_set_cookie_params($args);
     } else {
-      session_set_cookie_params($args["lifetime"], $args["path"], $args["domain"], $args["secure"], $args["httponly"]);
+      session_set_cookie_params(
+        lifetime: $args["lifetime"],
+        path: $args["path"],
+        domain: $args["domain"],
+        secure: $args["secure"],
+        httponly: $args["httponly"]
+      );
     }
     return $args;
   }

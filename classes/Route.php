@@ -387,17 +387,20 @@ class Route {
     }
 
     protected static function paramNames($pattern){
-      if (!preg_match_all('#:([a-zA-Z]\\w*)#', $pattern, $m)) return [];
+      if (!preg_match_all(pattern: '#:([a-zA-Z]\\w*)#', subject: $pattern, matches: $m)) return [];
       return $m[1];
     }
 
     protected static function compilePatternAsRegexNoNames($pattern, $rules=[]){
-      return '#^'.preg_replace_callback('#:([a-zA-Z]\\w*)#', function($g) use (&$rules){
+      return '#^'.preg_replace_callback(
+        pattern: '#:([a-zA-Z]\\w*)#',
+        callback: function($g) use (&$rules){
           $rule = isset($rules[$g[1]]) ? $rules[$g[1]] : '[^/]+';
           $rule = static::makeNonCapturing($rule);
           return '(' . '(?:' . $rule . ')' . ')';
         },
-      str_replace(['.',')','*'],['\.',')?','.+'],$pattern)).'$#';
+        subject: str_replace(['.',')','*'],['\.',')?','.+'],$pattern)
+      ).'$#';
     }
 
     protected static function makeNonCapturing($pattern){
@@ -775,7 +778,7 @@ class Route {
       $URL     = $URL ?: Request::URI();
       $pattern = $cut ? str_replace('$#','',$pattern).'#' : $pattern;
       $args    = [];
-      if ( !preg_match($pattern,'/'.trim($URL,'/'),$args) ) return false;
+      if ( !preg_match(pattern: $pattern, subject: '/'.trim($URL,'/'), matches: $args) ) return false;
       foreach ($args as $key => $value) {
         if (false === is_string($key)) unset($args[$key]);
       }
@@ -1095,7 +1098,7 @@ class RouteGroup {
   }
 
   public function has($r){
-    return $this->routes->contains($r);
+    return $this->routes->offsetExists($r);
   }
 
   public function add($r){
@@ -1104,7 +1107,7 @@ class RouteGroup {
   }
 
   public function remove($r){
-    if ($this->routes->contains($r)) $this->routes->detach($r);
+    if ($this->routes->offsetExists($r)) $this->routes->offsetUnset($r);
     return $this;
   }
 

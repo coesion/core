@@ -33,4 +33,18 @@ class HTTPTest extends TestCase {
     $res = new HTTP_Response('body', 200, ['X' => '1']);
     $this->assertSame('body', (string)$res);
   }
+
+  public function testHttpRequestStringCast(): void {
+    $req = new HTTP_Request(
+      'post',
+      'example.com/path?x=1',
+      ['Content-Type' => 'application/json'],
+      ['a' => 1]
+    );
+
+    $raw = (string)$req;
+    $this->assertStringStartsWith("POST /path?x=1 HTTP/1.1\r\n", $raw);
+    $this->assertStringContainsString("Host: example.com\r\n", $raw);
+    $this->assertStringContainsString("\r\n\r\n{\"a\":1}", $raw);
+  }
 }

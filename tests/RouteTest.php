@@ -673,4 +673,27 @@ class RouteTest extends TestCase {
       Options::set('core.route.loop_mode', false);
       Options::set('core.route.debug', false);
     }
+
+    public function testRouteGroupAddRemoveAndMiddleware(): void {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.append_echoed_text', true);
+      Response::clean();
+
+      $group = new RouteGroup();
+      $route = Route::get('/rg', function () { return 'OK'; });
+
+      $this->assertFalse($group->has($route));
+      $group->add($route);
+      $this->assertTrue($group->has($route));
+
+      $group->before(function () { return 'B'; })
+            ->after(function () { return 'A'; });
+
+      Route::dispatch('/rg', 'get');
+      $this->assertEquals('BOKA', Response::body());
+
+      $group->remove($route);
+      $this->assertFalse($group->has($route));
+    }
 }

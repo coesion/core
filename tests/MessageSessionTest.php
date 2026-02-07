@@ -22,4 +22,22 @@ class MessageSessionTest extends TestCase {
     $ro = Message::readOnly();
     $this->assertSame('hi', $ro->greeting);
   }
+
+  public function testMessageReadOnlyExplicit(): void {
+    Message::set('notice', 'alert');
+    $ro = new MessageReadOnly();
+    $this->assertSame('alert', $ro->notice);
+    $this->assertSame('', Message::get('notice'));
+    $this->assertTrue(isset($ro->any_key));
+  }
+
+  public function testSessionReadOnly(): void {
+    Session::set('core_readonly_key', 'value');
+    $ro = new SessionReadOnly();
+    $this->assertSame('value', $ro->get('core_readonly_key'));
+    $this->assertSame('value', $ro->core_readonly_key);
+    $this->assertTrue($ro->exists('core_readonly_key'));
+    $this->assertTrue(isset($ro->core_readonly_key));
+    $this->assertSame(Session::name(), $ro->name());
+  }
 }

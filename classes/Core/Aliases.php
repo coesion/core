@@ -47,7 +47,7 @@ class Aliases {
       'ZIP' => '\\ZIP',
     ];
 
-    spl_autoload_register(function($class) use ($map) {
+    spl_autoload_register(callback: function($class) use ($map) {
       if (strpos($class, 'Core\\') !== 0) return false;
       $alias = substr($class, 5);
       if (!isset($map[$alias])) return false;
@@ -59,6 +59,6 @@ class Aliases {
         return true;
       }
       return false;
-    }, true, true);
+    }, throw: true, prepend: true);
   }
 }

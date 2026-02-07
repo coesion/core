@@ -80,6 +80,12 @@ class SQLTest extends TestCase {
 
 	}
 
+  public function testSQLConnectionInstanceAndValue(): void {
+    $conn = SQL::using('database_a');
+    $this->assertInstanceOf(SQLConnection::class, $conn);
+    $this->assertSame(1, (int)$conn->value('SELECT 1'));
+  }
+
 	public function testInsert() {
 		$id1 = SQL::insert('users', [
 			'email' => 'user@email.com',
