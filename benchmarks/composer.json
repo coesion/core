@@ -1,0 +1,15 @@
+{
+  "name": "core/benchmarks",
+  "type": "project",
+  "require": {
+    "php": ">=8.5",
+    "illuminate/routing": "^11.0",
+    "illuminate/events": "^11.0",
+    "illuminate/container": "^11.0",
+    "illuminate/http": "^11.0",
+    "symfony/routing": "^7.0",
+    "nikic/fast-route": "^1.3",
+    "slim/slim": "^4.0",
+    "slim/psr7": "^1.6"
+  }
+}

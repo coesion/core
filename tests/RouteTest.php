@@ -558,4 +558,64 @@ class RouteTest extends TestCase {
       $this->assertEquals('ALPHA-DELTA(/A3)',Response::body(),$URI);
 
     }
+
+    public function testLoopModeStaticWinsDynamic() {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.loop_mode', true);
+      Response::clean();
+
+      Route::get('/user/:id', function ($id) { return "D$id"; });
+      Route::get('/user/settings', function () { return 'S'; });
+
+      Route::compile();
+      Route::dispatch('/user/settings', 'get');
+      $this->assertEquals('S', Response::body());
+
+      Options::set('core.route.loop_mode', false);
+    }
+
+    public function testLoopModeDynamicOrderPreserved() {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.loop_mode', true);
+      Response::clean();
+
+      Route::get('/item/:slug', function ($slug) { return "A$slug"; })
+        ->rules(['slug' => '.+']);
+      Route::get('/item/:id', function ($id) { return "B$id"; })
+        ->rules(['id' => '\\d+']);
+
+      Route::compile();
+      Route::dispatch('/item/42', 'get');
+      $this->assertEquals('A42', Response::body());
+
+      Options::set('core.route.loop_mode', false);
+    }
+
+    public function testLoopModeCompiled() {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.loop_mode', true);
+      Options::set('core.route.debug', true);
+      Response::clean();
+
+      Route::get('/alpha', function () { return 'A'; });
+      Route::get('/user/:id', function ($id) { return "U$id"; })
+        ->rules(['id' => '\\d+']);
+
+      Route::compile();
+      $tree = Route::debugTree();
+      $this->assertTrue($tree['compiled']);
+
+      Route::dispatch('/alpha', 'get');
+      $this->assertEquals('A', Response::body());
+
+      Response::clean();
+      Route::dispatch('/user/42', 'get');
+      $this->assertEquals('U42', Response::body());
+
+      Options::set('core.route.loop_mode', false);
+      Options::set('core.route.debug', false);
+    }
 }

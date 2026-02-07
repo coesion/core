@@ -27,6 +27,46 @@ $ composer require coesion/core
 
 See the docs in `docs/guides/README.md`.
 
+## Routing
+
+The router supports two execution scenarios controlled by options:
+
+- `core.route.loop_mode` (default `false`): when `true`, routes are treated as immutable and `Route::compile()` should be called once after registration.
+- `core.route.debug` (default `false`): enables route stats collection and debug output via `Route::stats()` / `Route::debugTree()`.
+
+Example (loop mode):
+
+```php
+Options::set('core.route.loop_mode', true);
+
+Route::get('/hello', function () {
+  return 'world';
+});
+
+Route::compile();
+
+Route::dispatch('/hello', 'get');
+```
+
+## Benchmarks
+
+Benchmark tooling lives in `benchmarks/` with its own `composer.json` and `vendor/`. This keeps the main repository dependency-free.
+
+```bash
+cd benchmarks
+composer install
+php bin/benchmark_router.php
+```
+
+## Route Debugging
+
+Use the helper script to inspect the compiled tree and stats.
+
+```bash
+php tools/route_debug.php tree
+php tools/route_debug.php stats
+```
+
 
 ## Contributing
 
