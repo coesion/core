@@ -593,6 +593,61 @@ class RouteTest extends TestCase {
       Options::set('core.route.loop_mode', false);
     }
 
+    public function testFastPathNoHooksSuppressesEcho() {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.append_echoed_text', false);
+      Response::clean();
+
+      Route::get('/fast', function () {
+        echo 'ECHO';
+        return 'RESULT';
+      });
+
+      ob_start();
+      Route::dispatch('/fast', 'get');
+      $output = ob_get_clean();
+
+      $this->assertEquals('RESULT', Response::body());
+      $this->assertEquals('', $output);
+    }
+
+    public function testFastPathDisabledWithEvents() {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.append_echoed_text', false);
+      Response::clean();
+
+      $started = false;
+      Route::onEvent('start', function() use (&$started){ $started = true; });
+
+      Route::get('/event', function () {
+        return 'OK';
+      });
+
+      Route::dispatch('/event', 'get');
+      Route::off('start');
+
+      $this->assertTrue($started);
+      $this->assertEquals('OK', Response::body());
+    }
+
+    public function testLoopModeOffsetMapParams() {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.loop_mode', true);
+      Response::clean();
+
+      Route::get('/price/:id', function ($id) { return "P$id"; })
+        ->rules(['id' => '\\d+(\\.\\d+)?']);
+
+      Route::compile();
+      Route::dispatch('/price/12.5', 'get');
+      $this->assertEquals('P12.5', Response::body());
+
+      Options::set('core.route.loop_mode', false);
+    }
+
     public function testLoopModeCompiled() {
       Route::reset();
       Options::set('core.response.autosend', false);

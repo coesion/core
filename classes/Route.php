@@ -316,23 +316,24 @@ class Route {
     protected static function buildRegexDispatcher(array $routes, $prefix){
       $branches = [];
       $meta = [];
+      $group_index = 1;
       foreach ($routes as $idx => $route) {
-        $inner = static::regexInner($route->pattern);
+        $regex = static::compilePatternAsRegexNoNames($route->URLPattern, $route->rules);
+        $inner = static::regexInner($regex);
         $key = '__r' . $idx;
-        $param_groups = [];
-        foreach (static::paramNames($route->URLPattern) as $param) {
-          $param_groups[$param] = $key . '_' . $param;
-        }
-        if ($param_groups) {
-          $inner = preg_replace_callback('#\\(\\?<([a-zA-Z]\\w*)>#', function($m) use ($key){
-            return '(?<' . $key . '_' . $m[1] . '>';
-          }, $inner);
+        $param_index = [];
+        $param_names = static::paramNames($route->URLPattern);
+        $index = $group_index + 1;
+        foreach ($param_names as $param) {
+          $param_index[$index] = $param;
+          $index++;
         }
         $branches[] = '(?P<' . $key . '>' . $inner . ')';
         $meta[$key] = [
           'route'  => $route,
-          'param_groups' => $param_groups,
+          'param_index' => $param_index,
         ];
+        $group_index += 1 + count($param_names);
       }
       $regex = '#^(?:' . implode('|', $branches) . ')$#';
       return [
@@ -390,6 +391,87 @@ class Route {
       return $m[1];
     }
 
+    protected static function compilePatternAsRegexNoNames($pattern, $rules=[]){
+      return '#^'.preg_replace_callback('#:([a-zA-Z]\\w*)#', function($g) use (&$rules){
+          $rule = isset($rules[$g[1]]) ? $rules[$g[1]] : '[^/]+';
+          $rule = static::makeNonCapturing($rule);
+          return '(' . '(?:' . $rule . ')' . ')';
+        },
+      str_replace(['.',')','*'],['\.',')?','.+'],$pattern)).'$#';
+    }
+
+    protected static function makeNonCapturing($pattern){
+      $len = strlen($pattern);
+      $out = '';
+      $in_class = false;
+      for ($i = 0; $i < $len; $i++) {
+        $ch = $pattern[$i];
+        if ($ch === '\\') {
+          $out .= $ch;
+          if ($i + 1 < $len) {
+            $out .= $pattern[$i + 1];
+            $i++;
+          }
+          continue;
+        }
+        if ($ch === '[') {
+          $in_class = true;
+          $out .= $ch;
+          continue;
+        }
+        if ($ch === ']' && $in_class) {
+          $in_class = false;
+          $out .= $ch;
+          continue;
+        }
+        if ($ch === '(' && !$in_class) {
+          $next = $i + 1 < $len ? $pattern[$i + 1] : '';
+          if ($next === '?') {
+            $next2 = $i + 2 < $len ? $pattern[$i + 2] : '';
+            if ($next2 === 'P' || $next2 === '<') {
+              $gt = strpos($pattern, '>', $i + 3);
+              if ($gt !== false) {
+                $out .= '(?:';
+                $i = $gt;
+                continue;
+              }
+            }
+            $out .= $ch;
+            continue;
+          }
+          $out .= '(?:';
+          continue;
+        }
+        $out .= $ch;
+      }
+      return $out;
+    }
+
+    protected static function hasListeners(string $class, ?array $names = null){
+      try {
+        $getter = function() { return self::$_listeners; };
+        $bound = $getter->bindTo(null, $class);
+        $listeners = (array)$bound();
+      } catch (Throwable $e) {
+        return false;
+      }
+      if (empty($listeners)) return false;
+      if ($names === null) return true;
+      foreach ($names as $name) {
+        if (!empty($listeners[$name])) return true;
+      }
+      return false;
+    }
+
+    protected static function hasRouteEvents(){
+      if (static::hasListeners(static::class, ['start','before','after','end'])) return true;
+      return static::hasListeners(Event::class, ['core.route.before','core.route.after','core.route.end']);
+    }
+
+    protected static function hasBeforeAfter($route){
+      return !empty($route->befores) || !empty($route->afters);
+    }
+
     /**
      * Run one of the mapped callbacks to a passed HTTP Method.
      * @param  array  $args The arguments to be passed to the callback
@@ -399,10 +481,17 @@ class Route {
     public function run(array $args, $method='get'){
       $method = strtolower($method);
       $append_echoed_text = Options::get('core.route.append_echoed_text',true);
-      static::trigger('start', $this, $args, $method);
+
+      $fast_path = !$append_echoed_text
+        && !static::hasBeforeAfter($this)
+        && !static::hasRouteEvents();
+
+      if (!$fast_path) {
+        static::trigger('start', $this, $args, $method);
+      }
 
       // Call direct befores
-      if ( $this->befores ) {
+      if ( !$fast_path && $this->befores ) {
         // Reverse befores order
         foreach (array_reverse($this->befores) as $mw) {
           static::trigger('before', $this, $mw);
@@ -440,7 +529,7 @@ class Route {
       }
 
       // Apply afters
-      if ( $this->afters ) {
+      if ( !$fast_path && $this->afters ) {
         foreach ($this->afters as $mw) {
           static::trigger('after', $this, $mw);
           Event::trigger('core.route.after', $this, $mw);
@@ -456,8 +545,10 @@ class Route {
         }
       }
 
-      static::trigger('end', $this, $args, $method);
-      Event::trigger('core.route.end', $this);
+      if (!$fast_path) {
+        static::trigger('end', $this, $args, $method);
+        Event::trigger('core.route.end', $this);
+      }
 
       return [Filter::with('core.route.response', Response::body())];
      }
@@ -832,6 +923,10 @@ class Route {
 
         $loop_mode = Options::get('core.route.loop_mode', false);
         if ($loop_mode) {
+          $dispatcher_mode = Options::get('core.route.loop_dispatcher', 'fast');
+          if ($dispatcher_mode === 'tree') {
+            return static::dispatchCompiledTree($URL, $method, $return_route, $debug);
+          }
           if (!static::$compiled || empty(static::$compiled_dispatcher)) static::compile();
           $dispatcher = static::$compiled_dispatcher;
           $path = rtrim($URL, '/') ?: '/';
@@ -875,8 +970,8 @@ class Route {
                 return $route;
               } else {
                 $args = [];
-                foreach ($meta['param_groups'] as $param => $group) {
-                  if (isset($matches[$group])) $args[$param] = $matches[$group];
+                foreach ($meta['param_index'] as $index => $param) {
+                  if (isset($matches[$index])) $args[$param] = $matches[$index];
                 }
                 $route->run($args, $method);
                 if ($debug) {
@@ -933,6 +1028,55 @@ class Route {
         }
         if ($debug) static::$stats['unmatched']++;
         return false;
+    }
+
+    protected static function dispatchCompiledTree($URL, $method, $return_route, $debug){
+      if (!static::$compiled || empty(static::$compiled_tree)) static::compile();
+      $node = static::$compiled_tree;
+      $depth = 0;
+
+      foreach (explode('/',trim($URL,'/')) as $segment) {
+        if (isset($node['static'][$segment])) {
+          $node = $node['static'][$segment];
+          $depth++;
+        } else {
+          break;
+        }
+      }
+
+      if ($debug) {
+        static::$stats['depth_total'] += $depth;
+        static::$stats['depth_max'] = max(static::$stats['depth_max'], $depth);
+      }
+
+      foreach ((array)$node['routes'] as $route) {
+        if ($debug) static::$stats['static_checks']++;
+        if (is_a($route, __CLASS__) && $route->match($URL, $method)){
+          if ($return_route){
+            return $route;
+          } else {
+            $route->run($route->extractArgs($URL),$method);
+            if ($debug) static::$stats['matched']++;
+            return true;
+          }
+        }
+      }
+
+      foreach ((array)$node['dynamic_routes'] as $entry) {
+        if ($debug) static::$stats['dynamic_checks']++;
+        $route = $entry['route'];
+        if (is_a($route, __CLASS__) && $route->match($URL, $method)){
+          if ($return_route){
+            return $route;
+          } else {
+            $route->run($route->extractArgs($URL),$method);
+            if ($debug) static::$stats['matched']++;
+            return true;
+          }
+        }
+      }
+
+      return false;
     }
 
     public function push($links, $type = 'text'){

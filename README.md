@@ -32,7 +32,9 @@ See the docs in `docs/guides/README.md`.
 The router supports two execution scenarios controlled by options:
 
 - `core.route.loop_mode` (default `false`): when `true`, routes are treated as immutable and `Route::compile()` should be called once after registration.
+- `core.route.loop_dispatcher` (default `fast`): controls the loop-mode dispatcher (`fast` uses compiled static map + regex buckets; `tree` uses the legacy compiled trie).
 - `core.route.debug` (default `false`): enables route stats collection and debug output via `Route::stats()` / `Route::debugTree()`.
+- `core.route.append_echoed_text` (default `true`): when `false` and no hooks/events are registered, a fast-path skips middleware/events overhead.
 
 Example (loop mode):
 

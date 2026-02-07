@@ -146,11 +146,13 @@ foreach ($selected as $scenario) {
   $routes = build_routes($static_count, $dynamic_count);
   $paths = build_paths($static_count, $dynamic_count);
 
-  $core_setup = function($loop_mode) use ($routes) {
-    return function() use ($routes, $loop_mode) {
+  $core_setup = function($loop_mode, $dispatcher = 'fast') use ($routes) {
+    return function() use ($routes, $loop_mode, $dispatcher) {
       Route::reset();
       Options::set('core.response.autosend', false);
+      Options::set('core.route.append_echoed_text', false);
       Options::set('core.route.loop_mode', $loop_mode);
+      Options::set('core.route.loop_dispatcher', $dispatcher);
       foreach ($routes as $r) {
         if ($r[1]) {
           Route::get($r[0])->rules(['id' => '\\d+']);
@@ -168,8 +170,10 @@ foreach ($selected as $scenario) {
     Route::dispatch($path, 'get');
   };
 
-  $results[] = bench_series('core_loop:warm:' . $scenario['name'], $core_setup(true), $core_dispatch, $paths, $iterations, $warmup, $random, false, $repeats, $step, $total_steps);
-  $results[] = bench_series('core_loop:cold:' . $scenario['name'], $core_setup(true), $core_dispatch, $paths, $iterations, 0, $random, true, $repeats, $step, $total_steps);
+  $results[] = bench_series('core_loop:warm:' . $scenario['name'], $core_setup(true, 'fast'), $core_dispatch, $paths, $iterations, $warmup, $random, false, $repeats, $step, $total_steps);
+  $results[] = bench_series('core_loop:cold:' . $scenario['name'], $core_setup(true, 'fast'), $core_dispatch, $paths, $iterations, 0, $random, true, $repeats, $step, $total_steps);
+  $results[] = bench_series('core_loop_tree:warm:' . $scenario['name'], $core_setup(true, 'tree'), $core_dispatch, $paths, $iterations, $warmup, $random, false, $repeats, $step, $total_steps);
+  $results[] = bench_series('core_loop_tree:cold:' . $scenario['name'], $core_setup(true, 'tree'), $core_dispatch, $paths, $iterations, 0, $random, true, $repeats, $step, $total_steps);
   $results[] = bench_series('core_request:warm:' . $scenario['name'], $core_setup(false), $core_dispatch, $paths, $iterations, $warmup, $random, false, $repeats, $step, $total_steps);
   $results[] = bench_series('core_request:cold:' . $scenario['name'], $core_setup(false), $core_dispatch, $paths, $iterations, 0, $random, true, $repeats, $step, $total_steps);
 

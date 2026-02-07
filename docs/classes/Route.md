@@ -8,6 +8,7 @@ Key behavior:
 - Supports named parameters with `:param` syntax.
 - Supports route groups and optimized dispatch tree.
 - `Route::dispatch()` will auto-send the response on shutdown.
+- Loop mode can precompile routes for long-lived processes.
 
 Public API:
 - `Route::on($pattern, $callback = null)` creates a route.
@@ -26,6 +27,9 @@ Public API:
 - `Route::group($prefix, $callback)` defines a route group.
 - `Route::dispatch($URL = null, $method = null, $return_route = false)` dispatches.
 - `Route::reset()` clears routes.
+- `Route::compile()` precompiles routes for loop mode.
+- `Route::debugTree()` returns a debug view of the compiled tree.
+- `Route::stats()` returns dispatch counters (when `core.route.debug` is enabled).
 
 Supporting class:
 - `RouteGroup` collects grouped routes and can apply `before`, `after`, `push`.
@@ -37,6 +41,29 @@ Route::get('/hello/:name', function ($name) {
 });
 Route::dispatch();
 ```
+
+### Loop mode (long-lived process)
+---
+
+For workers or servers that handle many requests in a loop, enable loop mode and compile once:
+
+```php
+Options::set('core.route.loop_mode', true);
+Route::get('/hello', function () { return 'world'; });
+Route::compile();
+Route::dispatch('/hello', 'get');
+```
+
+The dispatcher used in loop mode is controlled by:
+
+- `core.route.loop_dispatcher = 'fast'` (default): static map + regex buckets.
+- `core.route.loop_dispatcher = 'tree'`: legacy compiled trie.
+
+### Fast-path dispatch
+---
+
+If no route hooks/events are registered and `core.route.append_echoed_text` is `false`,
+`Route::run()` will skip middleware/events overhead for maximum speed.
 
 The Route module allow you to bind callbacks to HTTP requests.
 
