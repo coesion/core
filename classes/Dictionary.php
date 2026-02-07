@@ -76,7 +76,7 @@ abstract class Dictionary {
         static::$fields->compact();
     }
 
-    protected static function & find($path, $create=false, callable $operation=null) {
+    protected static function & find($path, $create=false, ?callable $operation=null) {
         return static::$fields->find($path, $create, $operation);
     }
 

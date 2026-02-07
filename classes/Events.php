@@ -22,7 +22,7 @@ trait Events {
         static::$_listeners[$name] = [$listener];
     }
 
-    public static function off($name,callable $listener = null){
+    public static function off($name, ?callable $listener = null){
         if($listener === null) {
             unset(static::$_listeners[$name]);
         } else {
