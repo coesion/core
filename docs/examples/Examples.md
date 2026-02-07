@@ -47,8 +47,3 @@ Response::send();
 View::using(new MyViewAdapter());
 Route::get('/home', function () {
   return View::from('home', ['title' => 'Welcome']);
-});
-
-Route::dispatch();
-Response::send();
-```

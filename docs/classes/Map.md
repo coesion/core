@@ -22,5 +22,3 @@ $map = new Map(['user' => ['name' => 'Ada']]);
 $map->set('user.email', 'a@example.com');
 ```
 
-
-

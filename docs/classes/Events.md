@@ -12,5 +12,3 @@ Public API:
 - `::trigger($name, ...$args)` dispatches listeners.
 - `::triggerOnce($name)` dispatches once and clears.
 
-
-

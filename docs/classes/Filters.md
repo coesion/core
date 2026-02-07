@@ -17,5 +17,3 @@ Filter::add('core.redirect', function ($url) {
 });
 ```
 
-
-

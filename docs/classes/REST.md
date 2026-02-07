@@ -37,5 +37,3 @@ REST::expose('post', [
   'delete' => function ($id) { return SQL::delete('posts', $id); },
   'list' => function () { return SQL::each('select * from posts'); },
   'clear' => function () { return SQL::delete('posts'); },
-]);
-```

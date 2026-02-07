@@ -127,5 +127,3 @@ CLI::on('process :filename',function($filename){
 If you don't pass an argument for an option `--optimize`, the `true` value will be used.
 
 
-
-

@@ -19,5 +19,3 @@ class Comment extends Model { public $post_id; }
 Post::hasMany('Comment.post_id');
 ```
 
-
-

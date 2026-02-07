@@ -20,5 +20,3 @@ $s = new Structure(['user' => ['name' => 'Ada']]);
 echo $s->user->name;
 ```
 
-
-

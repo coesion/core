@@ -20,5 +20,3 @@ $zip->write('hello.txt', 'Hello');
 $zip->close();
 ```
 
-
-

@@ -26,5 +26,3 @@ Job::queue('email', ['to' => 'user@example.com']);
 Job::execute();
 ```
 
-
-
