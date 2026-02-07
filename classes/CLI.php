@@ -19,6 +19,7 @@ class CLI {
     protected static $commands     = [];
     protected static $help         = null;
     protected static $error        = null;
+    protected static $ui           = null;
 
     protected static $shell_colors = [
       'BLACK'     =>"\033[0;30m",      'DARKGRAY'     =>"\033[1;30m",
@@ -209,7 +210,7 @@ class CLI {
     * @param string $filename The (fake) filename passed to the editor (for syntax highlighting hint).
     * @return string The edited contents
     */
-   public static function edit($text,$filename=''){
+    public static function edit($text,$filename=''){
       $EDITOR = getenv('EDITOR')?:'nano';
       $tmp = tempnam(sys_get_temp_dir(), "E-").strtr($filename,'/','_');
       file_put_contents($tmp, $text);
@@ -219,6 +220,16 @@ class CLI {
       return $result;
   }
 
+  /**
+   * UI facade (TUI helpers)
+   * @return \CLI\UI\Facade
+   */
+  public static function UI(){
+    if (!static::$ui) {
+      static::$ui = new \CLI\UI\Facade();
+    }
+    return static::$ui;
+  }
 
 }
 

@@ -19,6 +19,7 @@ Public API:
 - `CLI::write($message)` and `CLI::writeln($message)` support inline color tags.
 - `CLI::color($color)` sets ANSI colors.
 - `CLI::edit($text, $filename = '')` opens an editor.
+- `CLI::UI()` returns the TUI facade (gum-like prompts and styling).
 
 Example:
 ```php
@@ -26,6 +27,67 @@ CLI::on('greet :name', function ($name) {
   CLI::writeln("Hello $name");
 }, 'Print a greeting');
 CLI::run();
+```
+
+## TUI (CLI::UI)
+---
+
+The TUI facade provides gum-like prompts and styling without external dependencies.
+
+Core methods:
+- `input($prompt, $opts = [])`
+- `confirm($prompt, $opts = [])`
+- `select($prompt, array $items, $opts = [])`
+- `multiSelect($prompt, array $items, $opts = [])`
+- `filter($prompt, array $items, $opts = [])`
+- `password($prompt, $opts = [])`
+- `file($prompt, $opts = [])`
+- `write($prompt, $opts = [])`
+- `style($text, $opts = [])`
+- `join(array $pieces, $opts = [])`
+
+Example:
+```php
+$ui = CLI::UI();
+$name = $ui->input('Your name', [
+  'placeholder' => 'Rick',
+  'inline' => true,
+  'card' => true,
+  'title' => 'Input',
+  'theme' => 'lipgloss',
+  'border' => 'rounded',
+]);
+
+$color = $ui->select('Pick a color', ['Red', 'Green', 'Blue'], [
+  'card' => true,
+  'card_prompt' => false,
+  'title' => 'Select',
+  'theme' => 'lipgloss',
+  'border' => 'rounded',
+]);
+```
+
+Scripted and debug options:
+- `CORE_CLI_FORCE_TTY=1` forces TTY rendering.
+- `CORE_CLI_SCRIPTED=1` auto-fills inputs for non-interactive runs.
+- `CORE_CLI_SNAPSHOT=1` stops after rendering prompts in the demo tool.
+
+## CLI TUI Demo
+---
+
+Demo tool:
+```
+php tools/cli-demo.php demo
+```
+
+Composer script:
+```
+composer cli-demo
+```
+
+Scripted demo (non-interactive):
+```
+CORE_CLI_FORCE_TTY=1 CORE_CLI_SCRIPTED=1 CORE_CLI_SNAPSHOT=1 php tools/cli-demo.php demo
 ```
 
 You can define a command line interface via "command routes".
