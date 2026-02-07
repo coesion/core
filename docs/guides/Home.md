@@ -9,6 +9,7 @@ Start here:
 - [Examples](../examples/Examples.md)
 - [API](../classes/API.md)
 - [REST](../classes/REST.md)
+- [REST API With Auth](./REST-Auth.md)
 - [Route Cache Extension](../classes/Route-Cache-Extension.md)
 
 Class reference:

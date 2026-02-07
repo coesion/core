@@ -60,6 +60,25 @@ Docs:
 - `docs/classes/Resource.md`
 - `docs/classes/Collection.md`
 
+## Auth/Security Add-on
+
+Core ships a lightweight auth/security add-on with session and bearer token support, CSRF protection, secure headers, and rate limiting.
+
+Docs:
+- `docs/classes/Auth.md`
+- `docs/classes/Gate.md`
+- `docs/classes/Csrf.md`
+- `docs/classes/SecurityHeaders.md`
+- `docs/classes/RateLimiter.md`
+
+Quick start:
+```php
+Auth::resolver(function ($identity, $source) {
+  return User::find($identity);
+});
+Auth::boot();
+```
+
 ## Benchmarks
 
 Benchmark tooling lives in `benchmarks/` with its own `composer.json` and `vendor/`. This keeps the main repository dependency-free.
