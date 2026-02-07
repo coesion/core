@@ -7,10 +7,15 @@ Start here:
 - [Core](../classes/Core.md)
 - [Installation](./Installation.md)
 - [Examples](../examples/Examples.md)
+- [API](../classes/API.md)
 - [REST](../classes/REST.md)
 - [Route Cache Extension](../classes/Route-Cache-Extension.md)
 
 Class reference:
+- [API](../classes/API.md)
+- [REST](../classes/REST.md)
+- [Collection](../classes/Collection.md)
+- [Resource](../classes/Resource.md)
 - [Cache](../classes/Cache.md)
 - [Check](../classes/Check.md)
 - [CLI](../classes/CLI.md)

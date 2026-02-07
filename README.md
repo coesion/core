@@ -50,6 +50,16 @@ Route::compile();
 Route::dispatch('/hello', 'get');
 ```
 
+## API Module
+
+The API module exposes resources via RESTful endpoints.
+
+Docs:
+- `docs/classes/API.md`
+- `docs/classes/REST.md`
+- `docs/classes/Resource.md`
+- `docs/classes/Collection.md`
+
 ## Benchmarks
 
 Benchmark tooling lives in `benchmarks/` with its own `composer.json` and `vendor/`. This keeps the main repository dependency-free.

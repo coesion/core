@@ -11,10 +11,15 @@ Guides:
 - [Installation](./Installation.md)
 - [Examples](../examples/Examples.md)
 - [FrankenPHP](./FrankenPHP.md)
+- [API](../classes/API.md)
 - [REST](../classes/REST.md)
 - [Route Cache Extension](../classes/Route-Cache-Extension.md)
 
 Class reference:
+- [API](../classes/API.md)
+- [REST](../classes/REST.md)
+- [Collection](../classes/Collection.md)
+- [Resource](../classes/Resource.md)
 - [Core](../classes/Core.md)
 - [Cache](../classes/Cache.md)
 - [Check](../classes/Check.md)

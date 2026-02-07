@@ -12,6 +12,7 @@ Usage overview:
 - Responses: `Response` builds and sends headers, body, and content types.
 - Persistence: `SQL`, `Persistence`, and `Model` provide a minimal ORM.
 - Events and filters: `Events`, `Event`, `Filters`, and `Filter` enable hooks and overrides.
+- API: `API`, `Resource`, `Collection`, and `REST` provide RESTful data exposure.
 - Utilities: `Text`, `Hash`, `Token`, `CSV`, `ZIP`, `Shell`, `Work` and others support common tasks.
 
 Typical use cases:
@@ -38,6 +39,10 @@ FrankenPHP:
 - Static binary guide: see `docs/guides/FrankenPHP.md`.
 
 Class reference:
+- [API](../classes/API.md)
+- [REST](../classes/REST.md)
+- [Collection](../classes/Collection.md)
+- [Resource](../classes/Resource.md)
 - [Core](../classes/Core.md)
 - [Cache](../classes/Cache.md)
 - [Check](../classes/Check.md)
@@ -93,6 +98,7 @@ Guides:
 - [Installation](Installation.md)
 - [Examples](../examples/Examples.md)
 - [FrankenPHP](FrankenPHP.md)
+- [API](../classes/API.md)
 - [REST](../classes/REST.md)
 - [Route Cache Extension](../classes/Route-Cache-Extension.md)
 - [Classes](Classes.md)
