@@ -1,6 +1,7 @@
 - Every time you do a discovery on something unexpected, something that you couldn't guess, save it in the MEMORY.md document. Don't just write a story of what happened, write decisive info that you could not find anywhere else.
 - Read from MEMORY.md when you encounter a unknow decision or are you in doubt of something.
-- Run all tests after any plan implementation or significant change, if you find any errors fix them.
+- Run the full test suite only when you modify or add code in the main classes; if you find any errors fix them.
+- Changes not related to the main classes (docs, comments, metadata, or other non-core edits) do not require retesting.
 - Don't break any feature when you implement something new or you change something already there.
 - Avoid adding new external dependencies.
 - Maximize the use of the already present classes in the Core collection.
