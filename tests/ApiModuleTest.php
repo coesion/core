@@ -32,6 +32,9 @@ class ApiModuleTest extends TestCase {
 
   protected function setUp(): void {
     parent::setUp();
+    if (!extension_loaded('pdo_sqlite')) {
+      $this->markTestSkipped('pdo_sqlite extension is not available.');
+    }
     Options::set('core.response.autosend', false);
     Options::set('core.route.auto_optimize', false);
     Response::clean();

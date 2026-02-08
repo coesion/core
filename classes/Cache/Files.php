@@ -20,10 +20,13 @@ class Files implements Adapter {
     }
 
     public function __construct($options=[]){
-        $this->options = (object) array_merge($options,[
+        $this->options = (object) array_merge([
             'cache_dir' => sys_get_temp_dir().'/core_file_cache',
-        ]);
+        ], $options);
         $this->options->cache_dir = rtrim($this->options->cache_dir,'/');
+        if (is_dir($this->options->cache_dir) && !is_writable($this->options->cache_dir)) {
+            $this->options->cache_dir = sys_get_temp_dir().'/core_file_cache_'.getmypid();
+        }
         if(false===is_dir($this->options->cache_dir)) mkdir($this->options->cache_dir,0777,true);
         $this->options->cache_dir .= '/';
     }
@@ -54,14 +57,19 @@ class Files implements Adapter {
     public function exists($key){
         $cache_file_name = $this->options->cache_dir.$key.'.cache.php';
         if(false === is_file($cache_file_name)) return false;
-        $peek = file_get_contents($cache_file_name,false,null,-1,32);
-        $expire = explode('{i:0;i:',$peek,2);
-        $expire = explode(';',end($expire),2);
-        $expire = current($expire);
+        $raw = file_get_contents($cache_file_name);
+        if ($raw === false) return false;
+        $data = @unserialize($raw);
+        if (!is_array($data) || count($data) < 2) {
+            @unlink($cache_file_name);
+            return false;
+        }
+        $expire = $data[0];
         if($expire && $expire < time()){
             unlink($cache_file_name);
             return false;
-        } else return true;
+        }
+        return true;
     }
 
     public function flush(){

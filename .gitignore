@@ -6,3 +6,4 @@ dist
 .phpunit.cache
 MEMORY.md
 AGENTS.md
+build/phpstan

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="classes/Loader.php" colors="true" cacheDirectory=".phpunit.cache">
+  <php>
+    <ini name="error_reporting" value="E_ALL &amp; ~E_DEPRECATED"/>
+  </php>
   <testsuites>
     <testsuite name="Core Test Suite">
       <directory>tests</directory>
