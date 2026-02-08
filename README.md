@@ -4,6 +4,7 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/coesion/core/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/coesion/core/?branch=master)
 [![Build Status](https://travis-ci.org/coesion/core.svg)](https://travis-ci.org/coesion/core)
+[![Docs Pages](https://github.com/coesion/core/actions/workflows/docs-pages.yml/badge.svg)](https://github.com/coesion/core/actions/workflows/docs-pages.yml)
 [![Total Downloads](https://poser.pugx.org/coesion/core/downloads.svg)](https://packagist.org/packages/coesion/core)
 [![Latest Stable Version](https://poser.pugx.org/coesion/core/v/stable.svg)](https://packagist.org/packages/coesion/core)
 [![Latest Unstable Version](https://poser.pugx.org/coesion/core/v/unstable.svg)](https://packagist.org/packages/coesion/core)
@@ -26,6 +27,14 @@ $ composer require coesion/core
 ## Documentation
 
 See the docs in `docs/guides/README.md`.
+
+Render static docs for GitHub Pages:
+
+```bash
+composer docs-build-pages
+```
+
+This generates the publishable site in `build/docs-site`.
 
 ## Routing
 

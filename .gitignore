@@ -7,3 +7,4 @@ dist
 MEMORY.md
 AGENTS.md
 build/phpstan
+build/docs-site
