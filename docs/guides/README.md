@@ -49,7 +49,7 @@ Class reference:
 - [Check](../classes/Check.md)
 - [CLI](../classes/CLI.md)
 - [CSV](../classes/CSV.md)
-- [Csrf](../classes/Csrf.md)
+- [CSRF](../classes/CSRF.md)
 - [Deferred](../classes/Deferred.md)
 - [Dictionary (abstract)](../classes/Dictionary.md)
 - [Email](../classes/Email.md)

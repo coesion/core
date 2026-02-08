@@ -76,7 +76,7 @@ Core ships a lightweight auth/security add-on with session and bearer token supp
 Docs:
 - `docs/classes/Auth.md`
 - `docs/classes/Gate.md`
-- `docs/classes/Csrf.md`
+- `docs/classes/CSRF.md`
 - `docs/classes/SecurityHeaders.md`
 - `docs/classes/RateLimiter.md`
 

@@ -10,3 +10,4 @@ Class documentation lives in docs/classes/ with 60 markdown files; they are not 
 Docs renderer caveat: tools/serve-docs.php defines CORE_DOCS_ASCII_FLAME flag at file scope; renderPage must receive that flag as a parameter (or declare global) or PHP emits undefined variable warnings at sidebar render lines.
 Some docs/classes markdown files contain mixed line endings (CRLF/LF), which can surface as stray carriage-return characters during scripted text extraction and insertion.
 Bulk markdown intro rewrites can accidentally stack multiple generated paragraphs in docs/classes; cleanup passes should first strip previously generated intro patterns before reinserting.
+Loader::register maps class names directly to filenames (with original class case), so acronym class renames on case-sensitive filesystems must also rename the PHP file (e.g., CSRF -> classes/CSRF.php) to keep Loader autoload working.

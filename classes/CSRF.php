@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Csrf
+ * CSRF
  *
  * CSRF token helper.
  *
@@ -10,7 +10,7 @@
  * @copyright Coesion - 2026
  */
 
-class Csrf {
+class CSRF {
   use Module;
 
   public static function token(){
@@ -64,4 +64,3 @@ class Csrf {
     return bin2hex(openssl_random_pseudo_bytes(32));
   }
 }
-

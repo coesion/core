@@ -126,29 +126,29 @@ parameters:
 			path: classes/Core/Aliases.php
 
 		-
-			message: "#^Csrf\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Csrf does not extend any class\\.$#"
+			message: "#^CSRF\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but CSRF does not extend any class\\.$#"
 			count: 1
-			path: classes/Csrf.php
+			path: classes/CSRF.php
 
 		-
-			message: "#^Csrf\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Csrf does not extend any class\\.$#"
+			message: "#^CSRF\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but CSRF does not extend any class\\.$#"
 			count: 1
-			path: classes/Csrf.php
+			path: classes/CSRF.php
 
 		-
 			message: "#^Left side of && is always true\\.$#"
 			count: 1
-			path: classes/Csrf.php
+			path: classes/CSRF.php
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 2
-			path: classes/Csrf.php
+			path: classes/CSRF.php
 
 		-
 			message: "#^Parameter \\#2 \\$b of static method Password\\:\\:compare\\(\\) expects string, object given\\.$#"
 			count: 1
-			path: classes/Csrf.php
+			path: classes/CSRF.php
 
 		-
 			message: "#^Email\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Email does not extend any class\\.$#"

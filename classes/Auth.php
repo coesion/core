@@ -53,8 +53,8 @@ class Auth {
       },
       'csrf' => function (array $options = []) {
         $this->before(function () use ($options) {
-          if (!Csrf::shouldVerify()) return;
-          if (!Csrf::verify($options)) {
+          if (!CSRF::shouldVerify()) return;
+          if (!CSRF::verify($options)) {
             Response::error(419, 'CSRF token mismatch');
             Response::add('CSRF token mismatch');
             return false;

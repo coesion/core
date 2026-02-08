@@ -48,9 +48,9 @@ class AuthSecurityTest extends TestCase {
   }
 
   public function testCsrfTokenVerify(): void {
-    $token = Csrf::token();
+    $token = CSRF::token();
     $_SERVER['HTTP_X_CSRF_TOKEN'] = $token;
-    $this->assertTrue(Csrf::verify());
+    $this->assertTrue(CSRF::verify());
   }
 
   public function testGateAllows(): void {

@@ -186,7 +186,7 @@ Route::post('/account', function () {
 
 CSRF tokens can be read with:
 ```php
-$token = Csrf::token();
+$token = CSRF::token();
 ```
 
 Send the token via `X-CSRF-Token` header or `_csrf` input.
