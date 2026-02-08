@@ -1,8 +1,9 @@
 # URL
 
-
 Overview:
 `URL` is a helper object for parsing and composing URLs.
+
+Use `URL` when parsing and rebuilding URLs dynamically, including selective component edits before rendering the final string.
 
 Public API:
 - `new URL($url = '')` constructs an instance.
@@ -113,4 +114,3 @@ echo $link;
 ```
 mailto://info@myserver.com?subject=This+is+a+subject&body=Hi%21+This+is+a+test...+%3AD
 ```
-

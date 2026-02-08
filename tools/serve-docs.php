@@ -87,7 +87,7 @@ if (!$filePath) {
   }
 }
 
-renderPage($classesTree, $traitsTree, $guidesTree, $requested, $contentHtml, $toc);
+renderPage($classesTree, $traitsTree, $guidesTree, $requested, $contentHtml, $toc, $enableAsciiFlame);
 
 function isPortFree(int $port): bool {
   $socket = @stream_socket_server("tcp://127.0.0.1:$port", $errno, $errstr);
@@ -264,7 +264,7 @@ function getClassAliasMap(string $classesDir): array {
   return $aliases;
 }
 
-function renderPage(array $classesTree, array $traitsTree, array $guidesTree, string $current, string $contentHtml, array $toc): void {
+function renderPage(array $classesTree, array $traitsTree, array $guidesTree, string $current, string $contentHtml, array $toc, bool $enableAsciiFlame = false): void {
   header('Content-Type: text/html; charset=utf-8');
   $title = 'Docs';
   $classesHtml = renderTree($classesTree, $current, true);

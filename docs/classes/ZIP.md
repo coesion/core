@@ -1,8 +1,9 @@
 # ZIP
 
-
 Overview:
 `ZIP` wraps `ZipArchive` and provides helpers to create, write, and download zip files.
+
+Use `ZIP` to build downloadable archives or package generated files programmatically without manual ZipArchive boilerplate.
 
 Public API:
 - `ZIP::create($name = '')` constructs a ZIP file.
@@ -19,4 +20,3 @@ $zip = ZIP::create('backup');
 $zip->write('hello.txt', 'Hello');
 $zip->close();
 ```
-

@@ -1,8 +1,9 @@
 # CSV
 
-
 Overview:
 `CSV` provides CSV read/write utilities with auto delimiter detection and a row schema system.
+
+Use `CSV` to import/export tabular data for admin tools, data migrations, and reporting jobs without rewriting delimiter, schema, and streaming logic each time.
 
 Key behavior:
 - Mode is read or write.
@@ -126,4 +127,3 @@ CSV::open('agents.csv')->each(function($row) use ($csv) {
   $csv->write($row);
 });
 ```
-

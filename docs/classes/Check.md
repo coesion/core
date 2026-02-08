@@ -1,8 +1,9 @@
 # Check
 
-
 Overview:
 `Check` validates a data map against named validation rules. You can define custom rules at runtime, and it ships with a standard set (required, email, min, max, etc.).
+
+Use `Check` to validate input payloads, forms, and API parameters with reusable rules so validation behavior stays consistent across endpoints.
 
 Key behavior:
 - `Check::valid()` executes rules and collects errors.
@@ -144,4 +145,3 @@ Check::valid([
   'level'       => 'required | in_array:["GUEST","USER","ADMIN"]',
 ], Request::data()) || echo "Errors: " . print_r(Check::errors(),true);
 ```
-

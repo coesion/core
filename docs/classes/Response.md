@@ -1,8 +1,9 @@
 # Response
 
-
 Overview:
 `Response` builds and sends HTTP responses, with buffering and helpers for JSON, HTML, and binary data.
+
+Use `Response` to compose status, headers, payload, downloads, and CORS behavior before sending output to the client.
 
 Key behavior:
 - Tracks headers, status, body, and send state.
@@ -170,4 +171,3 @@ Response::push([
   ],
 ]);
 ```
-

@@ -1,8 +1,9 @@
 # Structure
 
-
 Overview:
 `Structure` wraps arrays or objects and allows property access (`$obj->key`) and array access interchangeably.
+
+Use `Structure` when you want object-style access over nested arrays and mixed payloads, especially for API responses.
 
 Public API:
 - `new Structure($input = [], $deep = true)` creates a wrapper.
@@ -19,4 +20,3 @@ Example:
 $s = new Structure(['user' => ['name' => 'Ada']]);
 echo $s->user->name;
 ```
-

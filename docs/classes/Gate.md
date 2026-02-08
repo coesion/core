@@ -3,6 +3,8 @@
 Overview:
 `Gate` is a minimal authorization layer with named abilities.
 
+Use `Gate` to model authorization abilities like `admin`, `editor`, or resource-specific policies and enforce them at route boundaries.
+
 Public API:
 - `Gate::define($ability, callable $callback)`
 - `Gate::allows($ability, ...$args)`
@@ -18,4 +20,3 @@ Route::get('/admin', function () {
   return 'ok';
 })->auth()->can('admin');
 ```
-

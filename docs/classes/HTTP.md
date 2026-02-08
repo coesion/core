@@ -1,8 +1,9 @@
 # HTTP
 
-
 Overview:
 `HTTP` is a cURL wrapper with helpers for GET/POST/PUT/DELETE and JSON support.
+
+Use `HTTP` for outbound service calls where you need a compact wrapper around cURL with headers, auth, JSON encoding, and response helpers.
 
 Key behavior:
 - Uses a shared user agent and header set.
@@ -140,4 +141,3 @@ You can however change it with the `HTTP::userAgent($value)` method.
 ```php
 HTTP::userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36');
 ```
-

@@ -1,8 +1,9 @@
 # Persistence (trait)
 
-
 Overview:
 `Persistence` provides a persistence layer for `Model` via SQL.
+
+Use the `Persistence` trait to give models SQL-backed load/save behavior with configurable table and primary-key conventions.
 
 Key behavior:
 - Default table name is the pluralized class name.
@@ -80,4 +81,3 @@ User::onSave(function($table, $options){
   $path = '/data/' . $table . '/' . Hash::md5( $this->$keyname ) . '.php';
   return file_put_contents(serialize($this)) > 0;
 });
-

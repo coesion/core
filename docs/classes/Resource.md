@@ -3,6 +3,8 @@
 Overview:
 `Resource` is the base class for API-exposed entities. Override `expose()` to control output.
 
+Use `Resource` to define how model fields are exposed externally, including transformed output for list and detail representations.
+
 Minimal example:
 
 ```php

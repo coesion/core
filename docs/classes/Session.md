@@ -1,8 +1,9 @@
 # Session
 
-
 Overview:
 `Session` wraps PHP sessions and provides convenience methods for access and read-only access.
+
+Use `Session` for state that must persist across requests, with helpers for lifecycle, naming, and safe key access.
 
 Key behavior:
 - `Session::start()` ensures session is active.
@@ -98,4 +99,3 @@ You can check if a variable is in session stash with the `Session::exists` metho
 ```php
 if(!Session::exists('user')) Redirect::to('/login');
 ```
-

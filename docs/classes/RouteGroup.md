@@ -3,6 +3,8 @@
 Overview:
 RouteGroup is a helper for grouping routes, letting you apply `before`, `after`, and `push` to multiple routes at once.
 
+Use `RouteGroup` to apply shared middleware and response hints across multiple routes without repeating each call.
+
 Public API:
 - `new RouteGroup()` creates and registers the group.
 - `add($route)` attaches a route to the group.
@@ -10,5 +12,3 @@ Public API:
 - `before($callbacks)` applies before middleware to all routes.
 - `after($callbacks)` applies after middleware to all routes.
 - `push($links, $type = 'text')` applies HTTP/2 push to all routes.
-
-

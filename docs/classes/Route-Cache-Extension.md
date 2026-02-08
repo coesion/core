@@ -3,6 +3,8 @@
 Overview:
 This guide shows how to extend `Route` with a `cache()` helper using the `Module` trait. The extension stores serialized responses in `Cache` and serves them on subsequent requests.
 
+Use this extension pattern when you want route-level response caching with minimal route code changes and predictable cache keys.
+
 Implementation:
 ```php
 /*

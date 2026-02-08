@@ -1,8 +1,9 @@
 # Redirect
 
-
 Overview:
 `Redirect` provides HTTP redirection helpers using `Response`.
+
+Use `Redirect` to centralize HTTP redirection behavior, including referrer fallback and URL filtering before location output.
 
 Public API:
 - `Redirect::to($url, $status = 302)` sends a redirect.
@@ -42,4 +43,3 @@ This outputs :
 ```
 
 > If the optional boolean parameter `$parent` is passed as `true` the `parent.location` object is used. This is useful for redirecting inside iframes, like in Facebook Page Tab apps.
-

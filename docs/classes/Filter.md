@@ -1,8 +1,9 @@
 # Filter
 
-
 Overview:
 `Filter` is a global filter registry built on the `Filters` trait. It provides class-level methods aliased to `filter`, `filterSingle`, and `filterWith`.
+
+Use `Filter` to let application or plugin code override calculated values through named transformation chains.
 
 Public API:
 - `Filter::add($name, callable $modder)` adds a filter.
@@ -159,4 +160,3 @@ Here the `document.title` filter will be executed instead of `title`.
 ```
 Guvf jnf n gevhzcu
 ```
-

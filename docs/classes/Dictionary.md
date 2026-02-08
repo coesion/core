@@ -1,8 +1,9 @@
 # Dictionary (abstract)
 
-
 Overview:
 `Dictionary` is a static key-value repository with dot-notation access built on `Map`.
+
+Use `Dictionary` as a static configuration repository when modules need shared keyed settings with dot-notation access.
 
 Key behavior:
 - Uses a static `Map` instance per subclass.
@@ -201,4 +202,3 @@ MyService::init( Config::get([
     'verbose'    =>  'app.global.debug',
 ]));
 ```
-

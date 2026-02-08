@@ -1,8 +1,9 @@
 # Cache
 
-
 Overview:
 `Cache` provides a multi-strategy cache facade. It selects a backend driver with a first-come, first-served strategy and exposes a consistent API for get/set/exists/increment operations.
+
+Use `Cache` to memoize expensive queries or computed payloads and share cached values across requests with a driver strategy that can degrade gracefully.
 
 Key behavior:
 - Cache can be globally enabled or disabled with `Cache::enabled()`.
@@ -168,4 +169,3 @@ A common use for this is for disabling cache in debug mode.
 ```php
 Cache::enabled(!Options::get('debug',false));
 ```
-

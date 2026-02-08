@@ -1,8 +1,9 @@
 # SQL
 
-
 Overview:
 `SQL` is a PDO-based database wrapper with connection registry and helper methods. It defaults to an in-memory SQLite connection.
+
+Use `SQL` for connection management and common query helpers while keeping direct PDO access available through connection wrappers.
 
 Security note:
 - Emulated prepares are disabled by default (real prepares when supported).
@@ -255,4 +256,3 @@ Event::on('core.sql.query',function($query,$params,$statement){
   echo "Success    : ", ($statement?'Yes':'No'), "\n";
 });
 ```
-

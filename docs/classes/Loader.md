@@ -1,8 +1,9 @@
 # Loader
 
-
 Overview:
 `Loader` is a minimal class autoloader that resolves class names to file paths under registered roots.
+
+Use `Loader` when bootstrapping projects that need simple class autoloading from one or more directory roots.
 
 Key behavior:
 - Supports PSR-0 style underscore mapping.
@@ -35,4 +36,3 @@ The simplest way to retrieve a value from cache is via the `get` method.
 ```php
 Loader::addPath('/path/to/my/classes');
 ```
-

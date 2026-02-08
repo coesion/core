@@ -1,8 +1,9 @@
 # Map
 
-
 Overview:
 `Map` is a dot-notation key-value store and is the data backbone for `Dictionary`.
+
+Use `Map` for nested key-value manipulation with dot paths when you need mutable structured data without repeatedly checking array depth.
 
 Public API:
 - `Map::all()` returns the array by reference.
@@ -21,4 +22,3 @@ Example:
 $map = new Map(['user' => ['name' => 'Ada']]);
 $map->set('user.email', 'a@example.com');
 ```
-

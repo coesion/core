@@ -1,8 +1,9 @@
 # Email
 
-
 Overview:
 `Email` is an email delivery facade that delegates to a configured driver.
+
+Use `Email` when you need to send notifications through interchangeable providers while keeping envelope creation and send flow identical.
 
 Key behavior:
 - Drivers live in the `Email\` namespace.
@@ -108,4 +109,3 @@ The `to` and `from` properties accepts one or an array of email addresses in the
 1. `user@host.com`
 1. `<user@host.com>`
 1. `Name Surname <user@host.com>`
-

@@ -1,8 +1,9 @@
 # Service
 
-
 Overview:
 `Service` is a lightweight service container supporting singleton and factory registrations.
+
+Use `Service` to register singleton or factory-style dependencies and resolve them lazily through a lightweight container.
 
 Public API:
 - `Service::register($serviceName, $factory)` registers a singleton factory.
@@ -116,4 +117,3 @@ echo json_encode([$a,$b], JSON_PRETTY_PRINT);
 The [Service](./Service.md) module sports a service locator and a factory container.  
 
 This module permits the user to register and retrieve a service manager instance, one (singleton) or multiple times.
-

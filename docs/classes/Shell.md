@@ -1,8 +1,9 @@
 # Shell
 
-
 Overview:
 `Shell` builds and runs shell commands with optional parameter handling and piping.
+
+Use `Shell` to compose and run command-line operations with escaping, aliasing, and pipelines from PHP code.
 
 Public API:
 - `Shell::<command>(...$params)` builds a command via `__callStatic`.
@@ -226,4 +227,3 @@ Shell::alias('gitCommitAndPush',function($commit_message = 'Save'){
 ```
 
 Now you can "save" your work with : `Shell::gitCommit()` or with a commit message `Shell::gitCommit("Latest fixes.")`;
-

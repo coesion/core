@@ -1,8 +1,9 @@
 # Deferred
 
-
 Overview:
 `Deferred` executes a callback when the object is destroyed. This is a lightweight deferral mechanism for cleanup logic.
+
+Use `Deferred` to guarantee cleanup actions run at scope end, such as releasing locks, flushing buffers, or writing final telemetry.
 
 Public API:
 - `new Deferred(callable $callback)` registers a callback.
@@ -47,4 +48,3 @@ B: Wanna bet?
 A: I WIN!
 B: Haha! Gotcha!
 ```
-

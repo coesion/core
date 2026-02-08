@@ -1,8 +1,9 @@
 # Text
 
-
 Overview:
 `Text` contains string utilities: simple templating, slugify, and accent removal.
+
+Use `Text` for lightweight string templating, slug generation, accent normalization, and targeted substring extraction.
 
 Public API:
 - `Text::render($template, $values = null)` renders `{{ var }}` placeholders.
@@ -32,4 +33,3 @@ echo Text::render('Your IP is : {{ server.REMOTE_HOST }}',[
 ```
 Your IP is : 192.30.252.131
 ```
-

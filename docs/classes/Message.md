@@ -1,8 +1,9 @@
 # Message
 
-
 Overview:
 `Message` provides cross-request flash messages stored in `Session` under `core.messages`.
+
+Use `Message` for flash-style cross-request notices, validation feedback, and one-time UI messages stored in session state.
 
 Key behavior:
 - Reads messages once and removes them on access.
@@ -116,4 +117,3 @@ Now you can access messages directly in view templates via the `Message` global.
 ```
 
 The messages are one-shot only, only consumed they are deleted from the stash.
-

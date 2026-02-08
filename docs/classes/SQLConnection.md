@@ -3,6 +3,8 @@
 Overview:
 SQLConnection is the per-connection PDO wrapper used by SQL. It implements query execution, data fetching, and insert/update helpers.
 
+Use `SQLConnection` when you need per-connection query execution helpers such as `value`, `each`, `insert`, and `update`.
+
 Public API:
 - `prepare($query, $pdo_params = [])`
 - `exec($query, $params = [], $pdo_params = [])`
@@ -18,5 +20,3 @@ Public API:
 - `updateWhere($table, $data, $where, $pk = 'id')`
 - `update($table, $data, $pk = 'id', $extra_where = '')`
 - `insertOrUpdate($table, $data = [], $pk = 'id', $extra_where = '')`
-
-

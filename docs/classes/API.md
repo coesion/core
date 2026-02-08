@@ -3,6 +3,8 @@
 Overview:
 The API module exposes data via RESTful endpoints and provides base classes for resources.
 
+Use `API` when you want to expose database-backed entities as predictable REST endpoints while keeping pagination, list/detail modes, and resource shaping in one place.
+
 Implemented classes:
 - `API` manages routes setup and endpoints.
 - `Resource` represents a resource to expose.

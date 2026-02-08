@@ -1,8 +1,9 @@
 # Filters (trait)
 
-
 Overview:
 `Filters` enables value transformation hooks identified by a name string.
+
+Use the `Filters` trait when building classes that should expose overridable value pipelines via named filter hooks.
 
 Public API:
 - `::filter($names, callable $modder = null)` registers one or more filters.
@@ -16,4 +17,3 @@ Filter::add('core.redirect', function ($url) {
   return rtrim($url, '/');
 });
 ```
-

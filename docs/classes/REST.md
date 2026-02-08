@@ -1,6 +1,10 @@
 # REST
 
+Overview:
 The **REST** module allows you to expose a resource via CRUD methods mapped to a RESTful API.
+
+Use `REST` when you want CRUD endpoints mapped directly from HTTP methods, with handlers for list/read/create/update/delete in one declaration.
+
 Part of the API module.
 
 ### Expose a resource

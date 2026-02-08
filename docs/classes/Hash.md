@@ -1,8 +1,9 @@
 # Hash
 
-
 Overview:
 `Hash` provides hashing helpers including UUID generation and a murmur hash implementation.
+
+Use `Hash` for deterministic checksums, UUID generation, and random token helpers in identifiers, signatures, and cache keys.
 
 Public API:
 - `Hash::make($payload, $method = 'md5', $raw = false)` hashes payload (serialized).
@@ -169,4 +170,3 @@ Array
 | 3 | This generates a UUID from a MD5 hash of a namespace (another valid UUID) and name. Given the same namespace and name, the output is always the same. | Used for backwards compatibility |
 | 4 | UUIDs are pseudo-random.| Random ID |
 | 5 | This generates a UUID from an SHA-1 hash of a namespace (another valid UUID) and name. Given the same namespace and name, the output is always the same. | Preferred |
-

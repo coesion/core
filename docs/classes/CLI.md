@@ -1,8 +1,9 @@
 # CLI
 
-
 Overview:
 `CLI` is a lightweight command router for CLI scripts. It parses argv, supports flags, and dispatches to named command handlers.
+
+Use `CLI` for project commands, maintenance scripts, and deployment tasks where argument parsing, help output, and command dispatch should stay uniform.
 
 Key behavior:
 - Commands are registered with `CLI::on()`.
@@ -187,5 +188,3 @@ CLI::on('process :filename',function($filename){
 ```
 
 If you don't pass an argument for an option `--optimize`, the `true` value will be used.
-
-

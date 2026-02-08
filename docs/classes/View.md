@@ -1,8 +1,9 @@
 # View
 
-
 Overview:
 `View` renders templates using a pluggable adapter and provides `View::from()` factory.
+
+Use `View` to render templates through a pluggable adapter so presentation stays separate from request and domain logic.
 
 Public API:
 - `View::using(View\Adapter $handler)` sets the template handler.
@@ -123,4 +124,3 @@ echo View::from('index',[
 The [View](./View.md) module handles the rendering of templates via various engines.
 
 Core ships a vanilla PHP template engine (`View\PHP`), you can find other bridges in the [coesion](https://github.com/coesion) repository
-

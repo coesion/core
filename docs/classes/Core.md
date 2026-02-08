@@ -3,6 +3,8 @@
 Overview:
 `Core` provides runtime metadata and diagnostics, and a minimal logging hook.
 
+Use `Core` for runtime diagnostics and version metadata in health checks, debug endpoints, and operational tooling.
+
 Public API:
 - `Core::version()` returns the framework version string.
 - `Core::diagnostics()` returns runtime information (PHP, SAPI, OPcache status).

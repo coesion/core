@@ -1,8 +1,9 @@
 # Relation (trait)
 
-
 Overview:
 `Relation` defines relationships between `Model` classes and adds lazy-loading accessors.
+
+Use the `Relation` trait to declare one-to-one and one-to-many links between models and access related data lazily.
 
 Key behavior:
 - Relations are defined via `hasOne` and `hasMany`.
@@ -18,4 +19,3 @@ class Post extends Model { public $id; }
 class Comment extends Model { public $post_id; }
 Post::hasMany('Comment.post_id');
 ```
-

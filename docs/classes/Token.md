@@ -1,8 +1,9 @@
 # Token
 
-
 Overview:
 `Token` is a simple JWT implementation using HMAC algorithms.
+
+Use `Token` to issue and verify signed JWT payloads for stateless authentication and trusted claims exchange.
 
 Public API:
 - `Token::encode($payload, $secret, $algo = 'HS256')`
@@ -73,4 +74,3 @@ The [Token](./Token.md) module exports methods for handling JWT tokens.
 >JSON Web Token (JWT) is a means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is digitally signed using JSON Web Signature (JWS) and/or encrypted using JSON Web Encryption (JWE).
 
 See [JWT](http://openid.net/specs/draft-jones-json-web-token-07.html) specs online.
-

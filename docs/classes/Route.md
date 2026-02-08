@@ -1,8 +1,9 @@
 # Route
 
-
 Overview:
 `Route` provides URL routing, middleware, and dispatching for HTTP requests.
+
+Use `Route` to register URL patterns, middleware, and method handlers so HTTP dispatching stays centralized and auditable.
 
 Key behavior:
 - Supports named parameters with `:param` syntax.
@@ -487,4 +488,3 @@ Route::onEvent('start',function($route, $args, $method){
 | Name | Parameters | Description |
 |:----:|------------|-------------|
 | `core.route.response`  | `response_body` | Filter the route response body output. |
-

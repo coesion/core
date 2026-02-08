@@ -1,8 +1,9 @@
 # Module (trait)
 
-
 Overview:
 `Module` allows runtime extension of classes with new methods using closures.
+
+Use the `Module` trait when you need runtime extension points, allowing modules to be augmented with new methods without editing class source.
 
 Public API:
 - `::extend($method, $callback = null)` registers new methods.
@@ -35,4 +36,3 @@ Test::extend([
 Test::Bar(); // Bar
 
 ```
-

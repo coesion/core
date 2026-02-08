@@ -1,8 +1,9 @@
 # Options
 
-
 Overview:
 `Options` is a configuration dictionary with loaders for PHP, INI, JSON, arrays, and `.env` files.
+
+Use `Options` to load and merge configuration from env, JSON, INI, PHP arrays, and files into a single lookup surface.
 
 Public API:
 - `Options::loadPHP($filepath, $prefix_path = null)`
@@ -93,4 +94,3 @@ Array
 The [Options](./Options.md) module exposes functions to manage a data-value dictionary loading values from various formats.
 
 See [Dictionary](./Dictionary.md).
-

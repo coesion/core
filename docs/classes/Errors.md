@@ -1,8 +1,9 @@
 # Errors
 
-
 Overview:
 `Errors` handles PHP errors and exceptions and can output in several modes.
+
+Use `Errors` to capture PHP errors/exceptions and route them to structured handlers or JSON/HTML output depending on runtime context.
 
 Key behavior:
 - `Errors::capture()` installs handlers.
@@ -82,4 +83,3 @@ Modes | Description | Example
 ```php
 Errors::mode(Errors::HTML);
 ```
-

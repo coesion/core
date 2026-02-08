@@ -1,8 +1,9 @@
 # Request
 
-
 Overview:
 `Request` wraps access to request data and headers and provides content negotiation support.
+
+Use `Request` as the canonical reader for input, headers, method, URL, and body parsing so endpoint logic stays transport-consistent.
 
 Public API:
 - `Request::accept($key = 'type', $choices = '')` negotiates Accept headers.
@@ -112,4 +113,3 @@ stdClass Object
 ```
 
 Handles the HTTP [request](./request.md) for the current execution.
-

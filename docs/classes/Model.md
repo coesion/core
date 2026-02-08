@@ -1,8 +1,9 @@
 # Model (abstract)
 
-
 Overview:
 `Model` is the base ORM class. It composes `Persistence` and `Relation` to provide active-record style behavior.
+
+Use `Model` to represent persisted entities with active-record style querying, saving, and relation export.
 
 Key behavior:
 - Uses table and primary key from `Persistence` options.
@@ -82,4 +83,3 @@ The resulting object implements an ActiveRecord pattern for accessing/modifying 
 $mario->name = "Mario De Mario";
 $mario->save();
 ```
-

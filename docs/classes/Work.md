@@ -1,8 +1,9 @@
 # Work
 
-
 Overview:
 `Work` implements cooperative multitasking using PHP generators.
+
+Use `Work` to run cooperative multitasking workloads with generators when you need lightweight concurrency in one process.
 
 Key behavior:
 - `Work::add()` enqueues a generator as a task.
@@ -124,4 +125,3 @@ A:18
 A:19
 A:20
 ```
-

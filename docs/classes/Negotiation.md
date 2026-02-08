@@ -1,8 +1,9 @@
 # Negotiation
 
-
 Overview:
 `Negotiation` parses Accept-style headers and selects preferred or best-matching content types.
+
+Use `Negotiation` to select response formats from Accept headers so APIs can return the best supported representation automatically.
 
 Public API:
 - `Negotiation::parse($query)` parses an Accept header.
@@ -68,4 +69,3 @@ es
 
 The [Negotiation](./Negotiation.md) is a module for handling Content Negotiation.  
 > See Reference : [RFC 7231](https://tools.ietf.org/html/rfc7231)
-

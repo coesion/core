@@ -1,8 +1,9 @@
 # Job
 
-
 Overview:
 `Job` is a simple database-backed queue built on `Model`.
+
+Use `Job` for database-backed background work such as email delivery, retries, and async processing that can be executed outside the request cycle.
 
 Key behavior:
 - The queue table schema is documented in the class file.
@@ -25,4 +26,3 @@ Job::register('email', function (Job $job, $payload) {
 Job::queue('email', ['to' => 'user@example.com']);
 Job::execute();
 ```
-

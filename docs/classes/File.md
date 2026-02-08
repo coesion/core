@@ -1,8 +1,9 @@
 # File
 
-
 Overview:
 `File` provides a mount-based filesystem abstraction. Filesystems are mounted by alias and accessed with `alias://path` URIs.
+
+Use `File` when your app must read and write across local, memory, or archive-backed filesystems behind a single mount-based path format.
 
 Key behavior:
 - Uses filesystem adapter classes in `FileSystem\` namespace.
@@ -172,4 +173,3 @@ echo File::read('test.txt');
 ```json
 MEMORY 1
 ```
-

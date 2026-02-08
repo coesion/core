@@ -1,8 +1,9 @@
 # Password
 
-
 Overview:
 `Password` wraps hashing and verification with a fallback for older PHP versions.
+
+Use `Password` for secure password hashing and verification instead of managing algorithm and timing-safe comparisons manually.
 
 Public API:
 - `Password::make($password)` hashes a password.
@@ -53,4 +54,3 @@ var_dump(
 ```
 bool(false)
 ```
-

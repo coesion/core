@@ -1,8 +1,9 @@
 # Event
 
-
 Overview:
 `Event` is a thin wrapper around the `Events` trait, providing a global event bus.
+
+Use `Event` as a global event bus when independent parts of the app must react to the same lifecycle signal without tight coupling.
 
 Public API:
 - `Event::on($name, callable $listener)` registers a listener.
@@ -123,4 +124,3 @@ Reticulating splines for E1M1...
 Starting E1M1, BRING'EM'ON!!!
 Replenish ammonitions...
 ```
-
