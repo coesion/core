@@ -104,6 +104,7 @@ Guides:
 - [Examples](../examples/Examples.md)
 - [FrankenPHP](FrankenPHP.md)
 - [REST API With Auth](REST-Auth.md)
+- [Router Benchmarks](Router-Benchmarks.md)
 - [API](../classes/API.md)
 - [REST](../classes/REST.md)
 - [Route Cache Extension](../classes/Route-Cache-Extension.md)

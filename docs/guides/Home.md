@@ -11,6 +11,7 @@ Start here:
 - [REST](../classes/REST.md)
 - [REST API With Auth](./REST-Auth.md)
 - [Route Cache Extension](../classes/Route-Cache-Extension.md)
+- [Router Benchmarks](./Router-Benchmarks.md)
 
 Class reference:
 - [API](../classes/API.md)
