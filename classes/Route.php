@@ -278,44 +278,102 @@ class Route {
     }
 
     protected static function collectDynamicRoute(array &$dynamic_list, $route){
-      $prefix = static::dynamicPrefix($route->URLPattern);
+      $bucket = static::dynamicBucket($route->URLPattern);
+      $prefix = $bucket['prefix'];
+      $hint = $bucket['hint'];
+      $hint_pos = $bucket['hint_pos'];
       foreach ($route->methods as $method => $v) {
         if (!isset($dynamic_list[$method])) $dynamic_list[$method] = [];
         $dynamic_list[$method][] = [
           'prefix' => $prefix,
+          'hint'   => $hint,
+          'hint_pos' => $hint_pos,
           'route'  => $route,
         ];
       }
     }
 
     protected static function dynamicPrefix($pattern){
+      $bucket = static::dynamicBucket($pattern);
+      return $bucket['prefix'];
+    }
+
+    protected static function dynamicBucket($pattern){
       $segments = array_filter(explode('/', trim($pattern,'/')), 'strlen');
       $prefix = [];
-      foreach ($segments as $seg) {
-        if (static::isDynamic($seg) || strpos($seg,'(') !== false) break;
-        $prefix[] = $seg;
+      $found_dynamic = false;
+      $hint = '';
+      $hint_pos = null;
+      $has_optional = strpos($pattern, '(') !== false;
+      foreach ($segments as $idx => $seg) {
+        $is_dynamic = static::isDynamic($seg) || strpos($seg,'(') !== false;
+        if (!$found_dynamic && !$is_dynamic) {
+          $prefix[] = $seg;
+          continue;
+        }
+        $found_dynamic = true;
+        if ($hint === '' && !$has_optional && !$is_dynamic) {
+          $hint = $seg;
+          $hint_pos = $idx;
+          break;
+        }
       }
-      return $prefix ? '/' . implode('/', $prefix) : '';
+      return [
+        'prefix' => $prefix ? '/' . implode('/', $prefix) : '',
+        'hint' => $hint,
+        'hint_pos' => $hint_pos,
+      ];
     }
 
     protected static function buildDispatcher(array $static_map, array $dynamic_list){
+      $static_effective = [];
+      $wildcard = $static_map['*'] ?? [];
+      foreach ($static_map as $method => $map) {
+        if ($method === '*') continue;
+        $static_effective[$method] = $map + $wildcard;
+      }
+      if (!empty($wildcard)) {
+        $static_effective['*'] = $wildcard;
+      }
       $dispatcher = [
         'static'  => $static_map,
+        'static_effective' => $static_effective,
         'dynamic' => [],
       ];
       $chunk = 20;
 
       foreach ($dynamic_list as $method => $list) {
+        if (!empty($list)) {
+          $hint_counts = [];
+          foreach ($list as $entry) {
+            if (empty($entry['hint'])) continue;
+            $key = $entry['prefix'] . '|' . $entry['hint_pos'] . '|' . $entry['hint'];
+            if (!isset($hint_counts[$key])) $hint_counts[$key] = 0;
+            $hint_counts[$key]++;
+          }
+          if ($hint_counts) {
+            foreach ($list as &$entry) {
+              if (empty($entry['hint'])) continue;
+              $key = $entry['prefix'] . '|' . $entry['hint_pos'] . '|' . $entry['hint'];
+              if (($hint_counts[$key] ?? 0) < 3) {
+                $entry['hint'] = '';
+                $entry['hint_pos'] = null;
+              }
+            }
+            unset($entry);
+          }
+        }
         foreach (static::chunkDynamicRoutes($list, $chunk) as $bundle) {
-          $dispatcher['dynamic'][$method][] = static::buildRegexDispatcher($bundle['routes'], $bundle['prefix']);
+          $dispatcher['dynamic'][$method][] = static::buildRegexDispatcher($bundle['routes'], $bundle['prefix'], $bundle['hint'], $bundle['hint_pos']);
         }
       }
       return $dispatcher;
     }
 
-    protected static function buildRegexDispatcher(array $routes, $prefix){
+    protected static function buildRegexDispatcher(array $routes, $prefix, $hint = '', $hint_pos = null){
       $branches = [];
       $meta = [];
+      $group_indexes = [];
       $group_index = 1;
       foreach ($routes as $idx => $route) {
         $regex = static::compilePatternAsRegexNoNames($route->URLPattern, $route->rules);
@@ -329,7 +387,8 @@ class Route {
           $index++;
         }
         $branches[] = '(?P<' . $key . '>' . $inner . ')';
-        $meta[$key] = [
+        $group_indexes[] = $group_index;
+        $meta[$group_index] = [
           'route'  => $route,
           'param_index' => $param_index,
         ];
@@ -338,30 +397,47 @@ class Route {
       $regex = '#^(?:' . implode('|', $branches) . ')$#';
       return [
         'prefix' => $prefix,
+        'hint' => $hint,
+        'hint_pos' => $hint_pos,
         'regex' => $regex,
         'meta'  => $meta,
+        'group_indexes' => $group_indexes,
       ];
     }
 
     protected static function chunkDynamicRoutes(array $list, $chunk){
       $bundles = [];
       $current_prefix = null;
+      $current_hint = null;
+      $current_hint_pos = null;
       $current_routes = [];
 
       foreach ($list as $entry) {
         $prefix = $entry['prefix'];
+        $hint = $entry['hint'] ?? '';
+        $hint_pos = $entry['hint_pos'] ?? null;
+        $key = $prefix . '|' . $hint . '|' . ($hint_pos === null ? '' : $hint_pos);
+        $current_key = $current_prefix === null ? null : ($current_prefix . '|' . $current_hint . '|' . ($current_hint_pos === null ? '' : $current_hint_pos));
         if ($current_prefix === null) {
           $current_prefix = $prefix;
+          $current_hint = $hint;
+          $current_hint_pos = $hint_pos;
+          $current_key = $key;
         }
-        if ($prefix !== $current_prefix || count($current_routes) >= $chunk) {
+        if ($key !== $current_key || count($current_routes) >= $chunk) {
           if ($current_routes) {
             $bundles[] = [
               'prefix' => $current_prefix,
+              'hint' => $current_hint,
+              'hint_pos' => $current_hint_pos,
               'routes' => $current_routes,
             ];
           }
           $current_prefix = $prefix;
+          $current_hint = $hint;
+          $current_hint_pos = $hint_pos;
           $current_routes = [];
+          $current_key = $key;
         }
         $current_routes[] = $entry['route'];
       }
@@ -369,6 +445,8 @@ class Route {
       if ($current_routes) {
         $bundles[] = [
           'prefix' => $current_prefix,
+          'hint' => $current_hint,
+          'hint_pos' => $current_hint_pos,
           'routes' => $current_routes,
         ];
       }
@@ -934,8 +1012,11 @@ class Route {
           $dispatcher = static::$compiled_dispatcher;
           $path = rtrim($URL, '/') ?: '/';
 
-          if ($debug) static::$stats['static_checks']++;
-          $route = $dispatcher['static'][$method][$path] ?? ($dispatcher['static']['*'][$path] ?? null);
+          if ($debug) {
+            static::$stats['static_checks']++;
+          }
+          $static_effective = $dispatcher['static_effective'][$method] ?? ($dispatcher['static_effective']['*'] ?? ($dispatcher['static']['*'] ?? []));
+          $route = $static_effective[$path] ?? null;
           if ($route) {
             if ($return_route){
               return $route;
@@ -949,25 +1030,40 @@ class Route {
             }
           }
 
-          $dispatchers = $dispatcher['dynamic'][$method] ?? [];
-          if (!empty($dispatcher['dynamic']['*'])) {
-            $dispatchers = array_merge($dispatchers, $dispatcher['dynamic']['*']);
-          }
+          $method_dispatchers = $dispatcher['dynamic'][$method] ?? [];
+          $wildcard_dispatchers = $dispatcher['dynamic']['*'] ?? [];
+          $path_segments = null;
 
-          foreach ($dispatchers as $entry) {
+          $dispatch_lists = [$method_dispatchers, $wildcard_dispatchers];
+          foreach ($dispatch_lists as $dispatchers) foreach ($dispatchers as $entry) {
             $prefix = $entry['prefix'];
             if ($prefix !== '' && $path !== $prefix && strpos($path, $prefix . '/') !== 0) {
               continue;
             }
-            if ($debug) static::$stats['dynamic_checks']++;
-            if ($debug) static::$stats['regex_checks']++;
+            $hint = $entry['hint'] ?? '';
+            if ($hint !== '') {
+              if ($path_segments === null) {
+                $path_segments = array_values(array_filter(explode('/', trim($path,'/')), static function($segment){
+                  return $segment !== '';
+                }));
+              }
+              $hint_pos = $entry['hint_pos'];
+              if (!isset($path_segments[$hint_pos]) || $path_segments[$hint_pos] !== $hint) {
+                continue;
+              }
+            }
+            if ($debug) {
+              static::$stats['dynamic_checks']++;
+              static::$stats['regex_checks']++;
+            }
             if (!preg_match($entry['regex'], $path, $matches)) {
               continue;
             }
-            foreach ($entry['meta'] as $key => $meta) {
-              if (!array_key_exists($key, $matches) || $matches[$key] === '') {
+            foreach ($entry['group_indexes'] as $group_index) {
+              if (!array_key_exists($group_index, $matches) || $matches[$group_index] === '') {
                 continue;
               }
+              $meta = $entry['meta'][$group_index];
               $route = $meta['route'];
               if ($return_route){
                 return $route;
