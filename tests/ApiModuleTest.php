@@ -27,6 +27,7 @@ if (!class_exists('ArticleResource')) {
   }
 }
 
+if (!class_exists('ApiModuleTest', false)) {
 class ApiModuleTest extends TestCase {
 
   protected function setUp(): void {
@@ -151,4 +152,5 @@ class ApiModuleTest extends TestCase {
     Route::dispatch('/bucket/7', 'get');
     $this->assertEquals('READ:7', Response::body());
   }
+}
 }
