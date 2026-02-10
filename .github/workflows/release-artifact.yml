@@ -1,0 +1,69 @@
+name: Release Artifact
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  publish-artifact:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout core-dev
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Build artifact payload
+        run: composer build-artifact-repo
+
+      - name: Validate artifact core.php
+        run: |
+          php -l dist/artifact/core.php
+          php -r "require 'dist/artifact/core.php'; require 'dist/artifact/core.php'; echo 'guard-ok';"
+
+      - name: Publish to artifact repository
+        if: ${{ secrets.CORE_ARTIFACT_REPO != '' && secrets.CORE_ARTIFACT_TOKEN != '' }}
+        env:
+          CORE_ARTIFACT_REPO: ${{ secrets.CORE_ARTIFACT_REPO }}
+          CORE_ARTIFACT_TOKEN: ${{ secrets.CORE_ARTIFACT_TOKEN }}
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${CORE_ARTIFACT_REPO}.git" artifact-repo
+          rsync -a --delete dist/artifact/ artifact-repo/
+          cd artifact-repo
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No artifact changes to publish"
+          else
+            git commit -m "Release ${TAG_NAME} from core-dev"
+            git push origin HEAD
+          fi
+          if git rev-parse "${TAG_NAME}" >/dev/null 2>&1; then
+            git tag -d "${TAG_NAME}"
+          fi
+          git tag "${TAG_NAME}"
+          git push origin "${TAG_NAME}" --force
+
+      - name: Notify Packagist (optional)
+        if: ${{ secrets.PACKAGIST_UPDATE_URL != '' && secrets.PACKAGIST_API_TOKEN != '' && secrets.CORE_ARTIFACT_REPO != '' }}
+        env:
+          PACKAGIST_UPDATE_URL: ${{ secrets.PACKAGIST_UPDATE_URL }}
+          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
+          CORE_ARTIFACT_REPO: ${{ secrets.CORE_ARTIFACT_REPO }}
+        run: |
+          curl -fsS -X POST "$PACKAGIST_UPDATE_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{\"repository\":{\"url\":\"https://github.com/${CORE_ARTIFACT_REPO}\"},\"apiToken\":\"${PACKAGIST_API_TOKEN}\"}"

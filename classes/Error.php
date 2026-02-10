@@ -11,5 +11,7 @@
  * @copyright Coesion - 2026
  */
 
-include_once __DIR__.'Errors.php';
-class_alias('Errors','Error',true);
+include_once __DIR__.'/Errors.php';
+if (!class_exists('Error', false)) {
+  class_alias('Errors', 'Error', true);
+}

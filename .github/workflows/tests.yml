@@ -21,5 +21,20 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Release consistency check
+        run: composer release:check
+
+      - name: Build and lint dist/core.php
+        run: |
+          php tools/build-core.php
+          php -l dist/core.php
+          FIRST_HASH="$(sha256sum dist/core.php | cut -d' ' -f1)"
+          php tools/build-core.php
+          SECOND_HASH="$(sha256sum dist/core.php | cut -d' ' -f1)"
+          if [ "$FIRST_HASH" != "$SECOND_HASH" ]; then
+            echo "Non-deterministic build detected: $FIRST_HASH != $SECOND_HASH"
+            exit 1
+          fi
+
       - name: Run tests
         run: vendor/bin/phpunit --configuration=phpunit.xml

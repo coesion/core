@@ -35,6 +35,36 @@ composer docs-build-pages
 ```
 
 This generates the publishable site in `build/docs-site`.
+Release policy and versioning guide:
+- `docs/guides/Releasing.md`
+
+## Repo Roles
+
+- `core-dev` (this repository): source code, tests, and artifact compiler.
+- `coesion/core` artifact repository: generated runtime package with `core.php` only.
+
+Packagist artifact publishing guide:
+- `docs/guides/Packagist-Artifact.md`
+
+## Build And Preload
+
+Build a single distributable framework file:
+
+```bash
+php tools/build-core.php
+```
+
+Build full artifact-repository payload (for `coesion/core`):
+
+```bash
+composer build-artifact-repo
+```
+
+Use `dist/core.php` as your OPcache preload target in PHP-FPM/worker setups:
+
+- `opcache.enable=1`
+- `opcache.preload=/path/to/dist/core.php`
+- `opcache.preload_user=www-data` (or your PHP-FPM user)
 
 ## Routing
 
@@ -127,6 +157,7 @@ Solve a problem. Features are great, but even better is cleaning-up and fixing i
 ## Versioning
 
 Core is maintained by using the [Semantic Versioning Specification (SemVer)](http://semver.org).
+Canonical version source is the root `VERSION` file (`X.Y.Z`); git tags use `vX.Y.Z`.
 
 
 ## Copyright and license

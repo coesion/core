@@ -11,3 +11,11 @@ Docs renderer caveat: tools/serve-docs.php defines CORE_DOCS_ASCII_FLAME flag at
 Some docs/classes markdown files contain mixed line endings (CRLF/LF), which can surface as stray carriage-return characters during scripted text extraction and insertion.
 Bulk markdown intro rewrites can accidentally stack multiple generated paragraphs in docs/classes; cleanup passes should first strip previously generated intro patterns before reinserting.
 Loader::register maps class names directly to filenames (with original class case), so acronym class renames on case-sensitive filesystems must also rename the PHP file (e.g., CSRF -> classes/CSRF.php) to keep Loader autoload working.
+Dynamic prefix hint bucketing can become too granular (unique hints explode dispatcher bundles), causing regressions; apply a frequency threshold before using hints.
+Current repo discovery: tools/preload.php and tools/build-phar.php previously scanned only classes/*.php and excluded namespaced subfolders.
+Class tree count at time of migration: 71 PHP class files total, 52 in classes/ root and 19 in subfolders.
+Packaging/preload baseline after migration: build minified dist/core.php via tools/build-core.php and point opcache.preload directly to dist/core.php.
+For repo split, current source repository still had package name `coesion/core`; this conflicts with artifact-only Packagist ownership, so source package metadata was moved to `coesion/core-dev`.
+Artifact publishing now relies on generated `dist/artifact` payload with `composer.json` using `autoload.files` => ["core.php"] for automatic registration via `vendor/autoload.php`.
+Unexpected drift discovered: classes/Core.php had VERSION=1.0.0 while package metadata was 1.1.0; runtime version can drift unless centralized.
+Canonical release version policy now uses root VERSION file (plain X.Y.Z) and git tags must be vX.Y.Z.

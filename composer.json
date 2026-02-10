@@ -1,11 +1,10 @@
 {
-    "name": "coesion/core",
+    "name": "coesion/core-dev",
     "type": "library",
     "description": "Collection of tools for rapid application development.",
     "keywords": ["framework","core","sdk","platform"],
     "homepage": "https://github.com/coesion/core",
     "license": "MIT",
-    "version": "1.1.0",
     "authors": [
         {
             "name": "Stefano Azzolini",
@@ -28,13 +27,19 @@
             "vendor/bin/phpunit --colors=always --configuration=phpunit.xml"
         ],
         "test-silent" : "bash tools/test-silent.sh",
-        "build-phar" : "php tools/build-phar.php",
+        "build-core" : "php tools/build-core.php",
+        "build-artifact-repo" : [
+            "@build-core",
+            "php tools/build-artifact-repo.php"
+        ],
         "serve-docs" : "php tools/serve-docs.php",
         "docs" : "php tools/serve-docs.php",
         "docs-build-pages" : "php tools/build-docs-site.php --out=build/docs-site",
         "route-benchmark" : "php tools/route_debug.php",
         "cli-demo" : "php tools/cli-demo.php demo",
-        "changelog" : "docs/build-changelog.sh --skip-head > CHANGELOG.md && git add -A && git commit -am \"Updated CHANGELOG\""
+        "release:plan" : "php tools/release-plan.php",
+        "release:cut" : "php tools/release-cut.php",
+        "release:check" : "php tools/release-check.php"
     },
     "config": {
         "optimize-autoloader": true,

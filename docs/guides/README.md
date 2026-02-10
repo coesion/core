@@ -23,12 +23,13 @@ Typical use cases:
 
 Performance:
 - Autoload optimization: `composer dump-autoload -o`
-- OPcache preload (web/FPM): set `opcache.enable=1`, `opcache.preload=/path/to/tools/preload.php`, and `opcache.preload_user=www-data` (or your PHP-FPM user). Optional for partial control: `opcache.file_cache=/path/to/opcache`.
+- Build single-file artifact: `php tools/build-core.php`
+- OPcache preload (web/FPM): set `opcache.enable=1`, `opcache.preload=/path/to/dist/core.php`, and `opcache.preload_user=www-data` (or your PHP-FPM user). Optional for partial control: `opcache.file_cache=/path/to/opcache`.
 
-PHAR (optional):
-- Build: `php -d phar.readonly=0 tools/build-phar.php`
-- Run: `php dist/core.phar`
-- Note: PHAR contains core classes only (no app or vendor code).
+Single-file deploy (optional):
+- Build: `php tools/build-core.php`
+- Include: `require __DIR__ . '/dist/core.php';`
+- Note: `dist/core.php` is generated from framework classes and optimized for preload/distribution.
 
 FrankenPHP:
 - Classic mode: works like standard PHP-FPM; no special changes required.
@@ -101,6 +102,8 @@ Class reference:
 
 Guides:
 - [Installation](Installation.md)
+- [Packagist Artifact Publishing](Packagist-Artifact.md)
+- [Releasing](Releasing.md)
 - [Examples](../examples/Examples.md)
 - [FrankenPHP](FrankenPHP.md)
 - [REST API With Auth](REST-Auth.md)
