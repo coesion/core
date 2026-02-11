@@ -143,15 +143,21 @@ function renderPageHtml(string $title, string $content, array $toc, array $nav, 
   $tocHtml = renderToc($toc);
   $navHtml = renderNav($nav, $currentOutputRel);
   $css = getStyles();
+  $highlightCss = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css';
+  $highlightJs = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
   return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
     . '<title>' . $safeTitle . '</title>'
+    . '<link rel="stylesheet" href="' . htmlspecialchars($highlightCss, ENT_QUOTES, 'UTF-8') . '">'
     . '<style>' . $css . '</style>'
     . '</head><body><div class="layout"><aside class="sidebar"><div class="brand">Coesion/Core Docs</div>'
     . '<div class="nav"><div class="section"><h4>On This Page</h4>' . $tocHtml . '</div>'
     . $navHtml
     . '</div></aside><main class="content"><div class="doc-meta">'
     . htmlspecialchars($sourceRel, ENT_QUOTES, 'UTF-8')
-    . '</div>' . $content . '</main></div></body></html>';
+    . '</div>' . $content . '</main></div>'
+    . '<script src="' . htmlspecialchars($highlightJs, ENT_QUOTES, 'UTF-8') . '"></script>'
+    . '<script>document.querySelectorAll(\'pre code\').forEach(function(el){if (window.hljs && hljs.highlightElement){hljs.highlightElement(el);}});</script>'
+    . '</body></html>';
 }
 
 function renderNav(array $nav, string $currentOutputRel): string {
@@ -469,6 +475,7 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sa
 .content pre { background: #020617; color: #e2e8f0; padding: 14px; border: 1px solid #1e293b; border-radius: 8px; overflow: auto; }
 .content code { background: #111827; border: 1px solid #1f2937; border-radius: 4px; padding: 1px 5px; }
 .content pre code { border: 0; padding: 0; background: transparent; }
+.content pre code.hljs { display: block; padding: 0; background: transparent; }
 .content blockquote { margin: 12px 0; border-left: 4px solid #334155; padding: 8px 12px; background: #111827; color: #cbd5e1; }
 .content table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 14px; }
 .content th, .content td { border: 1px solid #1f2937; padding: 8px 10px; text-align: left; }
