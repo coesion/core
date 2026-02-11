@@ -20,3 +20,4 @@ Artifact publishing now relies on generated `dist/artifact` payload with `compos
 Unexpected drift discovered: classes/Core.php had VERSION=1.0.0 while package metadata was 1.1.0; runtime version can drift unless centralized.
 Canonical release version policy now uses root VERSION file (plain X.Y.Z) and git tags must be vX.Y.Z.
 Static docs builder (`tools/build-docs-site.php`) did not inject highlight.js CSS/JS, while runtime docs server (`tools/serve-docs.php`) already did; this mismatch caused unhighlighted code snippets on GitHub Pages output.
+GitHub Actions workflow expressions: step-level `if:` cannot reference `secrets.*` directly; map secrets into job/workflow `env` first and gate steps with `env.*` conditions.

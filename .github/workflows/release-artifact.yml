@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      CORE_ARTIFACT_REPO: ${{ secrets.CORE_ARTIFACT_REPO }}
+      CORE_ARTIFACT_TOKEN: ${{ secrets.CORE_ARTIFACT_TOKEN }}
+      PACKAGIST_UPDATE_URL: ${{ secrets.PACKAGIST_UPDATE_URL }}
+      PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
     steps:
       - name: Checkout core-dev
         uses: actions/checkout@v4
@@ -33,10 +38,7 @@ jobs:
           php -r "require 'dist/artifact/core.php'; require 'dist/artifact/core.php'; echo 'guard-ok';"
 
       - name: Publish to artifact repository
-        if: ${{ secrets.CORE_ARTIFACT_REPO != '' && secrets.CORE_ARTIFACT_TOKEN != '' }}
-        env:
-          CORE_ARTIFACT_REPO: ${{ secrets.CORE_ARTIFACT_REPO }}
-          CORE_ARTIFACT_TOKEN: ${{ secrets.CORE_ARTIFACT_TOKEN }}
+        if: ${{ env.CORE_ARTIFACT_REPO != '' && env.CORE_ARTIFACT_TOKEN != '' }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
           git config --global user.name "github-actions[bot]"
@@ -58,11 +60,7 @@ jobs:
           git push origin "${TAG_NAME}" --force
 
       - name: Notify Packagist (optional)
-        if: ${{ secrets.PACKAGIST_UPDATE_URL != '' && secrets.PACKAGIST_API_TOKEN != '' && secrets.CORE_ARTIFACT_REPO != '' }}
-        env:
-          PACKAGIST_UPDATE_URL: ${{ secrets.PACKAGIST_UPDATE_URL }}
-          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
-          CORE_ARTIFACT_REPO: ${{ secrets.CORE_ARTIFACT_REPO }}
+        if: ${{ env.PACKAGIST_UPDATE_URL != '' && env.PACKAGIST_API_TOKEN != '' && env.CORE_ARTIFACT_REPO != '' }}
         run: |
           curl -fsS -X POST "$PACKAGIST_UPDATE_URL" \
             -H 'Content-Type: application/json' \
