@@ -81,9 +81,11 @@ jobs:
           git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${PHP_ARTIFACT_REPO}.git" artifact-repo
           cd artifact-repo
           git checkout "${PHP_ARTIFACT_BRANCH}" || git checkout -b "${PHP_ARTIFACT_BRANCH}"
+          git config core.fileMode false
+          git remote set-url origin "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${PHP_ARTIFACT_REPO}.git"
           cd ..
 
-          rsync -a --delete dist/artifact/ artifact-repo/
+          rsync -a --delete --exclude='.git' dist/artifact/ artifact-repo/
           cd artifact-repo
           git add -A
           if git diff --cached --quiet; then

@@ -90,9 +90,11 @@ jobs:
           git clone "https://x-access-token:${CORE_JS_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-repo
           cd artifact-repo
           git checkout "${JS_ARTIFACT_BRANCH}" || git checkout -b "${JS_ARTIFACT_BRANCH}"
+          git config core.fileMode false
+          git remote set-url origin "https://x-access-token:${CORE_JS_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git"
           cd ..
 
-          rsync -a --delete js/dist/artifact/ artifact-repo/
+          rsync -a --delete --exclude='.git' js/dist/artifact/ artifact-repo/
           cd artifact-repo
           git add -A
           if git diff --cached --quiet; then
