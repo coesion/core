@@ -27,44 +27,10 @@ function jsArtifactDeletePath($path){
   @rmdir($path);
 }
 
-function jsArtifactCopyDir($source, $target){
-  if (!is_dir($source)) {
-    throw new RuntimeException("Missing source directory $source");
-  }
-
-  if (!is_dir($target) && !mkdir($target, 0775, true) && !is_dir($target)) {
-    throw new RuntimeException("Failed to create directory $target");
-  }
-
-  $items = scandir($source);
-  if (!is_array($items)) {
-    throw new RuntimeException("Failed to read directory $source");
-  }
-
-  foreach ($items as $item) {
-    if ($item === '.' || $item === '..') {
-      continue;
-    }
-
-    $sourcePath = $source . DIRECTORY_SEPARATOR . $item;
-    $targetPath = $target . DIRECTORY_SEPARATOR . $item;
-
-    if (is_dir($sourcePath)) {
-      jsArtifactCopyDir($sourcePath, $targetPath);
-      continue;
-    }
-
-    if (!copy($sourcePath, $targetPath)) {
-      throw new RuntimeException("Failed to copy $sourcePath to $targetPath");
-    }
-  }
-}
-
 try {
   $root = dirname(__DIR__);
   $jsRoot = $root . DIRECTORY_SEPARATOR . 'js';
   $distCorePath = $jsRoot . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'core.js';
-  $srcPath = $jsRoot . DIRECTORY_SEPARATOR . 'src';
   $artifactDir = $jsRoot . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'artifact';
 
   $manifest = artifactReadManifest();
@@ -80,16 +46,8 @@ try {
     throw new RuntimeException("Failed to create artifact directory $artifactDir");
   }
 
-  jsArtifactCopyDir($srcPath, $artifactDir . DIRECTORY_SEPARATOR . 'src');
-
-  $coreEntry = "// Generated artifact entry for Core JS\nmodule.exports = require('./src/index');\n";
-  if (file_put_contents($artifactDir . DIRECTORY_SEPARATOR . 'core.js', $coreEntry) === false) {
-    throw new RuntimeException('Failed writing artifact core.js');
-  }
-
-  $indexEntry = "module.exports = require('./core');\n";
-  if (file_put_contents($artifactDir . DIRECTORY_SEPARATOR . 'index.js', $indexEntry) === false) {
-    throw new RuntimeException('Failed writing artifact index.js');
+  if (!copy($distCorePath, $artifactDir . DIRECTORY_SEPARATOR . 'core.js')) {
+    throw new RuntimeException('Failed to copy bundled core.js into artifact payload');
   }
 
   $package = [
@@ -103,18 +61,16 @@ try {
       'url' => 'https://github.com/' . $jsTarget['repo'] . '.git',
     ],
     'type' => 'commonjs',
-    'main' => 'index.js',
+    'main' => 'core.js',
     'exports' => [
-      '.' => './index.js',
+      '.' => './core.js',
       './bundle' => './core.js',
     ],
     'engines' => [
       'node' => '>=22',
     ],
     'files' => [
-      'index.js',
       'core.js',
-      'src',
       'README.md',
       'LICENSE.md',
       'CHANGELOG.md',
@@ -146,8 +102,8 @@ Response.send();
 ## Notes
 
 - This package is generated from the factory repository.
-- Runtime entrypoints are `index.js` and `core.js`.
-- Source-only directories like tests and scripts are excluded.
+- Runtime entrypoint is `core.js` (single-file minimized bundle).
+- Source-only directories like src, tests, and scripts are excluded.
 MD;
 
   if (file_put_contents($artifactDir . DIRECTORY_SEPARATOR . 'README.md', $readme . "\n") === false) {

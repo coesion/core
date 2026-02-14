@@ -14,14 +14,12 @@ This guide documents JS artifact publishing from the factory repository to a cle
 `js/dist/artifact` must include runtime deliverables only:
 
 - `package.json`
-- `index.js`
 - `core.js`
-- `src/`
 - `README.md`
 - `LICENSE.md`
 - optional `CHANGELOG.md`
 
-The artifact must not include source-only directories (`tests/`, `scripts/`).
+The artifact must not include source-only directories or files (`src/`, `tests/`, `scripts/`, `index.js`).
 
 ## Build and validate locally
 
@@ -31,6 +29,8 @@ npm --prefix js run build
 php tools/build-js-artifact-repo.php
 php tools/release-check-artifacts.php --artifact=js --artifact-dir=js/dist/artifact
 ```
+
+`npm --prefix js run build` generates `js/dist/core.js` as a single-file bundle consumed directly by the artifact payload.
 
 ## CI publish flow
 

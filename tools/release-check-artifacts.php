@@ -66,7 +66,7 @@ function releaseCheckPhpArtifactDir($dir, array $manifest){
 }
 
 function releaseCheckJsArtifactDir($dir, array $manifest, $jsVersion){
-  releaseCheckRequireFiles($dir, ['package.json', 'README.md', 'LICENSE.md', 'index.js', 'core.js', 'src/index.js'], 'JS');
+  releaseCheckRequireFiles($dir, ['package.json', 'README.md', 'LICENSE.md', 'core.js'], 'JS');
 
   $package = artifactReadJsonFile($dir . DIRECTORY_SEPARATOR . 'package.json');
   $expectedPackage = artifactGetPath($manifest, 'artifacts.js.package_name');
@@ -96,10 +96,18 @@ function releaseCheckJsArtifactDir($dir, array $manifest, $jsVersion){
     }
   }
 
-  foreach (['tests', 'scripts'] as $forbidden) {
+  foreach (['tests', 'scripts', 'src', 'index.js'] as $forbidden) {
+    $path = $dir . DIRECTORY_SEPARATOR . $forbidden;
+    $exists = is_dir($path) || is_file($path);
+    if (!$exists) {
+      continue;
+    }
+
     if (is_dir($dir . DIRECTORY_SEPARATOR . $forbidden)) {
       throw new RuntimeException("JS artifact must not include '$forbidden' directory");
     }
+
+    throw new RuntimeException("JS artifact must not include '$forbidden' file");
   }
 }
 
