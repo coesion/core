@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.3.0 - 2026-02-14
+
+Quick guide:
+- What changed: see Added/Changed/Fixed below.
+- Impact: review Breaking and Upgrade Notes before deployment.
+
+### Added
+- None.
+
+### Changed
+- Harden artifact release publish auth and sync
+- Update release targets config
+- Publish core-js to npm on release tags
+- Fix mirror workflow auth and stability
+- Add push-based PHP/JS artifact mirror workflow
+- Rebuild JS monofile bundle and artifact core.js
+- Apply pending framework updates and refresh release artifacts
+- Make core-js artifact single-file bundle
+- Add full dist/core.php PHPUnit lane for release validation
+- Merge core.php output by namespace in build generator
+- Add manifest-driven PHP/JS artifact publishing pipeline
+- Update .gitignore
+- expand contributing guidance for agentic coders
+- rebuild README for agent-first positioning
+
+### Fixed
+- None.
+
+### Breaking
+- None.
+
+### Upgrade Notes
+- No upgrade action required.
+
 ## v1.2.0 - 2026-02-14
 
 Quick guide:

@@ -1,17 +1,17 @@
-# @coesion/core-js
+# @coesionlabs/core
 
 Artifact-only distribution for Coesion Core JS.
 
 ## Install
 
 ```bash
-npm install @coesion/core-js
+npm install @coesionlabs/core
 ```
 
 ## Usage
 
 ```js
-const { Route, Response } = require('@coesion/core-js');
+const { Route, Response } = require('@coesionlabs/core');
 
 Route.get('/', () => 'Core JS loaded from artifact package.');
 Response.send();
