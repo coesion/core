@@ -13,6 +13,7 @@ jobs:
       contents: read
     env:
       CORE_JS_ARTIFACT_TOKEN: ${{ secrets.CORE_JS_ARTIFACT_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - name: Checkout factory repository
         uses: actions/checkout@v4
@@ -28,6 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Validate release targets and export env
         run: php tools/release-check-artifacts.php --artifact=js --format=env >> "$GITHUB_ENV"
@@ -70,6 +72,14 @@ jobs:
             exit 1
           fi
 
+      - name: Require npm token
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "NPM_TOKEN is required when SHOULD_PUBLISH=true"
+            exit 1
+          fi
+
       - name: Publish to JS artifact repository
         if: ${{ env.SHOULD_PUBLISH == 'true' }}
         run: |
@@ -97,3 +107,23 @@ jobs:
           fi
           git tag "${TAG_NAME}"
           git push origin "${TAG_NAME}" --force
+
+      - name: Check npm version availability
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          PACKAGE_NAME="${JS_PACKAGE_NAME}"
+          PACKAGE_VERSION="$(node -p "require('./js/dist/artifact/package.json').version")"
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version --registry="${JS_PACKAGE_REGISTRY}" >/dev/null 2>&1; then
+            echo "NPM_SHOULD_PUBLISH=false" >> "$GITHUB_ENV"
+            echo "Version ${PACKAGE_NAME}@${PACKAGE_VERSION} already exists on npm; skipping publish."
+          else
+            echo "NPM_SHOULD_PUBLISH=true" >> "$GITHUB_ENV"
+            echo "Version ${PACKAGE_NAME}@${PACKAGE_VERSION} not found on npm; publishing."
+          fi
+
+      - name: Publish package to npm
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.NPM_SHOULD_PUBLISH == 'true' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish js/dist/artifact --access public --registry="${JS_PACKAGE_REGISTRY}"

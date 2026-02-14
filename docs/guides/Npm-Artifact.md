@@ -41,13 +41,14 @@ Workflow: `.github/workflows/release-artifact-js.yml`
 3. build/validate `js/dist/artifact`
 4. mirror publish to JS artifact repo
 5. apply same tag in artifact repo
+6. publish `js/dist/artifact` to npm (skips when version already exists)
 
 ## Secrets
 
 - `CORE_JS_ARTIFACT_TOKEN`: token with push/tag access to configured JS artifact repo
+- `NPM_TOKEN`: npm automation token with publish permission for `@coesion/core-js`
 
 ## Registry sync
 
-Recommended: configure npm publishing from the JS artifact repo release process.
-
-If metadata drifts, retag the artifact repo and trigger npm resync/publish pipeline.
+NPM publish is handled directly by `.github/workflows/release-artifact-js.yml` on release tags.
+If metadata drifts, retag and rerun the release workflow.
