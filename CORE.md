@@ -34,6 +34,8 @@ Example: evolving dispatch internals while preserving the `Route::dispatch()` co
 Example: avoid filesystem case assumptions that break autoload behavior.
 - [C-PILLAR-05] Ergonomics without lock-in: helper APIs SHOULD reduce boilerplate without forcing one architecture.
 Example: static class helpers available without requiring a container framework.
+- [C-PILLAR-06] Focused evolution: Core MUST prioritize targeted additions over broad framework bloat.
+Example: solve high-impact agent workflows with small primitives before introducing large subsystems.
 
 ## Coding Style Rules
 - [C-STYLE-01] PHP files MUST start with `<?php` and a following blank line.
@@ -97,3 +99,4 @@ Example: docs-only edits do not require full suite execution; main class changes
 
 ## Update Notes
 - 2026-02-14: Initial living governance document created for Core philosophy, style, tradeoffs, and agent-first contribution rules.
+- 2026-02-14: Added `C-PILLAR-06` to formalize targeted additions over framework bloat.

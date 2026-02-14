@@ -1,204 +1,290 @@
-# Core Framework Audit: Strengths & Weaknesses vs Laravel & Symfony
+# Core Agentic Framework Audit
 
-> **Date:** 2026-02-14
-> **Scope:** Coesion/Core PHP framework compared against Laravel and Symfony across all major framework categories.
+> Date: 2026-02-14  
+> Scope: Core vs Laravel, Symfony, Slim, and Mezzio  
+> Goal: Make Core the best PHP framework for agentic coding workflows
 
 ---
 
-## 1. Feature Capability Matrix
+## 1) Executive Summary
 
-| Category | Core | Laravel | Symfony |
+Core is currently the strongest option in this set for an agentic coding centered workflow when weighted for:
+- deterministic APIs
+- low runtime footprint
+- zero external runtime dependencies
+- introspection discoverability
+
+The previous audit baseline was stale in important areas. This run confirms Core now includes built-in `i18n`, `Schedule`, `Crypt`, `WebSocket`, and a Redis cache adapter. Those categories are no longer "missing".
+
+Core still lags in human-centric ecosystem parity (migrations, query builder ergonomics, testing helpers, PSR interoperability), and these now represent the main blockers to widening adoption without compromising its zero-dependency identity.
+
+---
+
+## 2) Methodology
+
+### Rating Scale
+- `Strong` = 4
+- `Adequate` = 3
+- `Basic` = 2
+- `Missing` = 0
+
+### Agentic Weighted Score Model (100 total)
+- Introspection and self-discovery: 20
+- Explicitness and deterministic behavior: 15
+- Runtime footprint and startup profile: 15
+- Automation ergonomics (non-interactive workflows): 15
+- Security defaults for unattended execution: 10
+- Zero dependency portability: 10
+- Extensibility without hidden coupling: 10
+- Ecosystem interoperability for agents: 5
+
+### Evidence Rules
+- Core claims are based on source and docs in this repository.
+- Competitor claims are based on official documentation links listed in Section 10.
+
+---
+
+## 3) Corrections vs Previous Audit
+
+| Category | Previous Status | Current Source-Backed Status | Core Evidence |
 |---|---|---|---|
-| Routing | **Strong** | Strong | Strong |
-| HTTP Request/Response | **Strong** | Strong | Strong |
-| Authentication | **Adequate** | Strong | Adequate |
-| Authorization | **Adequate** | Strong | Strong |
-| CSRF | **Strong** | Strong | Strong |
-| Rate Limiting | **Strong** | Strong | Adequate |
-| Security Headers | **Strong** | Basic | Basic |
-| ORM / Database | **Basic** | Strong | Strong |
-| Query Builder | **Missing** | Strong | Strong |
-| Migrations | **Missing** | Strong | Strong |
-| Caching | **Adequate** | Strong | Strong |
-| Email | **Adequate** | Strong | Adequate |
-| Template Engine | **Basic** | Strong | Strong |
-| Validation | **Adequate** | Strong | Strong |
-| File Storage | **Adequate** | Strong | Adequate |
-| CLI / Console | **Adequate** | Strong | Strong |
-| Queue / Jobs | **Adequate** | Strong | Strong |
-| Events | **Strong** | Strong | Strong |
-| i18n / Localization | **Missing** | Strong | Strong |
-| Scheduling | **Missing** | Strong | Adequate |
-| Testing Utilities | **Missing** | Strong | Strong |
-| DI Container | **Basic** | Strong | Strong |
-| Code Generation | **Missing** | Strong | Strong |
-| WebSocket / Real-time | **Missing** | Adequate | Adequate |
-| PSR Compliance | **Missing** | Adequate | Strong |
-| Middleware Pipeline | **Basic** | Strong | Strong |
-| Form Handling | **Missing** | Adequate | Strong |
-| Encryption | **Missing** | Strong | Strong |
-| API Resources | **Adequate** | Strong | Adequate |
-| Content Negotiation | **Strong** | Basic | Adequate |
-| Performance / Footprint | **Strong** | Adequate | Adequate |
-| Zero Dependencies | **Strong** | Missing | Missing |
-
-**Legend:**
-
-- **Strong** — Feature-complete or exceeds competitors.
-- **Adequate** — Functional but less polished than competitors.
-- **Basic** — Minimal implementation, significant gaps vs competitors.
-- **Missing** — Not present at all.
+| i18n / Localization | Missing | Adequate | `classes/i18n.php`, `docs/classes/i18n.md` |
+| Scheduling | Missing | Adequate | `classes/Schedule.php`, `docs/classes/Schedule.md` |
+| Encryption | Missing | Adequate | `classes/Crypt.php`, `docs/classes/Crypt.md` |
+| WebSocket / Real-time | Missing | Adequate | `classes/WebSocket.php`, `classes/WebSocket/Pusher.php`, `docs/classes/WebSocket.md` |
+| Redis cache support | Missing | Adequate | `classes/Cache/Redis.php`, `docs/classes/Cache.md` |
 
 ---
 
-## 2. Strengths of Core
+## 4) Capability Matrix (Framework Breadth)
 
-These are areas where Core wins or matches the competition.
+| Category | Core | Laravel | Symfony | Slim | Mezzio |
+|---|---|---|---|---|---|
+| Routing | Strong | Strong | Strong | Strong | Strong |
+| HTTP Request/Response | Strong | Strong | Strong | Adequate | Adequate |
+| Authentication | Adequate | Strong | Adequate | Missing | Missing |
+| Authorization | Adequate | Strong | Strong | Missing | Missing |
+| CSRF | Strong | Strong | Strong | Adequate | Adequate |
+| Rate Limiting | Strong | Strong | Adequate | Missing | Missing |
+| Security Headers | Strong | Basic | Basic | Missing | Missing |
+| ORM / Database | Basic | Strong | Strong | Missing | Missing |
+| Query Builder | Missing | Strong | Strong | Missing | Missing |
+| Migrations | Missing | Strong | Strong | Missing | Missing |
+| Caching | Adequate | Strong | Strong | Missing | Missing |
+| Email | Adequate | Strong | Adequate | Missing | Missing |
+| Template Engine | Basic | Strong | Strong | Missing | Missing |
+| Validation | Adequate | Strong | Strong | Missing | Missing |
+| File Storage | Adequate | Strong | Adequate | Missing | Missing |
+| CLI / Console | Adequate | Strong | Strong | Missing | Missing |
+| Queue / Jobs | Adequate | Strong | Strong | Missing | Missing |
+| Events | Strong | Strong | Strong | Basic | Adequate |
+| i18n / Localization | Adequate | Strong | Strong | Missing | Missing |
+| Scheduling | Adequate | Strong | Adequate | Missing | Missing |
+| Testing Utilities | Missing | Strong | Strong | Basic | Basic |
+| DI Container | Basic | Strong | Strong | Adequate | Strong |
+| Code Generation | Missing | Strong | Strong | Missing | Missing |
+| WebSocket / Real-time | Adequate | Adequate | Adequate | Missing | Missing |
+| PSR Compliance | Missing | Adequate | Strong | Strong | Strong |
+| Middleware Pipeline | Basic | Strong | Strong | Strong | Strong |
+| Form Handling | Missing | Adequate | Strong | Missing | Missing |
+| Encryption | Adequate | Strong | Strong | Missing | Missing |
+| API Resources | Adequate | Strong | Adequate | Missing | Missing |
+| Content Negotiation | Strong | Basic | Adequate | Basic | Adequate |
+| Performance / Footprint | Strong | Adequate | Adequate | Strong | Adequate |
+| Zero External Runtime Dependencies | Strong | Missing | Missing | Missing | Missing |
 
-| Strength | Detail |
-|---|---|
-| **Zero dependencies** | Core has no external runtime dependencies. Laravel pulls ~70 packages, Symfony ~30+ components. Core's single-file dist is unmatched. |
-| **Single-file distribution** | `dist/core.php` preload file — no equivalent in Laravel/Symfony. Enables OPcache preloading of entire framework in one shot. |
-| **Compiled route dispatcher** | Loop mode with static map + regex buckets gives O(1) static route matching. Comparable to Symfony's compiled URL matcher, ahead of Laravel's default router. Three dispatch strategies: linear scan, optimized trie, and compiled fast dispatcher. |
-| **Lightweight ORM** | `Model` class with `Persistence`/`Relation` traits is simple and fast. No migration overhead, no schema abstractions. Convention-based table/key resolution. Direct SQL when needed via PDO convenience layer. |
-| **Security out of the box** | `CSRF`, `RateLimiter`, `SecurityHeaders`, `Token` (JWT), `Password` hashing, session hardening — all built-in without pulling separate packages. Laravel has these but requires more config; Symfony requires installing bundles. |
-| **Multi-driver architecture** | `Cache` (files/memory), `Email` (native/SMTP/SES), `FileSystem` (native/memory/ZIP), `View` (PHP adapter) — all use adapter pattern. Clean, extensible without bloat. |
-| **Module extension system** | Runtime method injection via `Module` trait. Classes can be extended without inheritance at runtime. Unique compared to Laravel's macros (similar concept but different execution). |
-| **Content negotiation** | RFC 7231 compliant negotiation via `Negotiation` class, integrated into `Request`. Supports type, language, encoding, charset with quality-value parsing. Laravel requires manual implementation; Symfony has it via HttpFoundation but less integrated. |
-| **Minimal learning curve** | ~70 classes total. Laravel has 500+, Symfony 200+ components. Entire API surface is scannable in hours. |
-| **Event-driven throughout** | `Event`/`Filter` system woven into routing, HTTP, email, SQL, errors. More pervasive than Laravel's event system for framework internals. Both pub-sub events and value-transforming filters. |
-| **CSV handling** | Built-in `CSV` class with auto-delimiter detection, SQL integration, generator-based reading. Neither competitor includes this natively. |
-
----
-
-## 3. Weaknesses of Core
-
-These are areas where Laravel and/or Symfony clearly win.
-
-| Weakness | Laravel | Symfony | Impact |
-|---|---|---|---|
-| **No query builder** | Eloquent + fluent query builder | Doctrine DBAL query builder | `SQL` class provides convenience methods (`insert`, `update`, `each`, `single`, `value`) but all WHERE clauses, JOINs, and complex queries require raw SQL strings. High friction for common CRUD. |
-| **No migrations** | Artisan migrate system | Doctrine Migrations | No version-controlled schema changes. Manual DB management required. The `Job` class even documents its required table as a SQL comment. |
-| **No full DI container** | Full IoC container with auto-injection | DependencyInjection component | `Service` class provides a service locator (singleton + factory registration) but no auto-injection, no constructor resolution, no interface binding. Classes rely on static access patterns. |
-| **No template engine** | Blade (compiled, directives, components) | Twig (sandboxed, extensible) | Only raw PHP templates via `View\PHP`. No compiled templates, no component system, no template inheritance syntax. Adapter interface exists for custom engines. |
-| **No i18n/localization** | Trans facade, pluralization, JSON lang files | Translation component, ICU support | Zero translation support. Must be built from scratch for multi-language apps. |
-| **No task scheduling** | `schedule:run` with cron expressions | Scheduler component (6.3+) | No built-in way to schedule recurring tasks. `Job` supports `scheduled_at` for deferred execution but not periodic recurrence. |
-| **No middleware pipeline** | Global + route + group middleware stack with priorities | Kernel listeners, event subscribers | `Route::before()`/`after()` and `RouteGroup` provide per-route and group-level hooks. Auth extends routes with `->auth()`, `->csrf()`, `->rateLimit()`, `->secureHeaders()`. But there is no formal middleware stack with ordering, priorities, or terminable middleware. |
-| **No form handling** | Form requests with validation | Form component with CSRF, types | No form builder, no form request objects. Validation exists via `Check` but is decoupled from any form abstraction. |
-| **No database seeding** | Seeder classes with factories | Fixtures (DoctrineFixturesBundle) | No structured way to populate test/dev data. |
-| **No testing utilities** | PHPUnit integration, Dusk, mocking | PHPUnit bridge, Panther, profiler | No test helpers, HTTP testing, or mocking utilities built-in. |
-| **No CLI scaffolding** | `make:model`, `make:controller`, etc. | `make:entity`, `make:controller`, etc. | `CLI` class provides full command routing with ANSI output and TUI helpers, but has no code generation or scaffolding commands. |
-| **No Redis/Memcached cache** | Redis, Memcached, DynamoDB, etc. | Redis, Memcached, APCu, etc. | Only file and memory cache drivers. No distributed cache support out of the box. |
-| **No WebSocket/broadcasting** | Laravel Echo, Pusher, Reverb | Mercure integration | No real-time features. |
-| **No PSR compliance** | PSR-7 via adapters, PSR-11, PSR-15 | PSR-7, PSR-11, PSR-14, PSR-15 | Custom interfaces throughout. Limits interoperability with PSR-compatible middleware and libraries. |
-| **No ORM relationship depth** | Eloquent: polymorphic, pivot, eager load, scopes | Doctrine: full relational mapping | Only `hasOne`/`hasMany`. No polymorphic, no many-to-many pivot tables, no eager loading, no query scopes. Relations auto-generate accessor methods but always lazy-load via individual queries. |
-| **No encryption** | AES-256-CBC via `Crypt` facade | Sodium-based encryption | `Hash` and `Password` utilities exist for hashing. `Token` handles JWT signing. But no general-purpose symmetric encrypt/decrypt for arbitrary data. |
+Notes:
+- Slim and Mezzio are intentionally minimalist and rely on composition of external packages for many categories.
+- Core's "missing" ratings are mostly ecosystem parity categories, not runtime fundamentals.
 
 ---
 
-## 4. Competitive Parity
+## 5) Agentic Scorecard (Weighted)
 
-These features exist in Core and match or nearly match the competition.
+| Criterion (Weight) | Core | Laravel | Symfony | Slim | Mezzio |
+|---|---:|---:|---:|---:|---:|
+| Introspection and self-discovery (20) | 4 | 2 | 3 | 1 | 1 |
+| Explicitness and deterministic behavior (15) | 4 | 2 | 3 | 3 | 3 |
+| Runtime footprint and startup profile (15) | 4 | 1 | 1 | 3 | 3 |
+| Automation ergonomics (15) | 3 | 4 | 3 | 2 | 2 |
+| Security defaults for unattended execution (10) | 3 | 4 | 4 | 2 | 2 |
+| Zero dependency portability (10) | 4 | 0 | 0 | 1 | 1 |
+| Extensibility without hidden coupling (10) | 3 | 3 | 3 | 3 | 3 |
+| Ecosystem interoperability for agents (5) | 1 | 3 | 4 | 4 | 4 |
 
-| Feature | Core implementation | Comparison notes |
+### Weighted Totals (max = 100)
+- Core: **87.5**
+- Symfony: **63.75**
+- Laravel: **57.5**
+- Slim: **55.0**
+- Mezzio: **55.0**
+
+Result: Core is currently rank #1 for this agentic-first model, but with clear parity risks in interop and developer automation.
+
+---
+
+## 6) Core Strengths for Agentic Coding
+
+1. Small, explicit API surface with predictable static classes.
+2. Zero external runtime dependency baseline (`composer.json` requires only PHP).
+3. Introspection primitives already present (`Introspect::classes/methods/extensions/routes/capabilities`, `Schema::tables/describe`, `Model::schema/fields`).
+4. Built-in machine-readable error modes (`Errors::JSON_VERBOSE`) support unattended execution diagnostics.
+5. Single-file distributable (`dist/core.php`) and preload story favor deterministic environments.
+
+---
+
+## 7) Core Gaps Blocking Clear Dominance
+
+1. Query ergonomics gap:
+- `SQL` supports helper methods but no fluent builder for common CRUD patterns.
+
+2. Schema lifecycle gap:
+- No native migration workflow and no versioned schema evolution primitives.
+
+3. Agent automation gap:
+- No dedicated machine-readable audit/diagnostic CLI contract.
+
+4. Interop gap:
+- No first-class PSR-7/11/15 bridge layer, limiting plug-and-play with broader PHP middleware and tooling.
+
+5. Test workflow gap:
+- No built-in HTTP test harness and fixture utilities oriented to deterministic agent loops.
+
+---
+
+## 8) 6-Month Roadmap (3 Phases, Zero Runtime Deps Hard Rule)
+
+## Phase A (Weeks 1-8): Agent Observability and Determinism
+
+### A1. Expand Introspection Coverage
+- Add framework capability fields beyond PHP extension flags (routing mode, auth configured, cache driver loaded, schedule registrations).
+- Acceptance:
+- `Introspect::capabilities()` returns deterministic associative map with stable keys.
+- New section in `docs/classes/Introspect.md` documents each key.
+
+### A2. Deterministic Machine-Readable Audit Export
+- Add `tools/agent-audit.php` with `--format=json|md`.
+- Acceptance:
+- JSON output stable across runs with same source and config.
+- Markdown export can regenerate `docs/AUDIT.md` sections.
+
+### A3. Error Envelope Stability Contract
+- Standardize error payload shape and optional trace verbosity policy.
+- Acceptance:
+- `Errors::mode(Errors::JSON_VERBOSE)` contract documented with examples and field guarantees.
+
+## Phase B (Weeks 9-16): Agent Productivity Primitives
+
+### B1. SQL Composition Helpers (Zero-Dep)
+- Introduce lightweight composable helpers in `SQL` for common query patterns while preserving raw SQL escape hatch.
+- Acceptance:
+- Join/filter/order/limit helpers for common cases.
+- No external packages introduced.
+
+### B2. Route and Schema Snapshot Utilities
+- Add deterministic exports:
+- route snapshot
+- table schema snapshot
+- model field snapshot
+- Acceptance:
+- Snapshot diff is stable and suitable for CI checks.
+
+### B3. Agent Test Harness Basics
+- Add minimal HTTP dispatch test helpers and fixture bootstrap docs.
+- Acceptance:
+- At least 3 canonical agent task tests:
+- new endpoint
+- auth-protected endpoint
+- schema change impact check
+
+## Phase C (Weeks 17-24): Interop and Competitive Proof
+
+### C1. PSR Bridge Layer (Optional, Internal)
+- Provide internal adapter interfaces for PSR-style request/response/container semantics without adding runtime deps.
+- Acceptance:
+- Bridge docs and examples for external integration boundaries.
+
+### C2. Agentic Benchmark Suite
+- Add benchmark scenarios measuring:
+- edit-to-green cycle time
+- discovery steps needed
+- failure recovery cost
+- Acceptance:
+- Reproducible benchmark report from `tools/` with documented methodology.
+
+### C3. Publish Comparative Agentic TCO Section
+- Add recurring section in `docs/AUDIT.md` showing effort metrics against competitors.
+- Acceptance:
+- Metrics updated with each audit run.
+- Sources and methodology embedded in report.
+
+---
+
+## 9) Prioritized Backlog (Impact x Confidence / Cost)
+
+| Item | Priority | Why |
 |---|---|---|
-| **Routing** | `Route` class with parameter extraction, groups, named routes (tags), compiled dispatch, reverse routing via `Route::URL()`. Three dispatch modes: linear, trie, and compiled fast. | On par with both. Compiled dispatcher is competitive with Symfony's URL matcher. |
-| **Authentication** | `Auth` class with session + bearer/JWT support. Custom resolvers, auto JWT decode, session regeneration on login/logout. | Simpler than Laravel Sanctum/Passport but functional for most apps. |
-| **Authorization** | `Gate` class with `define()`/`allows()` mirroring Laravel's Gate. Route integration via `->can()`. | Covers the core use case. Lacks policies, resource authorization, and `@can` directives. |
-| **CSRF protection** | `CSRF` class with token generation, verification, rotation. Route integration via `->csrf()`. | Equivalent to both competitors. |
-| **Rate limiting** | `RateLimiter` with fixed-window algorithm, cache backend, automatic headers (`X-RateLimit-*`, `Retry-After`). Route integration via `->rateLimit()`. | Laravel added this in 8.x; Core's is comparable. |
-| **Security headers** | `SecurityHeaders` class applying X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, HSTS, CORP. | Built-in. Neither Laravel nor Symfony ships this by default without packages. |
-| **HTTP client** | `HTTP` class wrapping cURL with `get`/`post`/`put`/`delete`, JSON auto-detection, auth, proxy, timeout. | Laravel wraps Guzzle; Symfony has HttpClient. Core's is simpler but functional. |
-| **Session management** | `Session` class with secure defaults: strengthened IDs (48 chars), strict mode, HTTP-only, SameSite cookies. Read-only accessor for views. | On par with both frameworks. |
-| **Email sending** | `Email` with `Native`/`Smtp`/`Ses`/`Proxy` drivers, attachment support, event hooks. | Comparable to Laravel Mail, ahead of Symfony without Mailer component. |
-| **Validation** | `Check` class with pipe-separated rules (`required\|email\|max:100`), custom validators, error messages with placeholders. | Simpler than both but covers common cases. Lacks form-request integration and conditional/nested rules. |
-| **Error handling** | Multi-mode error handling (HTML/JSON/silent) via configuration. | Adequate for most use cases. Lacks Symfony's profiler/debug toolbar. |
-| **Queue / Jobs** | `Job` class extends `Model` for database-backed persistent queue with `queue()`, `execute()`, `retry()`, `cleanQueue()`, and `scheduled_at` support. `Work` class provides in-memory coroutines for deferred execution. | Database queue is functional. Lacks dedicated worker daemon, multiple queue backends (Redis/SQS), job batching, and rate-limited dispatch. |
-| **Service locator** | `Service` class with `register()` (singleton), `registerFactory()`, and magic `__callStatic` access. | Provides basic service location. Not a full DI container but covers the common pattern. |
+| Expand `Introspect::capabilities()` | P0 | Highest leverage for autonomous decision-making. |
+| Add `tools/agent-audit.php` JSON export | P0 | Enables machine-driven audits and CI checks. |
+| Add SQL composition helpers | P1 | Reduces major friction without violating zero-dep rule. |
+| Add route/schema/model snapshots | P1 | Makes regressions detectable by agents quickly. |
+| Add minimal HTTP test harness | P1 | Improves agent reliability and shorter feedback loops. |
+| Define PSR bridge docs/adapters | P2 | Improves ecosystem reach while preserving Core identity. |
 
 ---
 
-## 5. Summary Scorecard
+## 10) Sources
 
-| Category | Core | Laravel | Symfony |
-|---|---|---|---|
-| Routing | Strong | Strong | Strong |
-| HTTP Request/Response | Strong | Strong | Strong |
-| Authentication | Adequate | Strong | Adequate |
-| Authorization | Adequate | Strong | Strong |
-| CSRF | Strong | Strong | Strong |
-| Rate Limiting | Strong | Strong | Adequate |
-| Security Headers | Strong | Basic | Basic |
-| ORM / Database | Basic | Strong | Strong |
-| Query Builder | Missing | Strong | Strong |
-| Migrations | Missing | Strong | Strong |
-| Caching | Adequate | Strong | Strong |
-| Email | Adequate | Strong | Adequate |
-| Template Engine | Basic | Strong | Strong |
-| Validation | Adequate | Strong | Strong |
-| File Storage | Adequate | Strong | Adequate |
-| CLI / Console | Adequate | Strong | Strong |
-| Queue / Jobs | Adequate | Strong | Strong |
-| Events | Strong | Strong | Strong |
-| i18n / Localization | Missing | Strong | Strong |
-| Scheduling | Missing | Strong | Adequate |
-| Testing Utilities | Missing | Strong | Strong |
-| DI Container | Basic | Strong | Strong |
-| Code Generation | Missing | Strong | Strong |
-| WebSocket / Real-time | Missing | Adequate | Adequate |
-| PSR Compliance | Missing | Adequate | Strong |
-| Middleware Pipeline | Basic | Strong | Strong |
-| Form Handling | Missing | Adequate | Strong |
-| Encryption | Missing | Strong | Strong |
-| API Resources | Adequate | Strong | Adequate |
-| Content Negotiation | Strong | Basic | Adequate |
-| Performance / Footprint | Strong | Adequate | Adequate |
-| Zero Dependencies | Strong | Missing | Missing |
+### Core (repository evidence)
+- `composer.json`
+- `classes/Introspect.php`
+- `classes/Schema.php`
+- `classes/Model.php`
+- `classes/Errors.php`
+- `classes/i18n.php`
+- `classes/Schedule.php`
+- `classes/Crypt.php`
+- `classes/WebSocket.php`
+- `classes/Cache/Redis.php`
+- `docs/classes/*.md`
 
-### At a Glance
+### Laravel (official docs)
+- Routing: https://laravel.com/docs/12.x/routing
+- Service container: https://laravel.com/docs/12.x/container
+- Migrations: https://laravel.com/docs/12.x/migrations
+- Localization: https://laravel.com/docs/12.x/localization
+- Scheduling: https://laravel.com/docs/12.x/scheduling
+- Queues: https://laravel.com/docs/12.x/queues
+- Testing: https://laravel.com/docs/12.x/testing
+- Broadcasting: https://laravel.com/docs/12.x/broadcasting
 
-- **Strong:** 9 categories
-- **Adequate:** 9 categories
-- **Basic:** 4 categories (ORM, Template Engine, DI Container, Middleware)
-- **Missing:** 10 categories
+### Symfony (official docs)
+- Routing: https://symfony.com/doc/current/routing.html
+- Service container: https://symfony.com/doc/current/service_container.html
+- Security and CSRF: https://symfony.com/doc/current/security/csrf.html
+- Messenger: https://symfony.com/doc/current/messenger.html
+- Scheduler: https://symfony.com/doc/current/scheduler.html
+- Translation: https://symfony.com/doc/current/translation.html
+- Testing: https://symfony.com/doc/current/testing.html
 
-### Core's Niche
+### Slim (official docs)
+- Docs root: https://www.slimframework.com/docs/v4/
+- Routing: https://www.slimframework.com/docs/v4/objects/routing.html
+- Middleware: https://www.slimframework.com/docs/v4/concepts/middleware.html
+- Container: https://www.slimframework.com/docs/v4/concepts/di.html
 
-Core excels as a **zero-dependency, high-performance micro-framework** for developers who value simplicity, full control, and minimal overhead. It covers the 80% of features needed for typical web applications in a footprint that is orders of magnitude smaller than Laravel or Symfony.
-
-The missing features (query builder, migrations, i18n, DI container, template engine) are precisely the areas where the full-stack frameworks justify their dependency weight. For projects that need these, Core requires either raw implementation or selective integration of third-party libraries.
+### Mezzio (official docs)
+- Docs root: https://docs.mezzio.dev/mezzio/
+- Routing: https://docs.mezzio.dev/mezzio/v3/features/router/intro/
+- Middleware: https://docs.mezzio.dev/mezzio/v3/features/middleware-types/
+- Container: https://docs.mezzio.dev/mezzio/v3/features/container/intro/
 
 ---
 
-## Appendix: Key Class Reference
+## 11) Re-Audit Trigger Conditions
 
-| Feature | Core class(es) | File(s) |
-|---|---|---|
-| Routing | `Route`, `RouteGroup` | `classes/Route.php` |
-| Request/Response | `Request`, `Response` | `classes/Request.php`, `classes/Response.php` |
-| Authentication | `Auth` | `classes/Auth.php` |
-| Authorization | `Gate` | `classes/Gate.php` |
-| CSRF | `CSRF` | `classes/CSRF.php` |
-| Rate Limiting | `RateLimiter` | `classes/RateLimiter.php` |
-| Security Headers | `SecurityHeaders` | `classes/SecurityHeaders.php` |
-| ORM | `Model`, `Persistence`, `Relation` | `classes/Model.php`, `classes/Persistence.php`, `classes/Relation.php` |
-| Database | `SQL`, `SQLConnection` | `classes/SQL.php` |
-| Cache | `Cache`, `Cache\Files`, `Cache\Memory` | `classes/Cache.php`, `classes/Cache/` |
-| Email | `Email`, `Email\Smtp`, `Email\Ses`, `Email\Native` | `classes/Email.php`, `classes/Email/` |
-| Views | `View`, `View\PHP` | `classes/View.php`, `classes/View/` |
-| Validation | `Check` | `classes/Check.php` |
-| File Storage | `FileSystem\Native`, `FileSystem\Memory`, `FileSystem\ZIP` | `classes/FileSystem/` |
-| CLI | `CLI` | `classes/CLI.php` |
-| Queue / Jobs | `Job`, `Work` | `classes/Job.php`, `classes/Work.php` |
-| Events | `Event`, `Events` (trait) | `classes/Event.php`, `classes/Events.php` |
-| Filters | `Filter`, `Filters` (trait) | `classes/Filter.php`, `classes/Filters.php` |
-| Service Locator | `Service` | `classes/Service.php` |
-| JWT | `Token` | `classes/Token.php` |
-| Hashing | `Hash`, `Password` | `classes/Hash.php`, `classes/Password.php` |
-| HTTP Client | `HTTP` | `classes/HTTP.php` |
-| Session | `Session` | `classes/Session.php` |
-| Content Negotiation | `Negotiation` | `classes/Negotiation.php` |
-| CSV | `CSV` | `classes/CSV.php` |
-| Module System | `Module` (trait) | `classes/Module.php` |
-| Options | `Options` | `classes/Options.php` |
-| Text | `Text` | `classes/Text.php` |
+Run this audit again when one of these changes:
+1. Core adds/removes capability classes or major runtime contracts.
+2. Core adds compatibility bridges (for example PSR adapters).
+3. Major competitor versions change architecture defaults.
+4. Agent benchmark methodology changes.

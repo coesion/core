@@ -73,6 +73,22 @@ Counterexamples:
 Migration notes:
 New toggles should be documented at introduction time.
 
+### [C-PILLAR-06] Focused evolution over framework bloat
+Source paragraph: `CORE.md` `[C-PILLAR-06]`
+
+Why this exists:
+Core's advantage comes from precision and clarity. Broad feature accretion can erase the agentic benefits of a small, explicit framework.
+
+Examples:
+- Add a narrowly scoped introspection field instead of a full subsystem.
+- Introduce a small SQL helper for common patterns before designing a large query DSL.
+
+Counterexamples:
+- Importing a broad set of patterns just to mirror mainstream frameworks.
+
+Migration notes:
+When proposing major additions, define the smallest viable primitive first and prove agent impact before expansion.
+
 ### [C-STYLE-06] Public method docblocks
 Source paragraph: `CORE.md` `[C-STYLE-06]`
 
