@@ -68,7 +68,7 @@ jobs:
       - name: Require JS artifact token
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          ARTIFACT_TOKEN="${CORE_JS_ARTIFACT_TOKEN:-$CORE_ARTIFACT_TOKEN}"
+          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           if [ -z "$ARTIFACT_TOKEN" ]; then
             echo "CORE_JS_ARTIFACT_TOKEN or CORE_ARTIFACT_TOKEN is required for JS tag mirroring/publish"
             exit 1
@@ -77,7 +77,7 @@ jobs:
       - name: Validate JS artifact token access
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          ARTIFACT_TOKEN="${CORE_JS_ARTIFACT_TOKEN:-$CORE_ARTIFACT_TOKEN}"
+          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           api_url="https://api.github.com/repos/${JS_ARTIFACT_REPO}"
           repo_json="$(mktemp)"
           curl -fsS \
@@ -103,7 +103,7 @@ jobs:
         if: ${{ env.SHOULD_PUBLISH == 'true' }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
-          ARTIFACT_TOKEN="${CORE_JS_ARTIFACT_TOKEN:-$CORE_ARTIFACT_TOKEN}"
+          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -128,7 +128,7 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
-          ARTIFACT_TOKEN="${CORE_JS_ARTIFACT_TOKEN:-$CORE_ARTIFACT_TOKEN}"
+          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -148,7 +148,7 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
-          ARTIFACT_TOKEN="${CORE_JS_ARTIFACT_TOKEN:-$CORE_ARTIFACT_TOKEN}"
+          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           API_URL="https://api.github.com/repos/${JS_ARTIFACT_REPO}"
 
           if curl -fsS \
