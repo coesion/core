@@ -106,7 +106,7 @@ class Errors {
             $entry = [];
             if (isset($frame['file']))     $entry['file']     = $frame['file'];
             if (isset($frame['line']))     $entry['line']     = $frame['line'];
-            if (isset($frame['function'])) $entry['function'] = $frame['function'];
+            $entry['function'] = $frame['function'];
             if (isset($frame['class']))    $entry['class']    = $frame['class'];
             $data['trace'][] = $entry;
         }

@@ -5,6 +5,12 @@
  *
  * SQL database access via PDO.
  *
+ * @method static mixed exec(string $query, array $params = [], array $pdo_params = [])
+ * @method static mixed value(string $query, array $params = [], int|string $column = 0)
+ * @method static array column(string $query, array $params = [], int|string $column = 0)
+ * @method static mixed each(string $query, array|callable $params = [], ?callable $looper = null)
+ * @method static mixed single(string $query, array|callable $params = [], ?callable $handler = null)
+ *
  * @package core
  * @author Stefano Azzolini <lastguest@gmail.com>
  * @copyright Coesion - 2026
@@ -80,8 +86,8 @@ class SQL {
 
   /**
    * Datasource connection accessor
-   * @param  strinf $name The datasource name
-   * @return SQLConnect   The datasource connection
+   * @param  string $name The datasource name
+   * @return SQLConnection The datasource connection
    */
   public static function using($name){
     if (empty(self::$connections[$name])) throw new \Exception("[SQL] Unknown connection named '$name'.");

@@ -6,16 +6,6 @@ parameters:
 			path: classes/API.php
 
 		-
-			message: "#^Auth\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Auth does not extend any class\\.$#"
-			count: 1
-			path: classes/Auth.php
-
-		-
-			message: "#^Auth\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Auth does not extend any class\\.$#"
-			count: 1
-			path: classes/Auth.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: classes/Auth.php
@@ -36,16 +26,6 @@ parameters:
 			path: classes/Auth.php
 
 		-
-			message: "#^CLI\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but CLI does not extend any class\\.$#"
-			count: 1
-			path: classes/CLI.php
-
-		-
-			message: "#^CLI\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but CLI does not extend any class\\.$#"
-			count: 1
-			path: classes/CLI.php
-
-		-
 			message: "#^PHPDoc tag @method has invalid value \\(commands\\)\\: Unexpected token \"\\\\r\\\\n     \\*\", expected '\\(' at offset 94$#"
 			count: 1
 			path: classes/CLI.php
@@ -54,86 +34,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$callback of function preg_replace_callback expects callable\\(array\\<int\\|string, string\\>\\)\\: string, Closure\\(mixed\\)\\: void given\\.$#"
 			count: 1
 			path: classes/CLI.php
-
-		-
-			message: "#^CSV\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but CSV does not extend any class\\.$#"
-			count: 1
-			path: classes/CSV.php
-
-		-
-			message: "#^CSV\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but CSV does not extend any class\\.$#"
-			count: 1
-			path: classes/CSV.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:each\\(\\)\\.$#"
-			count: 1
-			path: classes/CSV.php
-
-		-
-			message: "#^Unsafe usage of new static\\(\\)\\.$#"
-			count: 2
-			path: classes/CSV.php
-
-		-
-			message: "#^Cache\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Cache does not extend any class\\.$#"
-			count: 1
-			path: classes/Cache.php
-
-		-
-			message: "#^Cache\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Cache does not extend any class\\.$#"
-			count: 1
-			path: classes/Cache.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(enabled\\)\\: Unexpected token \"\\\\r\\\\n     \\*\", expected '\\(' at offset 79$#"
-			count: 1
-			path: classes/Cache.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(using\\)\\: Unexpected token \"\\\\r\\\\n     \\* \", expected '\\(' at offset 81$#"
-			count: 1
-			path: classes/Cache.php
-
-		-
-			message: "#^Check\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Check does not extend any class\\.$#"
-			count: 1
-			path: classes/Check.php
-
-		-
-			message: "#^Check\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Check does not extend any class\\.$#"
-			count: 1
-			path: classes/Check.php
-
-		-
-			message: "#^Undefined variable\\: \\$methods$#"
-			count: 1
-			path: classes/Check.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:each\\(\\)\\.$#"
-			count: 1
-			path: classes/Collection.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:value\\(\\)\\.$#"
-			count: 1
-			path: classes/Collection.php
-
-		-
-			message: "#^Parameter \\$callback of function spl_autoload_register expects \\(callable\\(string\\)\\: void\\)\\|null, Closure\\(mixed\\)\\: bool given\\.$#"
-			count: 1
-			path: classes/Core/Aliases.php
-
-		-
-			message: "#^CSRF\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but CSRF does not extend any class\\.$#"
-			count: 1
-			path: classes/CSRF.php
-
-		-
-			message: "#^CSRF\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but CSRF does not extend any class\\.$#"
-			count: 1
-			path: classes/CSRF.php
 
 		-
 			message: "#^Left side of && is always true\\.$#"
@@ -151,14 +51,29 @@ parameters:
 			path: classes/CSRF.php
 
 		-
-			message: "#^Email\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Email does not extend any class\\.$#"
-			count: 1
-			path: classes/Email.php
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 2
+			path: classes/CSV.php
 
 		-
-			message: "#^Email\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Email does not extend any class\\.$#"
+			message: "#^PHPDoc tag @method has invalid value \\(enabled\\)\\: Unexpected token \"\\\\r\\\\n     \\*\", expected '\\(' at offset 79$#"
 			count: 1
-			path: classes/Email.php
+			path: classes/Cache.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(using\\)\\: Unexpected token \"\\\\r\\\\n     \\* \", expected '\\(' at offset 81$#"
+			count: 1
+			path: classes/Cache.php
+
+		-
+			message: "#^Undefined variable\\: \\$methods$#"
+			count: 1
+			path: classes/Check.php
+
+		-
+			message: "#^Parameter \\$callback of function spl_autoload_register expects \\(callable\\(string\\)\\: void\\)\\|null, Closure\\(mixed\\)\\: bool given\\.$#"
+			count: 1
+			path: classes/Core/Aliases.php
 
 		-
 			message: "#^Parameter \\#1 \\$prefix of function uniqid expects string, int\\<1, max\\> given\\.$#"
@@ -171,64 +86,9 @@ parameters:
 			path: classes/Email/Smtp.php
 
 		-
-			message: "#^Errors\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Errors does not extend any class\\.$#"
-			count: 1
-			path: classes/Errors.php
-
-		-
-			message: "#^Errors\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Errors does not extend any class\\.$#"
-			count: 1
-			path: classes/Errors.php
-
-		-
-			message: "#^Event\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Event does not extend any class\\.$#"
-			count: 1
-			path: classes/Event.php
-
-		-
-			message: "#^Event\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Event does not extend any class\\.$#"
-			count: 1
-			path: classes/Event.php
-
-		-
-			message: "#^File\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but File does not extend any class\\.$#"
-			count: 1
-			path: classes/File.php
-
-		-
 			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(string\\)\\: bool\\)\\|null, 'strlen' given\\.$#"
 			count: 1
 			path: classes/File.php
-
-		-
-			message: "#^Filter\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Filter does not extend any class\\.$#"
-			count: 1
-			path: classes/Filter.php
-
-		-
-			message: "#^Filter\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Filter does not extend any class\\.$#"
-			count: 1
-			path: classes/Filter.php
-
-		-
-			message: "#^Gate\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Gate does not extend any class\\.$#"
-			count: 1
-			path: classes/Gate.php
-
-		-
-			message: "#^Gate\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Gate does not extend any class\\.$#"
-			count: 1
-			path: classes/Gate.php
-
-		-
-			message: "#^HTTP\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but HTTP does not extend any class\\.$#"
-			count: 1
-			path: classes/HTTP.php
-
-		-
-			message: "#^HTTP\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but HTTP does not extend any class\\.$#"
-			count: 1
-			path: classes/HTTP.php
 
 		-
 			message: "#^Variable \\$res might not be defined\\.$#"
@@ -261,11 +121,6 @@ parameters:
 			path: classes/Hash.php
 
 		-
-			message: "#^Hash\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Hash does not extend any class\\.$#"
-			count: 1
-			path: classes/Hash.php
-
-		-
 			message: "#^PHPDoc tag @method has invalid value \\(can\\)\\: Unexpected token \"\\\\r\\\\n\\\\t \\*\", expected '\\(' at offset 81$#"
 			count: 1
 			path: classes/Hash.php
@@ -284,11 +139,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$num of function base_convert expects string, int given\\.$#"
 			count: 1
 			path: classes/Hash.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:exec\\(\\)\\.$#"
-			count: 1
-			path: classes/Job.php
 
 		-
 			message: "#^Call to an undefined static method SQL\\:\\:update\\(\\)\\.$#"
@@ -346,32 +196,12 @@ parameters:
 			path: classes/Model.php
 
 		-
-			message: "#^Call to an undefined static method SQL\\:\\:single\\(\\)\\.$#"
-			count: 1
-			path: classes/Model.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:value\\(\\)\\.$#"
-			count: 1
-			path: classes/Model.php
-
-		-
 			message: "#^Deprecated in PHP 8\\.4\\: Parameter \\#1 \\$callback \\(callable\\) is implicitly nullable via default value null\\.$#"
 			count: 2
 			path: classes/Model.php
 
 		-
 			message: "#^Method Model\\:\\:relationAddRelationshipTo\\(\\) should return callable but return statement is missing\\.$#"
-			count: 1
-			path: classes/Model.php
-
-		-
-			message: "#^Model\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Model does not extend any class\\.$#"
-			count: 1
-			path: classes/Model.php
-
-		-
-			message: "#^Model\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Model does not extend any class\\.$#"
 			count: 1
 			path: classes/Model.php
 
@@ -431,16 +261,6 @@ parameters:
 			path: classes/Password.php
 
 		-
-			message: "#^Password\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Password does not extend any class\\.$#"
-			count: 1
-			path: classes/Password.php
-
-		-
-			message: "#^Password\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Password does not extend any class\\.$#"
-			count: 1
-			path: classes/Password.php
-
-		-
 			message: "#^Call to function is_array\\(\\) with string will always evaluate to false\\.$#"
 			count: 1
 			path: classes/REST.php
@@ -454,41 +274,6 @@ parameters:
 			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: classes/REST.php
-
-		-
-			message: "#^RateLimiter\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but RateLimiter does not extend any class\\.$#"
-			count: 1
-			path: classes/RateLimiter.php
-
-		-
-			message: "#^RateLimiter\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but RateLimiter does not extend any class\\.$#"
-			count: 1
-			path: classes/RateLimiter.php
-
-		-
-			message: "#^Redirect\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Redirect does not extend any class\\.$#"
-			count: 1
-			path: classes/Redirect.php
-
-		-
-			message: "#^Redirect\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Redirect does not extend any class\\.$#"
-			count: 1
-			path: classes/Redirect.php
-
-		-
-			message: "#^Request\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Request does not extend any class\\.$#"
-			count: 1
-			path: classes/Request.php
-
-		-
-			message: "#^Request\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Request does not extend any class\\.$#"
-			count: 1
-			path: classes/Request.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:single\\(\\)\\.$#"
-			count: 1
-			path: classes/Resource.php
 
 		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
@@ -523,16 +308,6 @@ parameters:
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$payload$#"
 			count: 5
-			path: classes/Response.php
-
-		-
-			message: "#^Response\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Response does not extend any class\\.$#"
-			count: 1
-			path: classes/Response.php
-
-		-
-			message: "#^Response\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Response does not extend any class\\.$#"
-			count: 1
 			path: classes/Response.php
 
 		-
@@ -581,16 +356,6 @@ parameters:
 			path: classes/Route.php
 
 		-
-			message: "#^Route\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Route does not extend any class\\.$#"
-			count: 1
-			path: classes/Route.php
-
-		-
-			message: "#^Route\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Route does not extend any class\\.$#"
-			count: 1
-			path: classes/Route.php
-
-		-
 			message: "#^Ternary operator condition is always true\\.$#"
 			count: 1
 			path: classes/Route.php
@@ -621,37 +386,7 @@ parameters:
 			path: classes/SQL.php
 
 		-
-			message: "#^Method SQL\\:\\:using\\(\\) has invalid return type SQLConnect\\.$#"
-			count: 1
-			path: classes/SQL.php
-
-		-
-			message: "#^Parameter \\$name of method SQL\\:\\:using\\(\\) has invalid type strinf\\.$#"
-			count: 1
-			path: classes/SQL.php
-
-		-
-			message: "#^SQL\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but SQL does not extend any class\\.$#"
-			count: 1
-			path: classes/SQL.php
-
-		-
-			message: "#^SecurityHeaders\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but SecurityHeaders does not extend any class\\.$#"
-			count: 1
-			path: classes/SecurityHeaders.php
-
-		-
-			message: "#^SecurityHeaders\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but SecurityHeaders does not extend any class\\.$#"
-			count: 1
-			path: classes/SecurityHeaders.php
-
-		-
 			message: "#^Anonymous function has an unused use \\$serviceName\\.$#"
-			count: 1
-			path: classes/Service.php
-
-		-
-			message: "#^Service\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Service does not extend any class\\.$#"
 			count: 1
 			path: classes/Service.php
 
@@ -691,24 +426,9 @@ parameters:
 			path: classes/Session.php
 
 		-
-			message: "#^Session\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Session does not extend any class\\.$#"
-			count: 1
-			path: classes/Session.php
-
-		-
-			message: "#^Session\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Session does not extend any class\\.$#"
-			count: 1
-			path: classes/Session.php
-
-		-
 			message: "#^Unknown parameter \\$lifetime in call to function session_set_cookie_params\\.$#"
 			count: 1
 			path: classes/Session.php
-
-		-
-			message: "#^Shell\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Shell does not extend any class\\.$#"
-			count: 1
-			path: classes/Shell.php
 
 		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
@@ -724,16 +444,6 @@ parameters:
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: classes/Structure.php
-
-		-
-			message: "#^Text\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Text does not extend any class\\.$#"
-			count: 1
-			path: classes/Text.php
-
-		-
-			message: "#^Text\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Text does not extend any class\\.$#"
-			count: 1
-			path: classes/Text.php
 
 		-
 			message: "#^Method URL\\:\\:__set\\(\\) with return type void returns mixed but should not return anything\\.$#"
@@ -769,31 +479,6 @@ parameters:
 			message: "#^Access to an undefined static property static\\(Work\\)\\:\\:\\$inited_shutdown\\.$#"
 			count: 2
 			path: classes/Work.php
-
-		-
-			message: "#^Work\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but Work does not extend any class\\.$#"
-			count: 1
-			path: classes/Work.php
-
-		-
-			message: "#^Work\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but Work does not extend any class\\.$#"
-			count: 1
-			path: classes/Work.php
-
-		-
-			message: "#^ZIP\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but ZIP does not extend any class\\.$#"
-			count: 1
-			path: classes/ZIP.php
-
-		-
-			message: "#^ZIP\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but ZIP does not extend any class\\.$#"
-			count: 1
-			path: classes/ZIP.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:exec\\(\\)\\.$#"
-			count: 4
-			path: tests/ApiModuleTest.php
 
 		-
 			message: "#^Anonymous function has an unused use \\$self\\.$#"
@@ -846,16 +531,6 @@ parameters:
 			path: tests/MessageSessionTest.php
 
 		-
-			message: "#^Call to an undefined static method SQL\\:\\:exec\\(\\)\\.$#"
-			count: 3
-			path: tests/ModelTest.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:value\\(\\)\\.$#"
-			count: 2
-			path: tests/ModelTest.php
-
-		-
 			message: "#^Property ModelTest\\:\\:\\$a1 is never read, only written\\.$#"
 			count: 1
 			path: tests/ModelTest.php
@@ -872,11 +547,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined static method SQL\\:\\:insertOrUpdate\\(\\)\\.$#"
-			count: 1
-			path: tests/PersistenceTest.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:single\\(\\)\\.$#"
 			count: 1
 			path: tests/PersistenceTest.php
 
@@ -926,23 +596,8 @@ parameters:
 			path: tests/RouteTest.php
 
 		-
-			message: "#^Call to an undefined static method SQL\\:\\:column\\(\\)\\.$#"
-			count: 2
-			path: tests/SQLTest.php
-
-		-
 			message: "#^Call to an undefined static method SQL\\:\\:delete\\(\\)\\.$#"
 			count: 3
-			path: tests/SQLTest.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:each\\(\\)\\.$#"
-			count: 2
-			path: tests/SQLTest.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:exec\\(\\)\\.$#"
-			count: 2
 			path: tests/SQLTest.php
 
 		-
@@ -961,38 +616,8 @@ parameters:
 			path: tests/SQLTest.php
 
 		-
-			message: "#^Call to an undefined static method SQL\\:\\:single\\(\\)\\.$#"
-			count: 2
-			path: tests/SQLTest.php
-
-		-
 			message: "#^Call to an undefined static method SQL\\:\\:update\\(\\)\\.$#"
 			count: 3
-			path: tests/SQLTest.php
-
-		-
-			message: "#^Call to an undefined static method SQL\\:\\:value\\(\\)\\.$#"
-			count: 6
-			path: tests/SQLTest.php
-
-		-
-			message: "#^Call to method exec\\(\\) on an unknown class SQLConnect\\.$#"
-			count: 2
-			path: tests/SQLTest.php
-
-		-
-			message: "#^Call to method insert\\(\\) on an unknown class SQLConnect\\.$#"
-			count: 1
-			path: tests/SQLTest.php
-
-		-
-			message: "#^Call to method value\\(\\) on an unknown class SQLConnect\\.$#"
-			count: 2
-			path: tests/SQLTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of static method SQL\\:\\:using\\(\\) expects strinf, string given\\.$#"
-			count: 4
 			path: tests/SQLTest.php
 
 		-
@@ -1027,16 +652,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined static method ModuleTraitTestClass\\:\\:sum\\(\\)\\.$#"
-			count: 1
-			path: tests/TraitsTest.php
-
-		-
-			message: "#^ModuleTraitTestClass\\:\\:__call\\(\\) calls parent\\:\\:__call\\(\\) but ModuleTraitTestClass does not extend any class\\.$#"
-			count: 1
-			path: tests/TraitsTest.php
-
-		-
-			message: "#^ModuleTraitTestClass\\:\\:__callStatic\\(\\) calls parent\\:\\:__callStatic\\(\\) but ModuleTraitTestClass does not extend any class\\.$#"
 			count: 1
 			path: tests/TraitsTest.php
 

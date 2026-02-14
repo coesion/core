@@ -265,8 +265,6 @@ class Introspect {
      */
     protected static function scheduleJobCount() {
         if (!class_exists('Schedule')) return 0;
-
-        $all = Schedule::all();
-        return is_array($all) ? count($all) : 0;
+        return count(Schedule::all());
     }
 }
