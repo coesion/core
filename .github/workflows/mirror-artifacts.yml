@@ -1,0 +1,179 @@
+name: Mirror Artifacts
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-artifacts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mirror-php:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CORE_ARTIFACT_TOKEN: ${{ secrets.CORE_ARTIFACT_TOKEN }}
+    steps:
+      - name: Checkout factory repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Validate release targets and export env
+        run: php tools/release-check-artifacts.php --artifact=php --format=env >> "$GITHUB_ENV"
+
+      - name: Detect PHP artifact-relevant changes
+        run: |
+          BASE="${{ github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$(git rev-list --max-parents=0 HEAD | tail -n1)"
+          fi
+
+          if git diff --name-only "$BASE" "${GITHUB_SHA}" | grep -Eq '^(classes/|tools/build-core.php|tools/build-artifact-repo.php|tools/release-check-artifacts.php|tools/release-targets-common.php|release-targets.json|VERSION|classes/Core.php|composer\.json|docs/guides/Releasing\.md|docs/guides/Packagist-Artifact\.md)$'; then
+            echo "SHOULD_PUBLISH=true" >> "$GITHUB_ENV"
+            echo "Detected PHP artifact-relevant changes."
+          else
+            echo "SHOULD_PUBLISH=false" >> "$GITHUB_ENV"
+            echo "No PHP artifact-relevant changes."
+          fi
+
+      - name: Require PHP artifact token
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          if [ -z "$CORE_ARTIFACT_TOKEN" ]; then
+            echo "CORE_ARTIFACT_TOKEN is required when SHOULD_PUBLISH=true"
+            exit 1
+          fi
+
+      - name: Build PHP artifact payload
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: composer build-artifact-repo
+
+      - name: Validate PHP artifact contract
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          php -l dist/artifact/core.php
+          php -r "require 'dist/artifact/core.php'; require 'dist/artifact/core.php'; echo 'guard-ok';"
+          php tools/release-check-artifacts.php --artifact=php --artifact-dir=dist/artifact
+
+      - name: Publish PHP artifact repository
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          SHORT_SHA="${GITHUB_SHA::7}"
+
+          git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${PHP_ARTIFACT_REPO}.git" artifact-repo
+          cd artifact-repo
+          git checkout "${PHP_ARTIFACT_BRANCH}" || git checkout -b "${PHP_ARTIFACT_BRANCH}"
+          cd ..
+
+          rsync -a --delete --exclude='.git' dist/artifact/ artifact-repo/
+          cd artifact-repo
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No PHP artifact payload diff to publish"
+          else
+            git commit -m "Publish PHP artifact from factory ${SHORT_SHA}"
+            git push origin "${PHP_ARTIFACT_BRANCH}"
+          fi
+
+  mirror-js:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CORE_JS_ARTIFACT_TOKEN: ${{ secrets.CORE_JS_ARTIFACT_TOKEN }}
+    steps:
+      - name: Checkout factory repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate release targets and export env
+        run: php tools/release-check-artifacts.php --artifact=js --format=env >> "$GITHUB_ENV"
+
+      - name: Detect JS artifact-relevant changes
+        run: |
+          BASE="${{ github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$(git rev-list --max-parents=0 HEAD | tail -n1)"
+          fi
+
+          if git diff --name-only "$BASE" "${GITHUB_SHA}" | grep -Eq '^(js/src/|js/scripts/|js/package.json|js/VERSION|tools/build-js-artifact-repo.php|tools/release-check-artifacts.php|tools/release-targets-common.php|release-targets.json|docs/guides/Npm-Artifact\.md|docs/guides/Releasing\.md)$'; then
+            echo "SHOULD_PUBLISH=true" >> "$GITHUB_ENV"
+            echo "Detected JS artifact-relevant changes."
+          else
+            echo "SHOULD_PUBLISH=false" >> "$GITHUB_ENV"
+            echo "No JS artifact-relevant changes."
+          fi
+
+      - name: Require JS artifact token
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          if [ -z "$CORE_JS_ARTIFACT_TOKEN" ]; then
+            echo "CORE_JS_ARTIFACT_TOKEN is required when SHOULD_PUBLISH=true"
+            exit 1
+          fi
+
+      - name: Test JS runtime
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: npm --prefix js run test
+
+      - name: Build JS runtime bundle
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: npm --prefix js run build
+
+      - name: Build JS artifact payload
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: php tools/build-js-artifact-repo.php
+
+      - name: Validate JS artifact contract
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: php tools/release-check-artifacts.php --artifact=js --artifact-dir=js/dist/artifact
+
+      - name: Publish JS artifact repository
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          SHORT_SHA="${GITHUB_SHA::7}"
+
+          git clone "https://x-access-token:${CORE_JS_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-repo
+          cd artifact-repo
+          git checkout "${JS_ARTIFACT_BRANCH}" || git checkout -b "${JS_ARTIFACT_BRANCH}"
+          cd ..
+
+          rsync -a --delete --exclude='.git' js/dist/artifact/ artifact-repo/
+          cd artifact-repo
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No JS artifact payload diff to publish"
+          else
+            git commit -m "Publish JS artifact from factory ${SHORT_SHA}"
+            git push origin "${JS_ARTIFACT_BRANCH}"
+          fi
