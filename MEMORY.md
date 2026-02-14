@@ -23,3 +23,5 @@ Static docs builder (`tools/build-docs-site.php`) did not inject highlight.js CS
 GitHub Actions workflow expressions: step-level `if:` cannot reference `secrets.*` directly; map secrets into job/workflow `env` first and gate steps with `env.*` conditions.
 docs/AUDIT.md became stale after capability additions: Core now includes i18n, Schedule, Crypt, WebSocket, and Cache\\Redis; those categories should not be marked Missing in future audits.
 Current verified Mezzio feature doc links for audits: /v3/features/router/intro/, /v3/features/middleware-types/, /v3/features/container/intro/.
+Introspect::classes reports only declared (already loaded) classes, not all class files on disk; capability/audit tooling should account for this when reporting class counts.
+Agent audit CLI added at tools/agent-audit.php with deterministic JSON/Markdown output and fail gates via --fail-on-missing=<dot.path>.

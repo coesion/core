@@ -126,7 +126,7 @@ class Introspect {
     /**
      * Detect available framework capabilities and extensions.
      *
-     * @return array Associative map of capability names to booleans
+     * @return array Associative map of capability flags and framework metadata
      */
     public static function capabilities() {
         return [
@@ -142,6 +142,26 @@ class Introspect {
             'zip'       => extension_loaded('zip'),
             'json'      => function_exists('json_encode'),
             'session'   => function_exists('session_start'),
+            'core'      => [
+                'zero_runtime_dependencies' => static::runtimeDependencyCount() === 0,
+                'runtime_dependency_count'  => static::runtimeDependencyCount(),
+                'introspection_available'   => true,
+                'route' => [
+                    'loop_mode'       => (bool) Options::get('core.route.loop_mode', false),
+                    'loop_dispatcher' => (string) Options::get('core.route.loop_dispatcher', 'fast'),
+                    'debug'           => (bool) Options::get('core.route.debug', false),
+                ],
+                'auth' => [
+                    'booted' => static::hasRouteExtension('auth'),
+                ],
+                'cache' => [
+                    'driver_loaded' => static::cacheDriverName() !== '',
+                    'driver'        => static::cacheDriverName(),
+                ],
+                'schedule' => [
+                    'registered_jobs' => static::scheduleJobCount(),
+                ],
+            ],
         ];
     }
 
@@ -173,5 +193,80 @@ class Introspect {
             $traits = array_merge($traits, static::allTraits($parent));
         }
         return array_unique($traits);
+    }
+
+    /**
+     * Count composer runtime dependencies excluding PHP and extension constraints.
+     *
+     * @return int
+     */
+    protected static function runtimeDependencyCount() {
+        $path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'composer.json';
+        $json = @file_get_contents($path);
+        if (!$json) return 0;
+
+        $composer = json_decode($json, true);
+        if (!is_array($composer)) return 0;
+
+        $requires = isset($composer['require']) && is_array($composer['require'])
+            ? $composer['require']
+            : [];
+
+        $count = 0;
+        foreach (array_keys($requires) as $package) {
+            $name = strtolower((string) $package);
+            if ($name === 'php') continue;
+            if (strpos($name, 'ext-') === 0) continue;
+            $count++;
+        }
+        return $count;
+    }
+
+    /**
+     * Check if Route has a specific dynamic extension.
+     *
+     * @param string $method
+     * @return bool
+     */
+    protected static function hasRouteExtension($method) {
+        return in_array($method, static::extensions('Route'), true);
+    }
+
+    /**
+     * Return the active cache driver short name, if available.
+     *
+     * @return string
+     */
+    protected static function cacheDriverName() {
+        if (!class_exists('Cache')) return '';
+
+        try {
+            $ref = new \ReflectionClass('Cache');
+            if (!$ref->hasProperty('driver')) return '';
+
+            $prop = $ref->getProperty('driver');
+            $prop->setAccessible(true);
+            $driver = $prop->getValue();
+
+            if (!is_object($driver)) return '';
+
+            $class = get_class($driver);
+            $parts = explode('\\', $class);
+            return strtolower(end($parts));
+        } catch (\Throwable $e) {
+            return '';
+        }
+    }
+
+    /**
+     * Return number of currently registered scheduled jobs.
+     *
+     * @return int
+     */
+    protected static function scheduleJobCount() {
+        if (!class_exists('Schedule')) return 0;
+
+        $all = Schedule::all();
+        return is_array($all) ? count($all) : 0;
     }
 }

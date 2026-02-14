@@ -107,6 +107,7 @@ Guides:
 - [Examples](../examples/Examples.md)
 - [FrankenPHP](FrankenPHP.md)
 - [REST API With Auth](REST-Auth.md)
+- [Agentic Audit](Agentic-Audit.md)
 - [Router Benchmarks](Router-Benchmarks.md)
 - [API](../classes/API.md)
 - [REST](../classes/REST.md)

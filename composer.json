@@ -35,6 +35,7 @@
         "serve-docs" : "php tools/serve-docs.php",
         "docs" : "php tools/serve-docs.php",
         "docs-build-pages" : "php tools/build-docs-site.php --out=build/docs-site",
+        "agent-audit" : "php tools/agent-audit.php --format=json --pretty",
         "route-benchmark" : "php tools/route_debug.php",
         "cli-demo" : "php tools/cli-demo.php demo",
         "release:plan" : "php tools/release-plan.php",

@@ -161,17 +161,20 @@ Result: Core is currently rank #1 for this agentic-first model, but with clear p
 - Acceptance:
 - `Introspect::capabilities()` returns deterministic associative map with stable keys.
 - New section in `docs/classes/Introspect.md` documents each key.
+- Status: Implemented (2026-02-14)
 
 ### A2. Deterministic Machine-Readable Audit Export
 - Add `tools/agent-audit.php` with `--format=json|md`.
 - Acceptance:
 - JSON output stable across runs with same source and config.
 - Markdown export can regenerate `docs/AUDIT.md` sections.
+- Status: Implemented (2026-02-14)
 
 ### A3. Error Envelope Stability Contract
 - Standardize error payload shape and optional trace verbosity policy.
 - Acceptance:
 - `Errors::mode(Errors::JSON_VERBOSE)` contract documented with examples and field guarantees.
+- Status: Implemented (2026-02-14)
 
 ## Phase B (Weeks 9-16): Agent Productivity Primitives
 

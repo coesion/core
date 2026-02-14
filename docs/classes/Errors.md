@@ -13,10 +13,11 @@ Public API:
 - `Errors::capture($tracing_level = null)` installs handlers.
 - `Errors::mode($mode = null)` gets or sets output mode.
 - `Errors::traceError(...)` and `Errors::traceException(...)` implement handlers.
+- `Errors::structuredException(Throwable $e)` builds a structured error payload.
 - Deprecated convenience event methods: `onFatal`, `onWarning`, `onNotice`, `onAny`.
 
 Modes:
-- `Errors::SIMPLE`, `Errors::HTML`, `Errors::SILENT`, `Errors::JSON`.
+- `Errors::SIMPLE`, `Errors::HTML`, `Errors::SILENT`, `Errors::JSON`, `Errors::JSON_VERBOSE`.
 
 Example:
 ```php
@@ -79,7 +80,23 @@ Modes | Description | Example
 `Errors::HTML` | Prints the error message wrapped in html  | `<pre class="app error"><code>Notice: undefined variable x.</code></pre>`
 `Errors::SILENT` | Don't print anything  | 
 `Errors::JSON` | Print a JSON string of an error envelope  | `{"error":"Notice: undefined variable x."}` 
+`Errors::JSON_VERBOSE` | Print a structured JSON envelope with file/line/trace | `{"error":"...","type":"...","code":0,"file":"...","line":42,"trace":[...]}` 
 
 ```php
 Errors::mode(Errors::HTML);
 ```
+
+### JSON_VERBOSE contract
+---
+
+`Errors::mode(Errors::JSON_VERBOSE)` emits a stable structured payload with these required keys:
+
+- `error` (string)
+- `type` (string)
+- `code` (int)
+- `file` (string)
+- `line` (int)
+- `trace` (array)
+
+Optional:
+- `previous` (nested structured error) when the exception has a previous throwable.

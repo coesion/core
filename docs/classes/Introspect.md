@@ -14,7 +14,21 @@ Public API:
 - `Introspect::methods($class)` — public methods including Module-injected ones.
 - `Introspect::extensions($class)` — only dynamically added methods.
 - `Introspect::routes()` — all registered routes with patterns, methods, tags.
-- `Introspect::capabilities()` — feature detection map (redis, sodium, curl, etc.).
+- `Introspect::capabilities()` — deterministic capability map including extension flags and Core runtime metadata.
+
+Capabilities contract:
+- Existing extension keys remain available: `redis`, `sodium`, `curl`, `pdo`, `sqlite`, `mysql`, `mbstring`, `openssl`, `gd`, `zip`, `json`, `session`.
+- The `core` key adds framework-level capabilities:
+- `core.zero_runtime_dependencies` (bool)
+- `core.runtime_dependency_count` (int)
+- `core.introspection_available` (bool)
+- `core.route.loop_mode` (bool)
+- `core.route.loop_dispatcher` (string)
+- `core.route.debug` (bool)
+- `core.auth.booted` (bool)
+- `core.cache.driver_loaded` (bool)
+- `core.cache.driver` (string)
+- `core.schedule.registered_jobs` (int)
 
 Example:
 ```php
@@ -37,5 +51,16 @@ $routes = Introspect::routes();
 
 // Check capabilities
 $caps = Introspect::capabilities();
-// ['redis' => false, 'sodium' => true, 'curl' => true, 'pdo' => true, ...]
+// [
+//   'redis' => false,
+//   ...
+//   'core' => [
+//     'zero_runtime_dependencies' => true,
+//     'runtime_dependency_count' => 0,
+//     'route' => ['loop_mode' => false, 'loop_dispatcher' => 'fast', 'debug' => false],
+//     'auth' => ['booted' => false],
+//     'cache' => ['driver_loaded' => true, 'driver' => 'files'],
+//     'schedule' => ['registered_jobs' => 0],
+//   ],
+// ]
 ```
