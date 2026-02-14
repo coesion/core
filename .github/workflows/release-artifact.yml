@@ -71,6 +71,22 @@ jobs:
             exit 1
           fi
 
+      - name: Validate artifact token access
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          api_url="https://api.github.com/repos/${PHP_ARTIFACT_REPO}"
+          repo_json="$(mktemp)"
+          curl -fsS \
+            -H "Authorization: Bearer ${CORE_ARTIFACT_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${api_url}" > "${repo_json}"
+
+          if ! grep -q '"push":[[:space:]]*true' "${repo_json}"; then
+            echo "CORE_ARTIFACT_TOKEN does not have push permission on ${PHP_ARTIFACT_REPO}"
+            cat "${repo_json}"
+            exit 1
+          fi
+
       - name: Publish to artifact repository
         if: ${{ env.SHOULD_PUBLISH == 'true' }}
         run: |
@@ -112,6 +128,26 @@ jobs:
           fi
           git tag -a "${TAG_NAME}" -m "Release ${TAG_NAME} from factory"
           git push origin "${TAG_NAME}" --force
+
+      - name: Create GitHub release in PHP artifact repository
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          API_URL="https://api.github.com/repos/${PHP_ARTIFACT_REPO}"
+
+          if curl -fsS \
+            -H "Authorization: Bearer ${CORE_ARTIFACT_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${API_URL}/releases/tags/${TAG_NAME}" >/dev/null 2>&1; then
+            echo "Release for ${TAG_NAME} already exists in ${PHP_ARTIFACT_REPO}"
+            exit 0
+          fi
+
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${CORE_ARTIFACT_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${API_URL}/releases" \
+            -d "{\"tag_name\":\"${TAG_NAME}\",\"target_commitish\":\"${PHP_ARTIFACT_BRANCH}\",\"name\":\"${TAG_NAME}\",\"generate_release_notes\":true}"
 
       - name: Notify Packagist (optional)
         if: ${{ env.SHOULD_PUBLISH == 'true' && env.PACKAGIST_UPDATE_URL != '' && env.PACKAGIST_API_TOKEN != '' }}
