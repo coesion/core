@@ -32,6 +32,7 @@
             "@build-core",
             "php tools/build-artifact-repo.php"
         ],
+        "build-js-artifact-repo" : "php tools/build-js-artifact-repo.php",
         "serve-docs" : "php tools/serve-docs.php",
         "docs" : "php tools/serve-docs.php",
         "docs-build-pages" : "php tools/build-docs-site.php --out=build/docs-site",
@@ -40,7 +41,8 @@
         "cli-demo" : "php tools/cli-demo.php demo",
         "release:plan" : "php tools/release-plan.php",
         "release:cut" : "php tools/release-cut.php",
-        "release:check" : "php tools/release-check.php"
+        "release:check" : "php tools/release-check.php",
+        "release:check-artifacts" : "php tools/release-check-artifacts.php"
     },
     "config": {
         "optimize-autoloader": true,

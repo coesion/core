@@ -26,3 +26,6 @@ jobs:
 
       - name: Enforce release policy
         run: php tools/release-check.php --strict
+
+      - name: Enforce artifact policy
+        run: php tools/release-check-artifacts.php

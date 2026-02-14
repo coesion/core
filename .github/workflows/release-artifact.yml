@@ -1,4 +1,4 @@
-name: Release Artifact
+name: Release Artifact (PHP)
 
 on:
   push:
@@ -12,13 +12,14 @@ jobs:
     permissions:
       contents: read
     env:
-      CORE_ARTIFACT_REPO: ${{ secrets.CORE_ARTIFACT_REPO }}
       CORE_ARTIFACT_TOKEN: ${{ secrets.CORE_ARTIFACT_TOKEN }}
       PACKAGIST_UPDATE_URL: ${{ secrets.PACKAGIST_UPDATE_URL }}
       PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
     steps:
-      - name: Checkout core-dev
+      - name: Checkout factory repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -29,30 +30,66 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Validate release targets and export env
+        run: php tools/release-check-artifacts.php --artifact=php --format=env >> "$GITHUB_ENV"
+
       - name: Build artifact payload
         run: composer build-artifact-repo
 
-      - name: Validate artifact core.php
+      - name: Validate artifact core.php and contract
         run: |
           php -l dist/artifact/core.php
           php -r "require 'dist/artifact/core.php'; require 'dist/artifact/core.php'; echo 'guard-ok';"
+          php tools/release-check-artifacts.php --artifact=php --artifact-dir=dist/artifact
+
+      - name: Detect PHP source changes
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          PREV_TAG="$(git tag --sort=-v:refname | grep -v "^${TAG_NAME}$" | head -n1)"
+          if [ -z "$PREV_TAG" ]; then
+            echo "SHOULD_PUBLISH=true" >> "$GITHUB_ENV"
+            echo "No previous tag found. Publishing PHP artifact."
+            exit 0
+          fi
+
+          if git diff --name-only "$PREV_TAG..$TAG_NAME" | grep -Eq '^(classes/|tools/build-core.php|tools/build-artifact-repo.php|tools/release-check-artifacts.php|tools/release-targets-common.php|release-targets.json|VERSION|classes/Core.php|composer\.json|docs/guides/Releasing\.md|docs/guides/Packagist-Artifact\.md)$'; then
+            echo "SHOULD_PUBLISH=true" >> "$GITHUB_ENV"
+            echo "Detected PHP-relevant changes since $PREV_TAG"
+          else
+            echo "SHOULD_PUBLISH=false" >> "$GITHUB_ENV"
+            echo "No PHP-relevant changes since $PREV_TAG"
+          fi
+
+      - name: Require artifact token
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          if [ -z "$CORE_ARTIFACT_TOKEN" ]; then
+            echo "CORE_ARTIFACT_TOKEN is required when SHOULD_PUBLISH=true"
+            exit 1
+          fi
 
       - name: Publish to artifact repository
-        if: ${{ env.CORE_ARTIFACT_REPO != '' && env.CORE_ARTIFACT_TOKEN != '' }}
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${CORE_ARTIFACT_REPO}.git" artifact-repo
+
+          git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${PHP_ARTIFACT_REPO}.git" artifact-repo
+          cd artifact-repo
+          git checkout "${PHP_ARTIFACT_BRANCH}" || git checkout -b "${PHP_ARTIFACT_BRANCH}"
+          cd ..
+
           rsync -a --delete dist/artifact/ artifact-repo/
           cd artifact-repo
           git add -A
           if git diff --cached --quiet; then
-            echo "No artifact changes to publish"
+            echo "No artifact payload diff to publish"
           else
-            git commit -m "Release ${TAG_NAME} from core-dev"
-            git push origin HEAD
+            git commit -m "Release ${TAG_NAME} from factory"
+            git push origin "${PHP_ARTIFACT_BRANCH}"
           fi
+
           if git rev-parse "${TAG_NAME}" >/dev/null 2>&1; then
             git tag -d "${TAG_NAME}"
           fi
@@ -60,8 +97,8 @@ jobs:
           git push origin "${TAG_NAME}" --force
 
       - name: Notify Packagist (optional)
-        if: ${{ env.PACKAGIST_UPDATE_URL != '' && env.PACKAGIST_API_TOKEN != '' && env.CORE_ARTIFACT_REPO != '' }}
+        if: ${{ env.SHOULD_PUBLISH == 'true' && env.PACKAGIST_UPDATE_URL != '' && env.PACKAGIST_API_TOKEN != '' }}
         run: |
           curl -fsS -X POST "$PACKAGIST_UPDATE_URL" \
             -H 'Content-Type: application/json' \
-            -d "{\"repository\":{\"url\":\"https://github.com/${CORE_ARTIFACT_REPO}\"},\"apiToken\":\"${PACKAGIST_API_TOKEN}\"}"
+            -d "{\"repository\":{\"url\":\"https://github.com/${PHP_ARTIFACT_REPO}\"},\"apiToken\":\"${PACKAGIST_API_TOKEN}\"}"

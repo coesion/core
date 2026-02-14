@@ -24,6 +24,9 @@ jobs:
       - name: Release consistency check
         run: composer release:check
 
+      - name: Artifact consistency check
+        run: composer release:check-artifacts
+
       - name: Build and lint dist/core.php
         run: |
           php tools/build-core.php

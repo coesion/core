@@ -1,0 +1,21 @@
+{
+  "defaults": {
+    "tag_pattern": "v*.*.*",
+    "publish_mode": "auto_on_tag"
+  },
+  "artifacts": {
+    "php": {
+      "repo": "coesion/core-php",
+      "branch": "main",
+      "package_name": "coesion/core",
+      "homepage": "https://coesion.github.io/core/"
+    },
+    "js": {
+      "repo": "coesion/core-js",
+      "branch": "main",
+      "package_name": "@coesion/core-js",
+      "homepage": "https://github.com/coesion/core-js",
+      "registry": "https://registry.npmjs.org"
+    }
+  }
+}

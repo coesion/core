@@ -1,13 +1,16 @@
 # Releasing
 
-Core uses a canonical `VERSION` file (plain semver `X.Y.Z`) and git tags in `vX.Y.Z` format.
+Core uses canonical version files and git tags in `vX.Y.Z` format.
 
 ## Version source of truth
 
-- `VERSION` is authoritative.
+- PHP: `VERSION` is authoritative.
 - `classes/Core.php` must match `VERSION` (`Core::VERSION`).
-- `dist/core.php` and artifact payload are generated from the same version source.
+- JS: `js/VERSION` is authoritative for JS artifact packaging.
+- `js/package.json` version must match `js/VERSION`.
+- `dist/core.php` and artifact payloads are generated from these version sources.
 - `composer.json` must not contain a `version` field.
+- `release-targets.json` is authoritative for artifact repo/package destinations.
 
 ## When to release
 
@@ -72,6 +75,7 @@ Policy checks:
 
 ```bash
 composer release:check
+composer release:check-artifacts
 php tools/release-check.php --strict
 ```
 
@@ -91,5 +95,7 @@ The changelog entry is a quick guide, not only a commit dump.
 ## CI enforcement
 
 - `.github/workflows/tests.yml` runs `composer release:check`.
+- `.github/workflows/tests.yml` runs `composer release:check-artifacts`.
 - `.github/workflows/release-policy.yml` runs strict policy on `main`/`master`/`develop` and release tags.
 - On tag builds, version/tag/changelog must match.
+- On tag builds, `.github/workflows/release-artifact.yml` and `.github/workflows/release-artifact-js.yml` publish mirror artifacts automatically.

@@ -1,0 +1,99 @@
+name: Release Artifact (JS)
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  publish-artifact-js:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CORE_JS_ARTIFACT_TOKEN: ${{ secrets.CORE_JS_ARTIFACT_TOKEN }}
+    steps:
+      - name: Checkout factory repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate release targets and export env
+        run: php tools/release-check-artifacts.php --artifact=js --format=env >> "$GITHUB_ENV"
+
+      - name: Test JS runtime
+        run: npm --prefix js run test
+
+      - name: Build JS runtime bundle
+        run: npm --prefix js run build
+
+      - name: Build JS artifact payload
+        run: php tools/build-js-artifact-repo.php
+
+      - name: Validate JS artifact contract
+        run: php tools/release-check-artifacts.php --artifact=js --artifact-dir=js/dist/artifact
+
+      - name: Detect JS source changes
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          PREV_TAG="$(git tag --sort=-v:refname | grep -v "^${TAG_NAME}$" | head -n1)"
+          if [ -z "$PREV_TAG" ]; then
+            echo "SHOULD_PUBLISH=true" >> "$GITHUB_ENV"
+            echo "No previous tag found. Publishing JS artifact."
+            exit 0
+          fi
+
+          if git diff --name-only "$PREV_TAG..$TAG_NAME" | grep -Eq '^(js/src/|js/scripts/|js/package.json|js/VERSION|tools/build-js-artifact-repo.php|tools/release-check-artifacts.php|tools/release-targets-common.php|release-targets.json|docs/guides/Npm-Artifact\.md|docs/guides/Releasing\.md)$'; then
+            echo "SHOULD_PUBLISH=true" >> "$GITHUB_ENV"
+            echo "Detected JS-relevant changes since $PREV_TAG"
+          else
+            echo "SHOULD_PUBLISH=false" >> "$GITHUB_ENV"
+            echo "No JS-relevant changes since $PREV_TAG"
+          fi
+
+      - name: Require JS artifact token
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          if [ -z "$CORE_JS_ARTIFACT_TOKEN" ]; then
+            echo "CORE_JS_ARTIFACT_TOKEN is required when SHOULD_PUBLISH=true"
+            exit 1
+          fi
+
+      - name: Publish to JS artifact repository
+        if: ${{ env.SHOULD_PUBLISH == 'true' }}
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git clone "https://x-access-token:${CORE_JS_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-repo
+          cd artifact-repo
+          git checkout "${JS_ARTIFACT_BRANCH}" || git checkout -b "${JS_ARTIFACT_BRANCH}"
+          cd ..
+
+          rsync -a --delete js/dist/artifact/ artifact-repo/
+          cd artifact-repo
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No JS artifact payload diff to publish"
+          else
+            git commit -m "Release ${TAG_NAME} from factory"
+            git push origin "${JS_ARTIFACT_BRANCH}"
+          fi
+
+          if git rev-parse "${TAG_NAME}" >/dev/null 2>&1; then
+            git tag -d "${TAG_NAME}"
+          fi
+          git tag "${TAG_NAME}"
+          git push origin "${TAG_NAME}" --force

@@ -3,14 +3,14 @@
 This guide documents the split deployment model:
 
 - `core-dev` repository: source code, tests, compiler (`tools/build-core.php`)
-- artifact repository (`coesion/core`): generated runtime package with `core.php`
+- artifact repository (`release-targets.json` -> `artifacts.php.repo`): generated runtime package with `core.php`
 
 ## Consumer install
 
 Applications should install the artifact package:
 
 ```bash
-composer require coesion/core
+composer require <configured-php-package>
 ```
 
 Then bootstrap only with:
@@ -37,7 +37,7 @@ The artifact repository must contain only runtime deliverables and package metad
 
 ```json
 {
-  "name": "coesion/core",
+  "name": "<release-targets.json artifacts.php.package_name>",
   "autoload": {
     "files": ["core.php"]
   }
@@ -73,8 +73,9 @@ Pipeline:
 
 ### Required GitHub secrets
 
-- `CORE_ARTIFACT_REPO`: target repo in `owner/name` format (example: `coesion/core`)
 - `CORE_ARTIFACT_TOKEN`: token with push/tag permission to artifact repo
+
+Target repo and package metadata are read from `release-targets.json`.
 
 ### Optional secrets for Packagist API fallback
 
@@ -88,7 +89,7 @@ Recommended default is Packagist webhook auto-update from the artifact repositor
 1. Create artifact repository with valid root `composer.json`.
 2. Push first tag (for example `v1.2.0`).
 3. Sign in at Packagist and submit artifact repository URL.
-4. Confirm package name is `coesion/core`.
+4. Confirm package name matches `release-targets.json` -> `artifacts.php.package_name`.
 5. Enable auto-update webhook (recommended).
 6. Run install smoke test in a clean app:
    - `composer require coesion/core`

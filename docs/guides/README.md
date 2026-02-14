@@ -103,6 +103,7 @@ Class reference:
 Guides:
 - [Installation](Installation.md)
 - [Packagist Artifact Publishing](Packagist-Artifact.md)
+- [NPM Artifact Publishing](Npm-Artifact.md)
 - [Releasing](Releasing.md)
 - [Examples](../examples/Examples.md)
 - [FrankenPHP](FrankenPHP.md)

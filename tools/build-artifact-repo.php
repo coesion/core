@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/release-targets-common.php';
+
 $root = dirname(__DIR__);
 $distDir = $root . DIRECTORY_SEPARATOR . 'dist';
 $corePath = $distDir . DIRECTORY_SEPARATOR . 'core.php';
@@ -7,64 +9,55 @@ $artifactDir = $distDir . DIRECTORY_SEPARATOR . 'artifact';
 $licensePath = $root . DIRECTORY_SEPARATOR . 'LICENSE.md';
 $changelogPath = $root . DIRECTORY_SEPARATOR . 'CHANGELOG.md';
 
-if (!is_file($corePath)) {
-  fwrite(STDERR, "Missing $corePath. Run php tools/build-core.php first.\n");
-  exit(1);
-}
+try {
+  $manifest = artifactReadManifest();
+  $phpArtifact = artifactGetPath($manifest, 'artifacts.php');
 
-if (!is_dir($artifactDir) && !mkdir($artifactDir, 0775, true) && !is_dir($artifactDir)) {
-  fwrite(STDERR, "Failed to create artifact directory: $artifactDir\n");
-  exit(1);
-}
+  if (!is_file($corePath)) {
+    throw new RuntimeException("Missing $corePath. Run php tools/build-core.php first.");
+  }
 
-$coreTarget = $artifactDir . DIRECTORY_SEPARATOR . 'core.php';
-if (!copy($corePath, $coreTarget)) {
-  fwrite(STDERR, "Failed to copy artifact core.php\n");
-  exit(1);
-}
+  if (!is_dir($artifactDir) && !mkdir($artifactDir, 0775, true) && !is_dir($artifactDir)) {
+    throw new RuntimeException("Failed to create artifact directory: $artifactDir");
+  }
 
-$composer = [
-  'name' => 'coesion/core',
-  'type' => 'library',
-  'description' => 'Coesion Core runtime artifact package.',
-  'keywords' => ['framework', 'core', 'sdk', 'artifact'],
-  'homepage' => 'https://github.com/coesion/core',
-  'license' => 'MIT',
-  'authors' => [
-    [
-      'name' => 'Stefano Azzolini',
-      'email' => 'lastguest@gmail.com',
+  $coreTarget = $artifactDir . DIRECTORY_SEPARATOR . 'core.php';
+  if (!copy($corePath, $coreTarget)) {
+    throw new RuntimeException('Failed to copy artifact core.php');
+  }
+
+  $composer = [
+    'name' => $phpArtifact['package_name'],
+    'type' => 'library',
+    'description' => 'Coesion Core runtime artifact package.',
+    'keywords' => ['framework', 'core', 'sdk', 'artifact'],
+    'homepage' => $phpArtifact['homepage'],
+    'license' => 'MIT',
+    'authors' => [
+      [
+        'name' => 'Stefano Azzolini',
+        'email' => 'lastguest@gmail.com',
+      ],
     ],
-  ],
-  'require' => [
-    'php' => '>=8.5',
-  ],
-  'autoload' => [
-    'files' => ['core.php'],
-  ],
-];
+    'require' => [
+      'php' => '>=8.5',
+    ],
+    'autoload' => [
+      'files' => ['core.php'],
+    ],
+  ];
 
-$composerJson = json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-if ($composerJson === false) {
-  fwrite(STDERR, "Failed to encode artifact composer.json\n");
-  exit(1);
-}
-$composerJson .= "\n";
+  artifactWriteJsonFile($artifactDir . DIRECTORY_SEPARATOR . 'composer.json', $composer);
 
-if (file_put_contents($artifactDir . DIRECTORY_SEPARATOR . 'composer.json', $composerJson) === false) {
-  fwrite(STDERR, "Failed to write artifact composer.json\n");
-  exit(1);
-}
-
-$readme = <<<MD
-# coesion/core
+  $readme = <<<MD
+# {$phpArtifact['package_name']}
 
 Artifact-only distribution for Coesion Core.
 
 ## Install
 
 ```bash
-composer require coesion/core
+composer require {$phpArtifact['package_name']}
 ```
 
 ## Usage
@@ -89,19 +82,20 @@ Response::send();
 - `core.php` includes a `COESION_CORE_LOADED` guard to prevent duplicate parsing.
 MD;
 
-if (file_put_contents($artifactDir . DIRECTORY_SEPARATOR . 'README.md', $readme . "\n") === false) {
-  fwrite(STDERR, "Failed to write artifact README.md\n");
+  if (file_put_contents($artifactDir . DIRECTORY_SEPARATOR . 'README.md', $readme . "\n") === false) {
+    throw new RuntimeException('Failed to write artifact README.md');
+  }
+
+  if (is_file($licensePath) && !copy($licensePath, $artifactDir . DIRECTORY_SEPARATOR . 'LICENSE.md')) {
+    throw new RuntimeException('Failed to copy LICENSE.md');
+  }
+
+  if (is_file($changelogPath) && !copy($changelogPath, $artifactDir . DIRECTORY_SEPARATOR . 'CHANGELOG.md')) {
+    throw new RuntimeException('Failed to copy CHANGELOG.md');
+  }
+
+  fwrite(STDOUT, "Built artifact repository payload in $artifactDir\n");
+} catch (Throwable $e) {
+  fwrite(STDERR, $e->getMessage() . "\n");
   exit(1);
 }
-
-if (is_file($licensePath) && !copy($licensePath, $artifactDir . DIRECTORY_SEPARATOR . 'LICENSE.md')) {
-  fwrite(STDERR, "Failed to copy LICENSE.md\n");
-  exit(1);
-}
-
-if (is_file($changelogPath) && !copy($changelogPath, $artifactDir . DIRECTORY_SEPARATOR . 'CHANGELOG.md')) {
-  fwrite(STDERR, "Failed to copy CHANGELOG.md\n");
-  exit(1);
-}
-
-fwrite(STDOUT, "Built artifact repository payload in $artifactDir\n");
