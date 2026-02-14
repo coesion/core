@@ -13,7 +13,6 @@ jobs:
       contents: read
     env:
       CORE_ARTIFACT_TOKEN: ${{ secrets.CORE_ARTIFACT_TOKEN }}
-      CORE_JS_ARTIFACT_TOKEN: ${{ secrets.CORE_JS_ARTIFACT_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - name: Checkout factory repository
@@ -68,20 +67,18 @@ jobs:
       - name: Require JS artifact token
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
-          if [ -z "$ARTIFACT_TOKEN" ]; then
-            echo "CORE_JS_ARTIFACT_TOKEN or CORE_ARTIFACT_TOKEN is required for JS tag mirroring/publish"
+          if [ -z "$CORE_ARTIFACT_TOKEN" ]; then
+            echo "CORE_ARTIFACT_TOKEN is required for JS tag mirroring/publish"
             exit 1
           fi
 
       - name: Validate JS artifact token access
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           api_url="https://api.github.com/repos/${JS_ARTIFACT_REPO}"
           repo_json="$(mktemp)"
           curl -fsS \
-            -H "Authorization: Bearer ${ARTIFACT_TOKEN}" \
+            -H "Authorization: Bearer ${CORE_ARTIFACT_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
             "${api_url}" > "${repo_json}"
 
@@ -103,15 +100,14 @@ jobs:
         if: ${{ env.SHOULD_PUBLISH == 'true' }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
-          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git clone "https://x-access-token:${ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-repo
+          git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-repo
           cd artifact-repo
           git checkout "${JS_ARTIFACT_BRANCH}" || git checkout -b "${JS_ARTIFACT_BRANCH}"
           git config core.fileMode false
-          git remote set-url origin "https://x-access-token:${ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git"
+          git remote set-url origin "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git"
           cd ..
 
           rsync -a --delete --exclude='.git' js/dist/artifact/ artifact-repo/
@@ -128,15 +124,14 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
-          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git clone "https://x-access-token:${ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-tag-repo
+          git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-tag-repo
           cd artifact-tag-repo
           git checkout "${JS_ARTIFACT_BRANCH}" || git checkout -b "${JS_ARTIFACT_BRANCH}"
           git pull --ff-only origin "${JS_ARTIFACT_BRANCH}"
-          git remote set-url origin "https://x-access-token:${ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git"
+          git remote set-url origin "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git"
 
           if git rev-parse "${TAG_NAME}" >/dev/null 2>&1; then
             git tag -d "${TAG_NAME}"
@@ -148,11 +143,10 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
-          ARTIFACT_TOKEN="${CORE_ARTIFACT_TOKEN:-$CORE_JS_ARTIFACT_TOKEN}"
           API_URL="https://api.github.com/repos/${JS_ARTIFACT_REPO}"
 
           if curl -fsS \
-            -H "Authorization: Bearer ${ARTIFACT_TOKEN}" \
+            -H "Authorization: Bearer ${CORE_ARTIFACT_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
             "${API_URL}/releases/tags/${TAG_NAME}" >/dev/null 2>&1; then
             echo "Release for ${TAG_NAME} already exists in ${JS_ARTIFACT_REPO}"
@@ -160,7 +154,7 @@ jobs:
           fi
 
           curl -fsS -X POST \
-            -H "Authorization: Bearer ${ARTIFACT_TOKEN}" \
+            -H "Authorization: Bearer ${CORE_ARTIFACT_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
             "${API_URL}/releases" \
             -d "{\"tag_name\":\"${TAG_NAME}\",\"target_commitish\":\"${JS_ARTIFACT_BRANCH}\",\"name\":\"${TAG_NAME}\",\"generate_release_notes\":true}"
