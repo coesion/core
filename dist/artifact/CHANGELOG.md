@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.3.1 - 2026-02-14
+
+Quick guide:
+- What changed: see Added/Changed/Fixed below.
+- Impact: review Breaking and Upgrade Notes before deployment.
+
+### Added
+- None.
+
+### Changed
+- Always mirror core release tag to core-php
+- Refresh local artifact snapshots for v1.3.0
+
+### Fixed
+- None.
+
+### Breaking
+- None.
+
+### Upgrade Notes
+- No upgrade action required.
+
 ## v1.3.0 - 2026-02-14
 
 Quick guide:
