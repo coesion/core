@@ -144,7 +144,7 @@ if (count($ordered) !== count($files)) {
   exit(1);
 }
 
-$chunks = [];
+$chunksByNamespace = [];
 foreach ($ordered as $file) {
   $min = php_strip_whitespace($file);
   if ($min === '') {
@@ -189,11 +189,10 @@ foreach ($ordered as $file) {
       }
     }
 
-    if ($namespace === '') {
-      $chunks[] = 'namespace {' . $min . '}';
-    } else {
-      $chunks[] = 'namespace ' . $namespace . ' {' . $min . '}';
+    if (!isset($chunksByNamespace[$namespace])) {
+      $chunksByNamespace[$namespace] = [];
     }
+    $chunksByNamespace[$namespace][] = $min;
   }
 }
 
@@ -221,8 +220,27 @@ $output .= " * @license MIT (LICENSE.md)\n";
 $output .= " * @copyright Coesion - 2026\n";
 $output .= " */\n";
 $output .= '// Coesion Core artifact metadata: ' . json_encode($meta, JSON_UNESCAPED_SLASHES) . "\n";
-$output .= "namespace { if (defined('COESION_CORE_LOADED')) { return; } define('COESION_CORE_LOADED', true); }\n";
-$output .= implode("\n", $chunks) . "\n";
+
+$guard = "if (defined('COESION_CORE_LOADED')) { return; } define('COESION_CORE_LOADED', true);";
+if (!isset($chunksByNamespace[''])) {
+  $chunksByNamespace[''] = [];
+}
+array_unshift($chunksByNamespace[''], $guard);
+
+$mergedBlocks = [];
+$mergedBlocks[] = 'namespace {' . implode('', $chunksByNamespace['']) . '}';
+
+$namedNamespaces = array_keys($chunksByNamespace);
+$namedNamespaces = array_values(array_filter($namedNamespaces, static function($ns){
+  return $ns !== '';
+}));
+sort($namedNamespaces, SORT_STRING);
+
+foreach ($namedNamespaces as $namespace) {
+  $mergedBlocks[] = 'namespace ' . $namespace . ' {' . implode('', $chunksByNamespace[$namespace]) . '}';
+}
+
+$output .= implode("\n", $mergedBlocks) . "\n";
 
 if (file_put_contents($corePath, $output) === false) {
   fwrite(STDERR, "Failed to write file: $corePath\n");

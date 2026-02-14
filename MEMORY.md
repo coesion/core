@@ -26,3 +26,4 @@ Current verified Mezzio feature doc links for audits: /v3/features/router/intro/
 Introspect::classes reports only declared (already loaded) classes, not all class files on disk; capability/audit tooling should account for this when reporting class counts.
 Agent audit CLI added at tools/agent-audit.php with deterministic JSON/Markdown output and fail gates via --fail-on-missing=<dot.path>.
 JS build output (`js/dist/core.js`) is a wrapper that requires `../src/index`; a clean artifact repo must rewrite entrypoints and include runtime `src/` or the package breaks at runtime.
+Loading dist/core.php in this environment can fail at require-time with `[core.email] : native driver not found`; include-guard checks may need environment-compatible email driver settings.
