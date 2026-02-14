@@ -1,0 +1,19 @@
+{
+  "name": "@coesion/core-js",
+  "version": "0.1.0",
+  "private": true,
+  "description": "JavaScript port of Core framework",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./bundle": "./dist/core.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests",
+    "build": "node ./scripts/build-bundle.js"
+  }
+}
