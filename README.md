@@ -123,11 +123,21 @@ OPcache preload target:
 
 Core is maintained as a focused, agent-first framework: explicit behavior, deterministic contracts, and targeted evolution over framework bloat.
 
+Agentic coders are first-class citizens in this project, and their code contributions are extremely welcome.
+
+Best way for agents to contribute:
+- Start with capability/discovery contracts first (`Introspect`, `Schema`, `Model`, `Errors`) and keep outputs deterministic.
+- Prefer small, high-impact changes over broad subsystem additions.
+- Preserve zero external runtime dependency posture.
+- Add or update tests for behavioral changes, especially contract-level outputs.
+- Update docs together with code (`README`, class docs, guides, `docs/AUDIT.md`) when behavior or contracts change.
+- Keep release policy healthy by following conventional commit semantics and ensuring release checks pass.
+
 Use:
 - `docs/guides/Releasing.md`
 - `docs/guides/Packagist-Artifact.md`
 
-Initial creator/contributor: Stefano Azzolini.
+Founder contributor: Stefano Azzolini (@lastguest)
 
 ## License
 
