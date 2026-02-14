@@ -1,0 +1,27 @@
+{
+    "name": "coesion/core",
+    "type": "library",
+    "description": "Coesion Core runtime artifact package.",
+    "keywords": [
+        "framework",
+        "core",
+        "sdk",
+        "artifact"
+    ],
+    "homepage": "https://coesion.github.io/core/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stefano Azzolini",
+            "email": "lastguest@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.5"
+    },
+    "autoload": {
+        "files": [
+            "core.php"
+        ]
+    }
+}

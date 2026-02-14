@@ -1,0 +1,26 @@
+{
+    "name": "@coesion/core-js",
+    "version": "0.1.0",
+    "description": "Coesion Core JavaScript runtime artifact package.",
+    "license": "MIT",
+    "homepage": "https://github.com/coesion/core-js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/coesion/core-js.git"
+    },
+    "type": "commonjs",
+    "main": "core.js",
+    "exports": {
+        ".": "./core.js",
+        "./bundle": "./core.js"
+    },
+    "engines": {
+        "node": ">=22"
+    },
+    "files": [
+        "core.js",
+        "README.md",
+        "LICENSE.md",
+        "CHANGELOG.md"
+    ]
+}
