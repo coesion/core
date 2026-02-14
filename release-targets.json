@@ -13,7 +13,7 @@
     "js": {
       "repo": "coesion/core-js",
       "branch": "main",
-      "package_name": "@coesion/core-js",
+      "package_name": "@coesionlabs/core",
       "homepage": "https://github.com/coesion/core-js",
       "registry": "https://registry.npmjs.org"
     }
