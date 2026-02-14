@@ -80,7 +80,8 @@ try {
   releaseRunPassthru('php tools/build-artifact-repo.php');
   releaseRunPassthru('composer test-all');
 
-  releaseRunPassthru('git add VERSION classes/Core.php CHANGELOG.md dist/core.php');
+  releaseRunPassthru('git add -A');
+  releaseRunPassthru('git diff --cached --quiet && (echo "No release changes staged" >&2; exit 1) || true');
   releaseRunPassthru('git commit -m "Release ' . $tag . '"');
   releaseRunPassthru('git tag -a ' . escapeshellarg($tag) . ' -m ' . escapeshellarg('Release ' . $tag));
 
