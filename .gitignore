@@ -2,9 +2,6 @@
 .DS_Store
 composer.lock
 vendor
-dist
 .phpunit.cache
-MEMORY.md
-AGENTS.md
 build/phpstan
 build/docs-site
