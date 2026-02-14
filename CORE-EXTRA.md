@@ -26,18 +26,18 @@ Counterexamples:
 Migration notes:
 When adding convenience APIs, ensure they remain opt-in and explicit.
 
-### [C-PHIL-03] Minimize external dependencies
-Source paragraph: `CORE.md` `[C-PHIL-03]`
+### [C-PHIL-02] Zero external runtime dependencies
+Source paragraph: `CORE.md` `[C-PHIL-02]`
 
 Why this exists:
-Dependency minimization reduces upgrade risk, installation friction, and transitive security surface.
+Zero runtime dependencies preserve portability, predictability, and low operational overhead.
 
 Examples:
 - Keep benchmark-specific packages isolated under `benchmarks/`.
 - Reuse existing classes instead of adding package wrappers.
 
 Counterexamples:
-- Adding a new package for a small helper that can be implemented in-house.
+- Adding a runtime package requirement for behavior that can be implemented in Core.
 
 Migration notes:
 When dependency pressure appears, prototype with existing primitives first and document the gap.

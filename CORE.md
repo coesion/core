@@ -15,8 +15,8 @@ Example: route behavior is configured through `Options` and explicit `Route::com
 
 ## Base Philosophy
 - [C-PHIL-01] Core MUST prefer explicit behavior over magic, including explicit boot, explicit config, and explicit dispatch.
-- [C-PHIL-02] Core MUST favor composable utilities over tightly coupled abstractions.
-- [C-PHIL-03] Core MUST minimize external dependencies in the main repository.
+- [C-PHIL-02] Core MUST keep zero external runtime dependencies in the main repository.
+- [C-PHIL-03] Core MUST favor composable utilities over tightly coupled abstractions.
 - [C-PHIL-04] Core SHOULD choose performance-aware defaults while keeping behavior understandable.
 - [C-PHIL-05] Core MUST protect backward compatibility unless a change is clearly documented and justified.
 - [C-PHIL-06] Core SHOULD optimize for predictable runtime behavior across environments.
