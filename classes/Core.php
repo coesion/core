@@ -7,7 +7,7 @@
  */
 
 class Core {
-  public const VERSION = '1.3.2';
+  public const VERSION = '1.3.3';
 
   public static function version(){
     return self::VERSION;

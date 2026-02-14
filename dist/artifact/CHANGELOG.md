@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.3.3 - 2026-02-14
+
+Quick guide:
+- What changed: see Added/Changed/Fixed below.
+- Impact: review Breaking and Upgrade Notes before deployment.
+
+### Added
+- None.
+
+### Changed
+- Automate artifact repo releases and token preflight checks
+- Stage all generated files in release-cut
+- Refresh PHP artifact snapshot after v1.3.2 release
+
+### Fixed
+- None.
+
+### Breaking
+- None.
+
+### Upgrade Notes
+- No upgrade action required.
+
 ## v1.3.2 - 2026-02-14
 
 Quick guide:
