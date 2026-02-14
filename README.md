@@ -1,168 +1,134 @@
 <img src="https://github.com/coesion/core/blob/master/docs/assets/core-logo.png?raw=true" height="130">
 
-----
+---
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/coesion/core/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/coesion/core/?branch=master)
-[![Build Status](https://travis-ci.org/coesion/core.svg)](https://travis-ci.org/coesion/core)
-[![Docs Pages](https://github.com/coesion/core/actions/workflows/docs-pages.yml/badge.svg)](https://github.com/coesion/core/actions/workflows/docs-pages.yml)
-[![Total Downloads](https://poser.pugx.org/coesion/core/downloads.svg)](https://packagist.org/packages/coesion/core)
-[![Latest Stable Version](https://poser.pugx.org/coesion/core/v/stable.svg)](https://packagist.org/packages/coesion/core)
-[![Latest Unstable Version](https://poser.pugx.org/coesion/core/v/unstable.svg)](https://packagist.org/packages/coesion/core)
-[![License](https://poser.pugx.org/coesion/core/license.svg)](https://packagist.org/packages/coesion/core)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/coesion/core?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcoesion%2Fcore.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcoesion%2Fcore?ref=badge_shield)
+# Core
 
+**Agent-first PHP framework for deterministic coding loops.**
 
-> Coesion/Core is a platform, a collection of components for rapid application development. It doesn't make decisions for you; it gives you tools to build your own solutions.
+One-shot `core.php` runtime, zero external runtime dependencies, and high portability by design.
 
+## Why Core for Agents
 
-## Installation
+- Deterministic runtime contracts:
+  - stable discovery through `Introspect::*`, `Schema::*`, `Model::schema()`, `Model::fields()`
+- Machine-readable diagnostics:
+  - structured errors via `Errors::JSON_VERBOSE`
+- Deterministic environment audit:
+  - `tools/agent-audit.php` with JSON/Markdown output and CI fail gates
+- Explicit execution model:
+  - configurable route loop mode and explicit `Route::compile()` / `Route::dispatch()`
+- Portable by design:
+  - single-file `core.php` + zero runtime package deps = predictable deploys anywhere
 
-Install via [composer](https://getcomposer.org/download/):
+## 60-Second Agent Quick Start
 
-```bash
-$ composer require coesion/core
-```
-
-## Documentation
-
-See the docs in `docs/guides/README.md`.
-
-Render static docs for GitHub Pages:
+### Option A: Composer artifact install
 
 ```bash
-composer docs-build-pages
+composer require coesion/core
 ```
 
-This generates the publishable site in `build/docs-site`.
-Release policy and versioning guide:
-- `docs/guides/Releasing.md`
+```php
+<?php
 
-## Repo Roles
+require __DIR__ . '/vendor/autoload.php';
 
-- `core-dev` (this repository): source code, tests, and artifact compiler.
-- `coesion/core` artifact repository: generated runtime package with `core.php` only.
+Errors::capture(E_ALL);
+Errors::mode(Errors::JSON_VERBOSE);
 
-Packagist artifact publishing guide:
-- `docs/guides/Packagist-Artifact.md`
+Route::get('/health', function () {
+  return ['ok' => true, 'version' => Core::version()];
+});
 
-## Build And Preload
+Route::dispatch('/health', 'get');
+```
 
-Build a single distributable framework file:
+### Option B: One-shot runtime include (`core.php`)
+
+```php
+<?php
+
+require __DIR__ . '/dist/core.php'; // or require __DIR__ . '/core.php' in artifact repo
+
+Errors::capture(E_ALL);
+Errors::mode(Errors::JSON_VERBOSE);
+```
+
+### First agent checks
+
+```bash
+php tools/agent-audit.php --format=json --pretty
+php tools/agent-audit.php --fail-on-missing=capabilities.core.zero_runtime_dependencies
+```
+
+## Agent Contracts
+
+| Concern | Contract |
+|---|---|
+| Capability discovery | `Introspect::capabilities()` |
+| Class/method discovery | `Introspect::classes()`, `Introspect::methods()` |
+| Route discovery | `Introspect::routes()` |
+| Data shape discovery | `Schema::tables()`, `Schema::describe()`, `Model::schema()`, `Model::fields()` |
+| Structured errors | `Errors::mode(Errors::JSON_VERBOSE)` |
+| CI/runtime audit | `tools/agent-audit.php` |
+
+## Strength Snapshot
+
+- Zero external runtime package dependencies (`composer.json` runtime requires only PHP).
+- One-shot single-file load path via generated `dist/core.php`.
+- Small, explicit API surface with static classes and predictable behavior.
+- Built-in security and platform primitives:
+  - `Auth`, `Gate`, `CSRF`, `RateLimiter`, `SecurityHeaders`, `Crypt`, `Token`
+- Built-in agent-relevant utilities:
+  - routing, SQL/Model, scheduling, i18n, queue/jobs, caching, negotiation, CSV/ZIP
+
+For the evidence-based capability scorecard and roadmap, see `docs/AUDIT.md`.
+
+## Build and Deploy
+
+Build one-shot runtime artifact:
 
 ```bash
 php tools/build-core.php
 ```
 
-Build full artifact-repository payload (for `coesion/core`):
+Build full artifact-repository payload:
 
 ```bash
 composer build-artifact-repo
 ```
 
-Use `dist/core.php` as your OPcache preload target in PHP-FPM/worker setups:
-
-- `opcache.enable=1`
-- `opcache.preload=/path/to/dist/core.php`
-- `opcache.preload_user=www-data` (or your PHP-FPM user)
-
-## Routing
-
-The router supports two execution scenarios controlled by options:
-
-- `core.route.loop_mode` (default `false`): when `true`, routes are treated as immutable and `Route::compile()` should be called once after registration.
-- `core.route.loop_dispatcher` (default `fast`): controls the loop-mode dispatcher (`fast` uses compiled static map + regex buckets; `tree` uses the legacy compiled trie).
-- `core.route.debug` (default `false`): enables route stats collection and debug output via `Route::stats()` / `Route::debugTree()`.
-- `core.route.append_echoed_text` (default `true`): when `false` and no hooks/events are registered, a fast-path skips middleware/events overhead.
-
-Example (loop mode):
-
-```php
-Options::set('core.route.loop_mode', true);
-
-Route::get('/hello', function () {
-  return 'world';
-});
-
-Route::compile();
-
-Route::dispatch('/hello', 'get');
-```
-
-## API Module
-
-The API module exposes resources via RESTful endpoints.
-
-Docs:
-- `docs/classes/API.md`
-- `docs/classes/REST.md`
-- `docs/classes/Resource.md`
-- `docs/classes/Collection.md`
-
-## Auth/Security Add-on
-
-Core ships a lightweight auth/security add-on with session and bearer token support, CSRF protection, secure headers, and rate limiting.
-
-Docs:
-- `docs/classes/Auth.md`
-- `docs/classes/Gate.md`
-- `docs/classes/CSRF.md`
-- `docs/classes/SecurityHeaders.md`
-- `docs/classes/RateLimiter.md`
-
-Quick start:
-```php
-Auth::resolver(function ($identity, $source) {
-  return User::find($identity);
-});
-Auth::boot();
-```
-
-## Benchmarks
-
-Benchmark tooling lives in `benchmarks/` with its own `composer.json` and `vendor/`. This keeps the main repository dependency-free.
+Run quality gates:
 
 ```bash
-cd benchmarks
-composer install
-php bin/benchmark_router.php
+composer test
+composer release:check
 ```
 
-## Route Debugging
+OPcache preload target:
 
-Use the helper script to inspect the compiled tree and stats.
+- `dist/core.php`
 
-```bash
-php tools/route_debug.php tree
-php tools/route_debug.php stats
-```
+## Docs
 
+- Guides: `docs/guides/README.md`
+- Class reference: `docs/classes/`
+- Agentic audit and roadmap: `docs/AUDIT.md`
+- Agent audit CLI guide: `docs/guides/Agentic-Audit.md`
+- Releasing: `docs/guides/Releasing.md`
+- Artifact publishing: `docs/guides/Packagist-Artifact.md`
 
 ## Contributing
 
-How to get involved:
+Core is maintained as a focused, agent-first framework: explicit behavior, deterministic contracts, and targeted evolution over framework bloat.
 
-1. [Star](https://github.com/coesion/core/stargazers) the project!
-2. Answer questions that come through [GitHub issues](https://github.com/coesion/core/issues?state=open)
-3. [Report a bug](https://github.com/coesion/core/issues/new) that you find
+Use:
+- `docs/guides/Releasing.md`
+- `docs/guides/Packagist-Artifact.md`
 
-Core follows the [GitFlow branching model](http://nvie.com/posts/a-successful-git-branching-model). The ```master``` branch always reflects a production-ready state while the latest development is taking place in the ```develop``` branch.
+Initial creator/contributor: Stefano Azzolini.
 
-Each time you want to work on a fix or a new feature, create a new branch based on the ```develop``` branch: ```git checkout -b BRANCH_NAME develop```. Only pull requests to the ```develop``` branch will be merged.
+## License
 
-Pull requests are **highly appreciated**.
-
-Solve a problem. Features are great, but even better is cleaning-up and fixing issues in the code that you discover.
-
-## Versioning
-
-Core is maintained by using the [Semantic Versioning Specification (SemVer)](http://semver.org).
-Canonical version source is the root `VERSION` file (`X.Y.Z`); git tags use `vX.Y.Z`.
-
-
-## Copyright and license
-
-Copyright 2026 Coesion under the [MIT license](LICENSE.md).
-
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcoesion%2Fcore.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcoesion%2Fcore?ref=badge_large)
+MIT. See `LICENSE.md`.
