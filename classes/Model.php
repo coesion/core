@@ -80,4 +80,22 @@ abstract class Model implements JsonSerializable {
       return $this->export();
     }
 
+    /**
+     * Return schema column descriptors for this model's table.
+     *
+     * @return array Array of column descriptors with name, type, nullable, default, key
+     */
+    public static function schema() {
+      return Schema::describe(static::persistenceOptions('table'));
+    }
+
+    /**
+     * Return a flat array of column names for this model's table.
+     *
+     * @return array Array of column name strings
+     */
+    public static function fields() {
+      return Schema::columns(static::persistenceOptions('table'));
+    }
+
 }

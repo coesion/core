@@ -13,10 +13,11 @@
 class Errors {
     use Module, Events;
 
-    const SIMPLE = 0;
-    const HTML   = 1;
-    const SILENT = 2;
-    const JSON   = 3;
+    const SIMPLE       = 0;
+    const HTML         = 1;
+    const SILENT       = 2;
+    const JSON         = 3;
+    const JSON_VERBOSE = 4;
 
     static $mode = self::SILENT;
 
@@ -72,6 +73,9 @@ class Errors {
           case self::JSON :
               echo json_encode(['error' => $e->getMessage()]);
               break;
+          case self::JSON_VERBOSE :
+              echo json_encode(static::structuredException($e));
+              break;
           case self::SILENT :
               // Don't echo anything.
               break;
@@ -81,6 +85,35 @@ class Errors {
               break;
       }
       return true;
+    }
+
+    /**
+     * Build a structured error payload from an exception.
+     *
+     * @param \Throwable $e
+     * @return array
+     */
+    public static function structuredException($e) {
+        $data = [
+            'error'   => $e->getMessage(),
+            'type'    => get_class($e),
+            'code'    => $e->getCode(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+            'trace'   => [],
+        ];
+        foreach ($e->getTrace() as $frame) {
+            $entry = [];
+            if (isset($frame['file']))     $entry['file']     = $frame['file'];
+            if (isset($frame['line']))     $entry['line']     = $frame['line'];
+            if (isset($frame['function'])) $entry['function'] = $frame['function'];
+            if (isset($frame['class']))    $entry['class']    = $frame['class'];
+            $data['trace'][] = $entry;
+        }
+        if ($e->getPrevious()) {
+            $data['previous'] = static::structuredException($e->getPrevious());
+        }
+        return $data;
     }
 
     /**
