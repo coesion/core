@@ -36,6 +36,9 @@ jobs:
       - name: Build artifact payload
         run: composer build-artifact-repo
 
+      - name: Run tests on dist/core.php
+        run: vendor/bin/phpunit --configuration=phpunit.dist.xml
+
       - name: Validate artifact core.php and contract
         run: |
           php -l dist/artifact/core.php

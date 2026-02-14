@@ -78,7 +78,7 @@ try {
 
   releaseRunPassthru('php tools/build-core.php');
   releaseRunPassthru('php tools/build-artifact-repo.php');
-  releaseRunPassthru('composer test');
+  releaseRunPassthru('composer test-all');
 
   releaseRunPassthru('git add VERSION classes/Core.php CHANGELOG.md dist/core.php');
   releaseRunPassthru('git commit -m "Release ' . $tag . '"');

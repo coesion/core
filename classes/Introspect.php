@@ -174,7 +174,10 @@ class Introspect {
     protected static function isCoreFile($file) {
         $file = strtr($file, '\\', '/');
         $classesDir = strtr(dirname(__DIR__), '\\', '/') . '/classes/';
-        return strpos($file, $classesDir) === 0;
+        if (strpos($file, $classesDir) === 0) return true;
+
+        $distCore = strtr(dirname(__DIR__), '\\', '/') . '/dist/core.php';
+        return $file === $distCore;
     }
 
     /**

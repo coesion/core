@@ -26,6 +26,14 @@
             "@test-static",
             "vendor/bin/phpunit --colors=always --configuration=phpunit.xml"
         ],
+        "test-dist" : [
+            "@build-core",
+            "vendor/bin/phpunit --colors=always --configuration=phpunit.dist.xml"
+        ],
+        "test-all" : [
+            "@test",
+            "@test-dist"
+        ],
         "test-silent" : "bash tools/test-silent.sh",
         "build-core" : "php tools/build-core.php",
         "build-artifact-repo" : [

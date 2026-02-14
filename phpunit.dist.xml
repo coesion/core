@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/bootstrap-dist.php" colors="true" cacheDirectory=".phpunit.cache">
+  <php>
+    <ini name="error_reporting" value="E_ALL &amp; ~E_DEPRECATED"/>
+  </php>
+  <testsuites>
+    <testsuite name="Core Dist Test Suite">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <file>dist/core.php</file>
+    </include>
+  </source>
+</phpunit>

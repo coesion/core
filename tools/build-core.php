@@ -173,12 +173,6 @@ foreach ($ordered as $file) {
     }
   }
 
-  $min = preg_replace('/\b(?:include|include_once|require|require_once)\s+[^;]+;/', '', $min);
-  if ($min === null) {
-    fwrite(STDERR, "Regex error while stripping include/require in: $file\n");
-    exit(1);
-  }
-
   $min = trim($min);
   if ($min !== '') {
     if (basename($file) === 'Core.php') {

@@ -55,4 +55,6 @@ class Email {
 
 }
 
-Email::using('native');
+if (class_exists('Email\\Native', true)) {
+  Email::using('native');
+}
