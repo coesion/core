@@ -6,3 +6,5 @@ vendor
 build/phpstan
 build/docs-site
 .todos/
+sidetrack/
+.sidecar/
