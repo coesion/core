@@ -14,6 +14,7 @@ class AgentAuditTool {
      * @return int
      */
     public static function run(array $argv) {
+        static::configureRuntime();
         $opts = static::parseOptions($argv);
         if (!empty($opts['help'])) {
             fwrite(STDOUT, static::usage());
@@ -43,6 +44,17 @@ class AgentAuditTool {
         }
         fwrite(STDOUT, $json . "\n");
         return 0;
+    }
+
+    /**
+     * Keep structured output deterministic by silencing deprecation display noise.
+     *
+     * @return void
+     */
+    protected static function configureRuntime() {
+        $level = error_reporting();
+        error_reporting($level & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+        ini_set('display_errors', '0');
     }
 
     /**
