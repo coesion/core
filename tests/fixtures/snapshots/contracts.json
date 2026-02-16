@@ -1,0 +1,11 @@
+{
+    "schema_version": 1,
+    "type": "contracts",
+    "items": {
+        "agent_audit_schema_version": 1,
+        "error_envelope_version": 1,
+        "snapshot_schema_version": 1,
+        "sql_helper_version": 1,
+        "psr_bridge_version": 1
+    }
+}
