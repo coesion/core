@@ -5,3 +5,4 @@ vendor
 .phpunit.cache
 build/phpstan
 build/docs-site
+.todos/

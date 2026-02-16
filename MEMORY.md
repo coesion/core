@@ -20,12 +20,5 @@ Artifact publishing now relies on generated `dist/artifact` payload with `compos
 Unexpected drift discovered: classes/Core.php had VERSION=1.0.0 while package metadata was 1.1.0; runtime version can drift unless centralized.
 Canonical release version policy now uses root VERSION file (plain X.Y.Z) and git tags must be vX.Y.Z.
 Static docs builder (`tools/build-docs-site.php`) did not inject highlight.js CSS/JS, while runtime docs server (`tools/serve-docs.php`) already did; this mismatch caused unhighlighted code snippets on GitHub Pages output.
-GitHub Actions workflow expressions: step-level `if:` cannot reference `secrets.*` directly; map secrets into job/workflow `env` first and gate steps with `env.*` conditions.
-docs/AUDIT.md became stale after capability additions: Core now includes i18n, Schedule, Crypt, WebSocket, and Cache\\Redis; those categories should not be marked Missing in future audits.
-Current verified Mezzio feature doc links for audits: /v3/features/router/intro/, /v3/features/middleware-types/, /v3/features/container/intro/.
-Introspect::classes reports only declared (already loaded) classes, not all class files on disk; capability/audit tooling should account for this when reporting class counts.
-Agent audit CLI added at tools/agent-audit.php with deterministic JSON/Markdown output and fail gates via --fail-on-missing=<dot.path>.
-JS build output (`js/dist/core.js`) is a wrapper that requires `../src/index`; a clean artifact repo must rewrite entrypoints and include runtime `src/` or the package breaks at runtime.
-Loading dist/core.php in this environment can fail at require-time with `[core.email] : native driver not found`; include-guard checks may need environment-compatible email driver settings.
-Dist-mode parity check uncovered a build bug: tools/build-core.php stripped include/require statements globally, which broke in-method includes (e.g., i18n::load for PHP translation files).
-Dist PHPUnit bootstrap in monorepo must temporarily unregister Composer classmap autoloaders before requiring dist/core.php to avoid class redeclaration from classes/ during core.php load.
+td CLI can return 'enable WAL mode: database is locked (261)' when multiple td commands run concurrently; run td operations sequentially in this repo.
+release-cut currently fails at git add dist/core.php unless forced, because dist/ is gitignored in this workspace; use git add -f dist/core.php when finalizing a release commit.
