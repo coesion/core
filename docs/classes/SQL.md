@@ -15,6 +15,7 @@ Public API (static):
 - `SQL::close($name = null)`
 - `SQL::hasConnection($name = 'default')`
 - `SQL::using($name)`
+- `SQL::selectFrom($table, $columns = ['*'])`
 
 `SQLConnection` methods:
 - `prepare($query, $pdo_params = [])`
@@ -31,11 +32,26 @@ Public API (static):
 - `updateWhere($table, $data, $where, $pk = 'id')`
 - `update($table, $data, $pk = 'id', $extra_where = '')`
 - `insertOrUpdate($table, $data = [], $pk = 'id', $extra_where = '')`
+- `selectFrom($table, $columns = ['*'])`
+- `whereEq($filters = [])`
+- `orderBy($order = [])`
+- `limit($limit, $offset = 0)`
+- `toSQL()`
+- `get()`
 
 Example:
 ```php
 SQL::connect('mysql:host=localhost;dbname=test', 'user', 'pass');
 SQL::exec('CREATE TABLE items (id INT)');
+```
+
+Fluent helper example:
+```php
+$rows = SQL::selectFrom('users', ['id', 'email'])
+  ->whereEq(['state' => 'active'])
+  ->orderBy(['id' => 'desc'])
+  ->limit(20)
+  ->get();
 ```
 
 The SQL module expose a shorthand for common database methods extending the PDO layer.

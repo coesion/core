@@ -11,6 +11,13 @@ Start here:
 - [REST](../classes/REST.md)
 - [REST API With Auth](./REST-Auth.md)
 - [Route Cache Extension](../classes/Route-Cache-Extension.md)
+- [Agents Quickstart](./Agents-Quickstart.md)
+- [Agent Use Cases](./Agent-Use-Cases.md)
+- [Why Core for Agents](./Why-Core-for-Agents.md)
+- [Agent Snapshot](./Agent-Snapshot.md)
+- [Interop](./Interop.md)
+- [Migrations](./Migrations.md)
+- [Agent KPIs](./Agent-KPIs.md)
 - [Router Benchmarks](./Router-Benchmarks.md)
 
 Class reference:
@@ -40,6 +47,7 @@ Class reference:
 - [Map](../classes/Map.md)
 - [Message](../classes/Message.md)
 - [MessageReadOnly](../classes/MessageReadOnly.md)
+- [Migration](../classes/Migration.md)
 - [Model](../classes/Model.md)
 - [Module](../classes/Module.md)
 - [Negotiation](../classes/Negotiation.md)

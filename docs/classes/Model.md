@@ -18,6 +18,9 @@ Public API:
 - `Model::save()` persists the instance.
 - `Model::export($transformer = null, $disabled_relations = [])` exports to array.
 - `Model::primaryKey()` returns primary key value.
+- `Model::schema()` returns schema descriptors for the model table.
+- `Model::fields()` returns column names for the model table.
+- `Model::snapshotFields($models = [])` returns deterministic model field snapshots.
 
 Example:
 ```php

@@ -24,6 +24,13 @@ php tools/agent-audit.php --format=json --fail-on-missing=capabilities.core.zero
 
 This exits with code `1` when the requested contract path is missing or false.
 
+Pair it with snapshots:
+
+```bash
+php tools/agent-snapshot.php --type=contracts --format=json --pretty
+php tools/agent-snapshot.php --type=contracts --fail-on-diff=tests/fixtures/snapshots/contracts.json
+```
+
 ## Output Contract
 
 Top-level fields:

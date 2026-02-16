@@ -14,6 +14,7 @@ Public API:
 - `Schema::columns($modelOrTable)` — returns flat array of column name strings.
 - `Schema::hasTable($table)` — checks if a table exists.
 - `Schema::flush()` — clears the internal schema cache.
+- `Schema::snapshotTables()` — deterministic table-to-columns snapshot map.
 
 Example:
 ```php

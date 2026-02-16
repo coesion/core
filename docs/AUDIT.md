@@ -142,13 +142,24 @@ Result: Core is currently rank #1 for this agentic-first model, but with clear p
 - No native migration workflow and no versioned schema evolution primitives.
 
 3. Agent automation gap:
-- No dedicated machine-readable audit/diagnostic CLI contract.
+- Machine-readable audit contract exists (`tools/agent-audit.php`), but broader snapshot and case-study proof contracts are still expanding.
 
 4. Interop gap:
 - No first-class PSR-7/11/15 bridge layer, limiting plug-and-play with broader PHP middleware and tooling.
 
 5. Test workflow gap:
 - No built-in HTTP test harness and fixture utilities oriented to deterministic agent loops.
+
+---
+
+## 7.1) Proof Table (Reproducible Claims)
+
+| Claim | Command | Expected Artifact | Last Verified |
+|---|---|---|---|
+| Audit contract is machine-readable | `php tools/agent-audit.php --format=json --pretty` | JSON payload with `schema_version/framework/capabilities/counts` | 2026-02-16 |
+| Contract snapshot is deterministic | `php tools/agent-snapshot.php --type=contracts --fail-on-diff=tests/fixtures/snapshots/contracts.json` | Exit code `0` if unchanged | 2026-02-16 |
+| Case-study output is machine-readable | `php tools/agent-case-study.php --preset=baseline --out=docs/guides/agent-case-study.baseline.json` | `docs/guides/agent-case-study.baseline.json` | 2026-02-16 |
+| Proof freshness is enforceable | `composer proof-freshness-check` | JSON report with artifact age in days | 2026-02-16 |
 
 ---
 

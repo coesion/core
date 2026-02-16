@@ -8,6 +8,15 @@
 
 One-shot `core.php` runtime, zero external runtime dependencies, and high portability by design.
 
+Proof-first CTA (run now):
+
+```bash
+php tools/agent-audit.php --format=json --pretty
+php tools/agent-snapshot.php --type=contracts --format=json --pretty
+composer agent-snapshot-check
+composer proof-freshness-check
+```
+
 ## Why Core for Agents
 
 - Deterministic runtime contracts:
@@ -72,6 +81,8 @@ php tools/agent-audit.php --fail-on-missing=capabilities.core.zero_runtime_depen
 | Data shape discovery | `Schema::tables()`, `Schema::describe()`, `Model::schema()`, `Model::fields()` |
 | Structured errors | `Errors::mode(Errors::JSON_VERBOSE)` |
 | CI/runtime audit | `tools/agent-audit.php` |
+| Contract versions | `Introspect::contracts()` |
+| Snapshot exports | `tools/agent-snapshot.php` |
 
 ## Strength Snapshot
 
@@ -116,6 +127,13 @@ OPcache preload target:
 - Class reference: `docs/classes/`
 - Agentic audit and roadmap: `docs/AUDIT.md`
 - Agent audit CLI guide: `docs/guides/Agentic-Audit.md`
+- Agent snapshot CLI guide: `docs/guides/Agent-Snapshot.md`
+- Agents quickstart: `docs/guides/Agents-Quickstart.md`
+- Agent use-cases: `docs/guides/Agent-Use-Cases.md`
+- Why Core for Agents: `docs/guides/Why-Core-for-Agents.md`
+- Interop guide: `docs/guides/Interop.md`
+- Migrations guide: `docs/guides/Migrations.md`
+- Agent KPI cadence: `docs/guides/Agent-KPIs.md`
 - Releasing: `docs/guides/Releasing.md`
 - Artifact publishing: `docs/guides/Packagist-Artifact.md`
 

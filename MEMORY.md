@@ -24,3 +24,6 @@ td CLI can return 'enable WAL mode: database is locked (261)' when multiple td c
 release-cut currently fails at git add dist/core.php unless forced, because dist/ is gitignored in this workspace; use git add -f dist/core.php when finalizing a release commit.
 rg is available in this macOS workspace; prior WSL-specific note about rg being missing does not apply here.
 .sidecar/shells.json.lock can appear as a zero-byte local artifact during Codex sessions; exclude it from release commits unless it contains intentional data.
+`td usage --new-session` can fail with database lock when td commands are run concurrently in the same turn; run td commands sequentially.
+`docs/guides/Router-Benchmarks.md` last-updated timestamp can drift stale from generated benchmark artifacts; freshness checks should enforce a max age.
+`composer proof-refresh` should not call `tools/benchmark_report.php` directly without an input benchmark JSON; in clean environments it fails unless `benchmarks/results/bench_*.json` exists.

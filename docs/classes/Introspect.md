@@ -15,6 +15,8 @@ Public API:
 - `Introspect::extensions($class)` — only dynamically added methods.
 - `Introspect::routes()` — all registered routes with patterns, methods, tags.
 - `Introspect::capabilities()` — deterministic capability map including extension flags and Core runtime metadata.
+- `Introspect::contracts()` — stable contract version map for agent tooling.
+- `Introspect::snapshotRoutes()` — deterministic route snapshot list.
 
 Capabilities contract:
 - Existing extension keys remain available: `redis`, `sodium`, `curl`, `pdo`, `sqlite`, `mysql`, `mbstring`, `openssl`, `gd`, `zip`, `json`, `session`.
@@ -22,6 +24,11 @@ Capabilities contract:
 - `core.zero_runtime_dependencies` (bool)
 - `core.runtime_dependency_count` (int)
 - `core.introspection_available` (bool)
+- `core.contracts.agent_audit_schema_version` (int)
+- `core.contracts.error_envelope_version` (int)
+- `core.contracts.snapshot_schema_version` (int)
+- `core.contracts.sql_helper_version` (int)
+- `core.contracts.psr_bridge_version` (int)
 - `core.route.loop_mode` (bool)
 - `core.route.loop_dispatcher` (string)
 - `core.route.debug` (bool)
@@ -63,4 +70,10 @@ $caps = Introspect::capabilities();
 //     'schedule' => ['registered_jobs' => 0],
 //   ],
 // ]
+
+$contracts = Introspect::contracts();
+// ['agent_audit_schema_version' => 1, ...]
+
+$routesSnapshot = Introspect::snapshotRoutes();
+// deterministic route listing sorted for CI diff use
 ```
