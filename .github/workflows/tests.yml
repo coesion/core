@@ -40,7 +40,13 @@ jobs:
           fi
 
       - name: Run tests
-        run: vendor/bin/phpunit --configuration=phpunit.xml
+        run: vendor/bin/phpunit --configuration=phpunit.xml --fail-on-deprecation --display-deprecations
 
       - name: Run tests on dist/core.php
-        run: vendor/bin/phpunit --configuration=phpunit.dist.xml
+        run: vendor/bin/phpunit --configuration=phpunit.dist.xml --fail-on-deprecation --display-deprecations
+
+      - name: Agent snapshot drift gate
+        run: composer agent-snapshot-check
+
+      - name: Proof freshness gate
+        run: composer proof-freshness-check

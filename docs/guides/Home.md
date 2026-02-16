@@ -18,6 +18,9 @@ Start here:
 - [Interop](./Interop.md)
 - [Migrations](./Migrations.md)
 - [Agent KPIs](./Agent-KPIs.md)
+- [Agent KPI Log](./Agent-KPI-Log.md)
+- [Proof Weekly Template](./Proof-Weekly-Template.md)
+- [Distribution Playbook](./Distribution-Playbook.md)
 - [Router Benchmarks](./Router-Benchmarks.md)
 
 Class reference:

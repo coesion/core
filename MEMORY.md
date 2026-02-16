@@ -27,3 +27,6 @@ rg is available in this macOS workspace; prior WSL-specific note about rg being 
 `td usage --new-session` can fail with database lock when td commands are run concurrently in the same turn; run td commands sequentially.
 `docs/guides/Router-Benchmarks.md` last-updated timestamp can drift stale from generated benchmark artifacts; freshness checks should enforce a max age.
 `composer proof-refresh` should not call `tools/benchmark_report.php` directly without an input benchmark JSON; in clean environments it fails unless `benchmarks/results/bench_*.json` exists.
+`class_exists('Error')` is true on PHP 8+ because of the built-in `\Error` class, so that check does not validate the removed Core alias shim in `classes/Error.php`.
+Weekly acquisition metrics (repo visits/clones) are not derivable from local repo state; automation must accept explicit KPI inputs (or authenticated API data) and should default to safe placeholders.
+Issue template labels are stable and can drive weekly KPI counts via GitHub Search API: regression=`bug+agent`, workflow=`enhancement+agent`, proof=`documentation+agent`.

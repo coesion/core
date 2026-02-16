@@ -53,6 +53,8 @@
         "migrate:rollback" : "php tools/migrate.php --action=rollback",
         "proof-refresh" : "php tools/proof-refresh.php",
         "proof-freshness-check" : "php tools/proof-freshness-check.php --max-days=30",
+        "proof-weekly-report" : "php tools/proof-weekly-report.php",
+        "marketing-weekly-cycle" : "php tools/marketing-weekly-cycle.php",
         "route-benchmark" : "php tools/route_debug.php",
         "cli-demo" : "php tools/cli-demo.php demo",
         "release:plan" : "php tools/release-plan.php",

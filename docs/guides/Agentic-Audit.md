@@ -31,6 +31,17 @@ php tools/agent-snapshot.php --type=contracts --format=json --pretty
 php tools/agent-snapshot.php --type=contracts --fail-on-diff=tests/fixtures/snapshots/contracts.json
 ```
 
+## CI Status Gates
+
+CI enforces proof integrity through explicit gates in `.github/workflows/tests.yml`:
+
+- `composer agent-snapshot-check`
+- `composer proof-freshness-check`
+
+Expected behavior:
+- Pass when contracts match snapshots and proof artifacts are fresh.
+- Fail when snapshot drift is detected or freshness exceeds policy limits.
+
 ## Output Contract
 
 Top-level fields:

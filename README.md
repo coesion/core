@@ -134,6 +134,10 @@ OPcache preload target:
 - Interop guide: `docs/guides/Interop.md`
 - Migrations guide: `docs/guides/Migrations.md`
 - Agent KPI cadence: `docs/guides/Agent-KPIs.md`
+- Agent KPI log: `docs/guides/Agent-KPI-Log.md`
+- Proof weekly template: `docs/guides/Proof-Weekly-Template.md`
+- Distribution playbook: `docs/guides/Distribution-Playbook.md`
+- Weekly automation command: `composer marketing-weekly-cycle` (supports `--github-fetch=1` with `GITHUB_TOKEN`)
 - Releasing: `docs/guides/Releasing.md`
 - Artifact publishing: `docs/guides/Packagist-Artifact.md`
 

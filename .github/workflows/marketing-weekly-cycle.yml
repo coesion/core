@@ -1,0 +1,48 @@
+name: Marketing Weekly Cycle
+
+on:
+  schedule:
+    # Every Monday at 09:00 UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  weekly-cycle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+
+      - name: Run marketing weekly cycle
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          php tools/marketing-weekly-cycle.php \
+            --github-fetch=1 \
+            --github-owner="${REPO_OWNER}" \
+            --github-repo="${REPO_NAME}" \
+            --notes="Weekly KPI refresh from GitHub Actions"
+
+      - name: Commit and push generated marketing artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/guides/Agent-KPI-Log.md docs/guides/proof-weekly-*.md docs/guides/distribution-proof-drop-*.md
+          if git diff --cached --quiet; then
+            echo "No marketing artifact changes"
+            exit 0
+          fi
+          git commit -m "chore(marketing): run weekly cycle"
+          git push
