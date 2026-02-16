@@ -25,9 +25,17 @@ trait Events {
     public static function off($name, ?callable $listener = null){
         if($listener === null) {
             unset(static::$_listeners[$name]);
-        } else {
-            if ($idx = array_search($listener,static::$_listeners[$name],true))
-                unset(static::$_listeners[$name][$idx]);
+            return;
+        }
+
+        if (!isset(static::$_listeners[$name]) || !is_array(static::$_listeners[$name])) {
+            return;
+        }
+
+        $idx = array_search($listener, static::$_listeners[$name], true);
+        if ($idx !== false) {
+            unset(static::$_listeners[$name][$idx]);
+            static::$_listeners[$name] = array_values(static::$_listeners[$name]);
         }
     }
 
@@ -45,8 +53,8 @@ trait Events {
         };
     }
 
-    public static function triggerOnce($name){
-        $res = static::trigger($name);
+    public static function triggerOnce($name, ...$args){
+        $res = static::trigger($name, ...$args);
         unset(static::$_listeners[$name]);
         return $res;
     }

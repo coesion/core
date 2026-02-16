@@ -75,4 +75,44 @@ class EventTest extends TestCase {
 
 	}
 
+
+	public function testOffRemovesFirstListenerAndMissingEventIsNoOp() {
+		$value = 0;
+
+		$first = function () use (&$value) {
+			$value += 1;
+		};
+		$second = function () use (&$value) {
+			$value += 10;
+		};
+
+		Event::on('test.event.remove-first', $first);
+		Event::on('test.event.remove-first', $second);
+		Event::off('test.event.remove-first', $first);
+
+		Event::trigger('test.event.remove-first');
+		$this->assertEquals(10, $value);
+
+		Event::off('test.event.does-not-exist', function () {});
+		$this->assertTrue(true);
+
+		Event::off('test.event.remove-first');
+	}
+
+	public function testTriggerOnceForwardsArguments() {
+		$seen = [];
+
+		Event::on('test.event.once.args', function ($value) use (&$seen) {
+			$seen[] = $value;
+			return strtoupper($value);
+		});
+
+		$first = Event::triggerOnce('test.event.once.args', 'payload');
+		$second = Event::triggerOnce('test.event.once.args', 'ignored');
+
+		$this->assertEquals(['payload'], $seen);
+		$this->assertEquals(['PAYLOAD'], $first);
+		$this->assertNull($second);
+	}
+
 }

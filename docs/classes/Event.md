@@ -71,7 +71,7 @@ array(2) {
 
 `NULL` will be returned if no handlers are attached to the event.
 
-You can run a trigger only one time with the `triggerOnce` method.
+You can run a trigger only one time with the `triggerOnce` method, and it forwards any arguments you pass to listeners.
 
 ### Passing parameters to event handlers
 ---
@@ -86,6 +86,12 @@ Event::on('eat',function($who,$what,$where){
 Event::trigger('eat','Simon','Burrito','Kitchen');
 
 // Result : Simon ate a Burrito, in the Kitchen
+```
+
+The same argument forwarding also applies to `triggerOnce`:
+
+```php
+Event::triggerOnce('my.event', 'value');
 ```
 
 ### Using the Events trait

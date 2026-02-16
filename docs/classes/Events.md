@@ -11,4 +11,4 @@ Public API:
 - `::off($name, callable $listener = null)` removes listeners.
 - `::alias($source, $alias)` creates an alias key.
 - `::trigger($name, ...$args)` dispatches listeners.
-- `::triggerOnce($name)` dispatches once and clears.
+- `::triggerOnce($name, ...$args)` dispatches once with optional arguments and clears.
