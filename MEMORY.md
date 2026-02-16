@@ -22,3 +22,5 @@ Canonical release version policy now uses root VERSION file (plain X.Y.Z) and gi
 Static docs builder (`tools/build-docs-site.php`) did not inject highlight.js CSS/JS, while runtime docs server (`tools/serve-docs.php`) already did; this mismatch caused unhighlighted code snippets on GitHub Pages output.
 td CLI can return 'enable WAL mode: database is locked (261)' when multiple td commands run concurrently; run td operations sequentially in this repo.
 release-cut currently fails at git add dist/core.php unless forced, because dist/ is gitignored in this workspace; use git add -f dist/core.php when finalizing a release commit.
+rg is available in this macOS workspace; prior WSL-specific note about rg being missing does not apply here.
+.sidecar/shells.json.lock can appear as a zero-byte local artifact during Codex sessions; exclude it from release commits unless it contains intentional data.
