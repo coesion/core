@@ -124,6 +124,50 @@ class Introspect {
     }
 
     /**
+     * Return internal contract versions for agent tooling compatibility checks.
+     *
+     * @return array
+     */
+    public static function contracts() {
+        return [
+            'agent_audit_schema_version' => 1,
+            'error_envelope_version'     => 1,
+            'snapshot_schema_version'    => 1,
+            'sql_helper_version'         => 1,
+            'psr_bridge_version'         => 1,
+        ];
+    }
+
+    /**
+     * Return deterministic route snapshots sorted by pattern/method/tag.
+     *
+     * @return array
+     */
+    public static function snapshotRoutes() {
+        $routes = static::routes();
+        foreach ($routes as &$route) {
+            $route['pattern'] = (string) ($route['pattern'] ?? '');
+            $route['tag'] = (string) ($route['tag'] ?? '');
+            $route['dynamic'] = (bool) ($route['dynamic'] ?? false);
+            $route['methods'] = array_values(array_unique(array_map('strtolower', (array) ($route['methods'] ?? []))));
+            sort($route['methods']);
+        }
+        unset($route);
+
+        usort($routes, function ($a, $b) {
+            $cmp = strcmp($a['pattern'], $b['pattern']);
+            if ($cmp !== 0) return $cmp;
+            $cmp = strcmp(implode(',', $a['methods']), implode(',', $b['methods']));
+            if ($cmp !== 0) return $cmp;
+            $cmp = strcmp($a['tag'], $b['tag']);
+            if ($cmp !== 0) return $cmp;
+            return ((int) $a['dynamic']) <=> ((int) $b['dynamic']);
+        });
+
+        return $routes;
+    }
+
+    /**
      * Detect available framework capabilities and extensions.
      *
      * @return array Associative map of capability flags and framework metadata
@@ -146,6 +190,7 @@ class Introspect {
                 'zero_runtime_dependencies' => static::runtimeDependencyCount() === 0,
                 'runtime_dependency_count'  => static::runtimeDependencyCount(),
                 'introspection_available'   => true,
+                'contracts'                => static::contracts(),
                 'route' => [
                     'loop_mode'       => (bool) Options::get('core.route.loop_mode', false),
                     'loop_dispatcher' => (string) Options::get('core.route.loop_dispatcher', 'fast'),

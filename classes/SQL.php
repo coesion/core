@@ -95,6 +95,18 @@ class SQL {
   }
 
   /**
+   * Start a lightweight fluent SELECT builder on the current connection.
+   *
+   * @param string $table
+   * @param array $columns
+   * @return SQLConnection
+   */
+  public static function selectFrom($table, $columns=['*']){
+    if (empty(self::$connections[self::$current])) throw new \Exception("[SQL] No default connection defined.");
+    return self::$connections[self::$current]->selectFrom($table, $columns);
+  }
+
+  /**
    * Proxy all direct static calls to the SQL module to the `default` datasource
    * @param  string $method The method name
    * @param  array $args    The method arguments
@@ -117,7 +129,8 @@ class SQLConnection {
   protected $connection        = [],
             $queries           = [],
             $last_exec_success = true,
-            $is_mysql          = false;
+            $is_mysql          = false,
+            $builder           = null;
 
   public function __construct($dsn, $username=null, $password=null, $options=[]){
     $this->is_mysql = strpos($dsn,'mysql:') === 0;
@@ -350,6 +363,107 @@ class SQLConnection {
     } else {
         return $this->insert($table, $data, $pk);
     }
+  }
+
+  /**
+   * Start a SELECT query builder.
+   *
+   * @param string $table
+   * @param array $columns
+   * @return $this
+   */
+  public function selectFrom($table, $columns=['*']){
+    $cols = [];
+    foreach ((array) $columns as $col) {
+      $cols[] = $col === '*' ? '*' : "`{$col}`";
+    }
+    $this->builder = [
+      'table'   => $table,
+      'columns' => $cols ?: ['*'],
+      'where'   => [],
+      'order'   => [],
+      'limit'   => null,
+      'offset'  => null,
+      'params'  => [],
+    ];
+    return $this;
+  }
+
+  /**
+   * Add equality WHERE conditions.
+   *
+   * @param array $filters
+   * @return $this
+   */
+  public function whereEq($filters=[]){
+    if (!$this->builder) return $this;
+    foreach ((array) $filters as $key => $value) {
+      $param = '__w_' . preg_replace('/[^a-z0-9_]+/i', '_', (string) $key) . '_' . count($this->builder['params']);
+      $this->builder['where'][] = "`{$key}` = :{$param}";
+      $this->builder['params'][$param] = $value;
+    }
+    return $this;
+  }
+
+  /**
+   * Add ORDER BY expressions.
+   *
+   * @param array $order key=>asc|desc
+   * @return $this
+   */
+  public function orderBy($order=[]){
+    if (!$this->builder) return $this;
+    foreach ((array) $order as $column => $direction) {
+      $dir = strtoupper((string) $direction) === 'DESC' ? 'DESC' : 'ASC';
+      $this->builder['order'][] = "`{$column}` {$dir}";
+    }
+    return $this;
+  }
+
+  /**
+   * Set LIMIT and optional OFFSET.
+   *
+   * @param int $limit
+   * @param int $offset
+   * @return $this
+   */
+  public function limit($limit, $offset=0){
+    if (!$this->builder) return $this;
+    $this->builder['limit'] = max(0, (int) $limit);
+    $this->builder['offset'] = max(0, (int) $offset);
+    return $this;
+  }
+
+  /**
+   * Render current builder SQL and params.
+   *
+   * @return array
+   */
+  public function toSQL(){
+    if (!$this->builder) return ['query' => '', 'params' => []];
+
+    $q = 'SELECT ' . implode(', ', $this->builder['columns']) . " FROM `{$this->builder['table']}`";
+    if ($this->builder['where']) $q .= ' WHERE ' . implode(' AND ', $this->builder['where']);
+    if ($this->builder['order']) $q .= ' ORDER BY ' . implode(', ', $this->builder['order']);
+    if ($this->builder['limit'] !== null) {
+      $q .= ' LIMIT ' . (int) $this->builder['limit'];
+      if ($this->builder['offset'] > 0) $q .= ' OFFSET ' . (int) $this->builder['offset'];
+    }
+
+    return ['query' => $q, 'params' => $this->builder['params']];
+  }
+
+  /**
+   * Execute current builder query and return rows.
+   *
+   * @return array|bool
+   */
+  public function get(){
+    $sql = $this->toSQL();
+    if (!$sql['query']) return false;
+    $rows = $this->all($sql['query'], $sql['params']);
+    $this->builder = null;
+    return $rows;
   }
 }
 

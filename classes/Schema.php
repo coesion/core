@@ -81,6 +81,26 @@ class Schema {
     }
 
     /**
+     * Return deterministic schema snapshot map keyed by table name.
+     *
+     * @return array
+     */
+    public static function snapshotTables() {
+        $snapshot = [];
+        $tables = static::tables();
+        sort($tables);
+        foreach ($tables as $table) {
+            $cols = static::describe($table);
+            usort($cols, function ($a, $b) {
+                return strcmp((string) ($a['name'] ?? ''), (string) ($b['name'] ?? ''));
+            });
+            $snapshot[$table] = $cols;
+        }
+        ksort($snapshot);
+        return $snapshot;
+    }
+
+    /**
      * Resolve a model class name or table string to a table name.
      *
      * @param string $modelOrTable

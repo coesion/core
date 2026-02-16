@@ -98,4 +98,30 @@ abstract class Model implements JsonSerializable {
       return Schema::columns(static::persistenceOptions('table'));
     }
 
+    /**
+     * Return deterministic model field snapshots.
+     *
+     * @param array $models Optional model class names
+     * @return array
+     */
+    public static function snapshotFields($models = []) {
+      if (!is_array($models) || !$models) {
+        $models = [];
+        foreach (get_declared_classes() as $class) {
+          if (is_subclass_of($class, __CLASS__)) $models[] = $class;
+        }
+      }
+
+      $snapshot = [];
+      foreach ((array) $models as $model) {
+        if (!class_exists($model) || !is_subclass_of($model, __CLASS__)) continue;
+        $fields = (array) $model::fields();
+        sort($fields);
+        $snapshot[$model] = $fields;
+      }
+
+      ksort($snapshot);
+      return $snapshot;
+    }
+
 }
