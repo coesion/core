@@ -36,6 +36,7 @@ Class reference:
 - [File](../classes/File.md)
 - [Filter](../classes/Filter.md)
 - [Filters](../classes/Filters.md)
+- [Form](../classes/Form.md)
 - [Hash](../classes/Hash.md)
 - [HTTP](../classes/HTTP.md)
 - [HTTP_Request](../classes/HTTP_Request.md)

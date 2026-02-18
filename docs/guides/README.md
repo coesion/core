@@ -117,6 +117,7 @@ Guides:
 - [Why Core for Agents](Why-Core-for-Agents.md)
 - [Interop](Interop.md)
 - [Migrations](Migrations.md)
+- [Code Generation](Code-Generation.md)
 - [Agent KPIs](Agent-KPIs.md)
 - [Agent KPI Log](Agent-KPI-Log.md)
 - [Proof Weekly Template](Proof-Weekly-Template.md)
