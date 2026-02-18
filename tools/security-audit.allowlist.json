@@ -45,6 +45,12 @@
     "reason": "Test harness intentionally spawns subprocess."
   },
   {
+    "rule": "SEC001",
+    "path": "tests/CodegenToolTest.php",
+    "line": 24,
+    "reason": "Codegen tool test intentionally spawns subprocess."
+  },
+  {
     "rule": "SEC002",
     "path": "classes/Cache/Files.php",
     "reason": "Cache payloads are trusted internal serialized values."
