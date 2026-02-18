@@ -98,7 +98,7 @@ The changelog entry is a quick guide, not only a commit dump.
 - `.github/workflows/tests.yml` runs `composer test-security`.
 - `.github/workflows/tests.yml` runs `composer release:check`.
 - `.github/workflows/tests.yml` runs `composer release:check-artifacts`.
-- `.github/workflows/release-policy.yml` runs strict policy on `main`/`master`/`develop` and release tags.
+- `.github/workflows/release-policy.yml` runs release policy on `main`/`master`/`develop` and strict policy on release tags.
 - `.github/workflows/mirror-artifacts.yml` mirrors PHP/JS artifact repos on pushes to `main`/`master` when artifact-relevant files changed.
 - On tag builds, version/tag/changelog must match.
 - On tag builds, `.github/workflows/release-artifact.yml` and `.github/workflows/release-artifact-js.yml` publish mirror artifacts automatically.

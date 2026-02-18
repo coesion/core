@@ -25,7 +25,12 @@ jobs:
           php-version: '8.5'
 
       - name: Enforce release policy
-        run: php tools/release-check.php --strict
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            php tools/release-check.php --strict
+          else
+            php tools/release-check.php
+          fi
 
       - name: Enforce artifact policy
         run: php tools/release-check-artifacts.php

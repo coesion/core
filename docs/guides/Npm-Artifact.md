@@ -45,7 +45,7 @@ Workflow: `.github/workflows/release-artifact-js.yml`
 
 ## Secrets
 
-- `CORE_JS_ARTIFACT_TOKEN`: token with push/tag access to configured JS artifact repo
+- `CORE_ARTIFACT_TOKEN`: token with push/tag access to configured JS artifact repo
 - `NPM_TOKEN`: npm automation token with publish permission for `@coesion/core-js`
 
 ## Registry sync

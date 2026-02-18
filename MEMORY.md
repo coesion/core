@@ -30,3 +30,5 @@ rg is available in this macOS workspace; prior WSL-specific note about rg being 
 `class_exists('Error')` is true on PHP 8+ because of the built-in `\Error` class, so that check does not validate the removed Core alias shim in `classes/Error.php`.
 Weekly acquisition metrics (repo visits/clones) are not derivable from local repo state; automation must accept explicit KPI inputs (or authenticated API data) and should default to safe placeholders.
 Issue template labels are stable and can drive weekly KPI counts via GitHub Search API: regression=`bug+agent`, workflow=`enhancement+agent`, proof=`documentation+agent`.
+`release-policy.yml` currently runs on branch pushes and tag pushes; using `--strict` unconditionally on branch pushes blocks any substantial conventional commits (`feat/fix/refactor/perf/breaking`) until a tag exists, so strict should be tag-gated while branches run non-strict release checks.
+`mirror-artifacts.yml` previously used a JS-only secret name (`CORE_JS_ARTIFACT_TOKEN`) while other artifact workflows already standardized on `CORE_ARTIFACT_TOKEN`; unify on CORE_ARTIFACT_TOKEN to avoid secret mismatch failures in JS mirror steps.

@@ -99,7 +99,7 @@ jobs:
     permissions:
       contents: read
     env:
-      CORE_JS_ARTIFACT_TOKEN: ${{ secrets.CORE_JS_ARTIFACT_TOKEN }}
+      CORE_ARTIFACT_TOKEN: ${{ secrets.CORE_ARTIFACT_TOKEN }}
     steps:
       - name: Checkout factory repository
         uses: actions/checkout@v4
@@ -137,8 +137,8 @@ jobs:
       - name: Require JS artifact token
         if: ${{ env.SHOULD_PUBLISH == 'true' }}
         run: |
-          if [ -z "$CORE_JS_ARTIFACT_TOKEN" ]; then
-            echo "CORE_JS_ARTIFACT_TOKEN is required when SHOULD_PUBLISH=true"
+          if [ -z "$CORE_ARTIFACT_TOKEN" ]; then
+            echo "CORE_ARTIFACT_TOKEN is required when SHOULD_PUBLISH=true"
             exit 1
           fi
 
@@ -161,11 +161,11 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           SHORT_SHA="${GITHUB_SHA::7}"
 
-          git clone "https://x-access-token:${CORE_JS_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-repo
+          git clone "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git" artifact-repo
           cd artifact-repo
           git checkout "${JS_ARTIFACT_BRANCH}" || git checkout -b "${JS_ARTIFACT_BRANCH}"
           git config core.fileMode false
-          git remote set-url origin "https://x-access-token:${CORE_JS_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git"
+          git remote set-url origin "https://x-access-token:${CORE_ARTIFACT_TOKEN}@github.com/${JS_ARTIFACT_REPO}.git"
           cd ..
 
           rsync -a --delete --exclude='.git' js/dist/artifact/ artifact-repo/
