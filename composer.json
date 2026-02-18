@@ -35,6 +35,12 @@
             "@test-dist"
         ],
         "test-silent" : "bash tools/test-silent.sh",
+        "audit-security-deps" : "php tools/dependency-audit.php",
+        "audit-security-code" : "php tools/security-audit.php",
+        "test-security" : [
+            "@audit-security-deps",
+            "@audit-security-code"
+        ],
         "build-core" : "php tools/build-core.php",
         "build-artifact-repo" : [
             "@build-core",

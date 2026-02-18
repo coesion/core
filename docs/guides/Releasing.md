@@ -74,6 +74,7 @@ composer release:cut -- --push
 Policy checks:
 
 ```bash
+composer test-security
 composer release:check
 composer release:check-artifacts
 php tools/release-check.php --strict
@@ -94,6 +95,7 @@ The changelog entry is a quick guide, not only a commit dump.
 
 ## CI enforcement
 
+- `.github/workflows/tests.yml` runs `composer test-security`.
 - `.github/workflows/tests.yml` runs `composer release:check`.
 - `.github/workflows/tests.yml` runs `composer release:check-artifacts`.
 - `.github/workflows/release-policy.yml` runs strict policy on `main`/`master`/`develop` and release tags.

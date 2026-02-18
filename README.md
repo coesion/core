@@ -138,6 +138,7 @@ OPcache preload target:
 - Proof weekly template: `docs/guides/Proof-Weekly-Template.md`
 - Distribution playbook: `docs/guides/Distribution-Playbook.md`
 - Weekly automation command: `composer marketing-weekly-cycle` (supports `--github-fetch=1` with `GITHUB_TOKEN`)
+- Security audit guide: `docs/guides/Security-Audit.md`
 - Releasing: `docs/guides/Releasing.md`
 - Artifact publishing: `docs/guides/Packagist-Artifact.md`
 

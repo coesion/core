@@ -1,0 +1,7 @@
+[
+  {
+    "rule": "SEC001",
+    "path": "tests/fixtures/security-audit/allowlisted.php",
+    "reason": "Fixture-only allowlist coverage."
+  }
+]

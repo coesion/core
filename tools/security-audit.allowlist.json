@@ -1,0 +1,62 @@
+[
+  {
+    "rule": "SEC001",
+    "path": "classes/CLI.php",
+    "reason": "Interactive editor flow intentionally shells out."
+  },
+  {
+    "rule": "SEC001",
+    "path": "classes/CLI/UI/Facade.php",
+    "reason": "Terminal UI helper intentionally uses shell commands."
+  },
+  {
+    "rule": "SEC001",
+    "path": "classes/CLI/UI/Terminal.php",
+    "reason": "Terminal size probing uses shell calls for portability."
+  },
+  {
+    "rule": "SEC001",
+    "path": "classes/Cache/Files.php",
+    "reason": "Legacy cache flush uses shell command."
+  },
+  {
+    "rule": "SEC001",
+    "path": "classes/Shell.php",
+    "reason": "Shell facade intentionally wraps process execution."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/build-core.php",
+    "reason": "Build metadata collection invokes git shell commands."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/release-common.php",
+    "reason": "Release tooling executes external commands by design."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/serve-docs.php",
+    "reason": "Docs utility launches local browser/server commands."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tests/AgentAuditToolTest.php",
+    "reason": "Test harness intentionally spawns subprocess."
+  },
+  {
+    "rule": "SEC002",
+    "path": "classes/Cache/Files.php",
+    "reason": "Cache payloads are trusted internal serialized values."
+  },
+  {
+    "rule": "SEC002",
+    "path": "classes/Cache/Redis.php",
+    "reason": "Redis cache payloads are trusted internal serialized values."
+  },
+  {
+    "rule": "SEC002",
+    "path": "classes/Job.php",
+    "reason": "Legacy job payload deserialization path retained for compatibility."
+  }
+]

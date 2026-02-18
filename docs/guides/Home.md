@@ -22,6 +22,7 @@ Start here:
 - [Proof Weekly Template](./Proof-Weekly-Template.md)
 - [Distribution Playbook](./Distribution-Playbook.md)
 - [Router Benchmarks](./Router-Benchmarks.md)
+- [Security Audit](./Security-Audit.md)
 
 Class reference:
 - [API](../classes/API.md)

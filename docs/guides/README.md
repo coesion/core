@@ -106,6 +106,7 @@ Guides:
 - [Packagist Artifact Publishing](Packagist-Artifact.md)
 - [NPM Artifact Publishing](Npm-Artifact.md)
 - [Releasing](Releasing.md)
+- [Security Audit](Security-Audit.md)
 - [Examples](../examples/Examples.md)
 - [FrankenPHP](FrankenPHP.md)
 - [REST API With Auth](REST-Auth.md)

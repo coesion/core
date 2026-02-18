@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Run security audit
+        run: composer test-security
+
       - name: Release consistency check
         run: composer release:check
 
