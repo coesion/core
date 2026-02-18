@@ -1,5 +1,38 @@
 # Changelog
 
+## v1.4.0 - 2026-02-18
+
+Quick guide:
+- What changed: see Added/Changed/Fixed below.
+- Impact: review Breaking and Upgrade Notes before deployment.
+
+### Added
+- add form handling and class scaffold codegen
+- add security audit gate to test suite
+- automate weekly proof and KPI cycle
+- add contracts, snapshots, migrations, and interop tooling
+
+### Changed
+- allowlist codegen tool subprocess fixture
+- align capability matrix with implemented features
+- add dogfooding core principle to agent guide
+- Allowlist intentional security-audit tool and fixture findings
+- Align artifact token and release policy workflows
+- Removed unknown entry in gitignore
+- ignore sidetrack and sidecar local dirs
+- add proof-driven guides, KPI cadence, and execution plans
+- cover snapshots, migrations, SQL builder, and interop
+- add v1.3.4 draft metadata
+
+### Fixed
+- None.
+
+### Breaking
+- None.
+
+### Upgrade Notes
+- No upgrade action required.
+
 ## v1.3.4 - 2026-02-16
 
 Quick guide:
