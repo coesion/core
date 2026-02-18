@@ -1,6 +1,6 @@
 # Core Agentic Framework Audit
 
-> Date: 2026-02-14  
+> Date: 2026-02-18  
 > Scope: Core vs Laravel, Symfony, Slim, and Mezzio  
 > Goal: Make Core the best PHP framework for agentic coding workflows
 
@@ -16,7 +16,7 @@ Core is currently the strongest option in this set for an agentic coding centere
 
 The previous audit baseline was stale in important areas. This run confirms Core now includes built-in `i18n`, `Schedule`, `Crypt`, `WebSocket`, and a Redis cache adapter. Those categories are no longer "missing".
 
-Core still lags in human-centric ecosystem parity (migrations, query builder ergonomics, testing helpers, PSR interoperability), and these now represent the main blockers to widening adoption without compromising its zero-dependency identity.
+Core still lags in human-centric ecosystem parity (full PSR package compliance breadth, richer form-builder ergonomics, and broader generator bundles), and these now represent the main blockers to widening adoption without compromising its zero-dependency identity.
 
 ---
 
@@ -53,6 +53,12 @@ Core still lags in human-centric ecosystem parity (migrations, query builder erg
 | Encryption | Missing | Adequate | `classes/Crypt.php`, `docs/classes/Crypt.md` |
 | WebSocket / Real-time | Missing | Adequate | `classes/WebSocket.php`, `classes/WebSocket/Pusher.php`, `docs/classes/WebSocket.md` |
 | Redis cache support | Missing | Adequate | `classes/Cache/Redis.php`, `docs/classes/Cache.md` |
+| Query Builder | Missing | Basic | `classes/SQL.php`, `tests/SQLBuilderTest.php` |
+| Migrations | Missing | Adequate | `classes/Migration.php`, `tools/migrate.php`, `tests/MigrationTest.php` |
+| Testing Utilities | Missing | Basic | `tests/support/AgentHttpHarness.php`, `tests/AgentHttpHarnessTest.php` |
+| PSR Compliance | Missing | Basic | `classes/Interop/*`, `tests/InteropTest.php`, `docs/guides/Interop.md` |
+| Form Handling | Missing | Adequate | `classes/Form.php`, `docs/classes/Form.md`, `tests/FormTest.php` |
+| Code Generation | Missing | Adequate | `tools/codegen.php`, `tests/CodegenToolTest.php`, `docs/guides/Code-Generation.md` |
 
 ---
 
@@ -68,8 +74,8 @@ Core still lags in human-centric ecosystem parity (migrations, query builder erg
 | Rate Limiting | Strong | Strong | Adequate | Missing | Missing |
 | Security Headers | Strong | Basic | Basic | Missing | Missing |
 | ORM / Database | Basic | Strong | Strong | Missing | Missing |
-| Query Builder | Missing | Strong | Strong | Missing | Missing |
-| Migrations | Missing | Strong | Strong | Missing | Missing |
+| Query Builder | Basic | Strong | Strong | Missing | Missing |
+| Migrations | Adequate | Strong | Strong | Missing | Missing |
 | Caching | Adequate | Strong | Strong | Missing | Missing |
 | Email | Adequate | Strong | Adequate | Missing | Missing |
 | Template Engine | Basic | Strong | Strong | Missing | Missing |
@@ -80,13 +86,13 @@ Core still lags in human-centric ecosystem parity (migrations, query builder erg
 | Events | Strong | Strong | Strong | Basic | Adequate |
 | i18n / Localization | Adequate | Strong | Strong | Missing | Missing |
 | Scheduling | Adequate | Strong | Adequate | Missing | Missing |
-| Testing Utilities | Missing | Strong | Strong | Basic | Basic |
+| Testing Utilities | Basic | Strong | Strong | Basic | Basic |
 | DI Container | Basic | Strong | Strong | Adequate | Strong |
-| Code Generation | Missing | Strong | Strong | Missing | Missing |
+| Code Generation | Adequate | Strong | Strong | Missing | Missing |
 | WebSocket / Real-time | Adequate | Adequate | Adequate | Missing | Missing |
-| PSR Compliance | Missing | Adequate | Strong | Strong | Strong |
+| PSR Compliance | Basic | Adequate | Strong | Strong | Strong |
 | Middleware Pipeline | Basic | Strong | Strong | Strong | Strong |
-| Form Handling | Missing | Adequate | Strong | Missing | Missing |
+| Form Handling | Adequate | Adequate | Strong | Missing | Missing |
 | Encryption | Adequate | Strong | Strong | Missing | Missing |
 | API Resources | Adequate | Strong | Adequate | Missing | Missing |
 | Content Negotiation | Strong | Basic | Adequate | Basic | Adequate |
@@ -135,20 +141,17 @@ Result: Core is currently rank #1 for this agentic-first model, but with clear p
 
 ## 7) Core Gaps Blocking Clear Dominance
 
-1. Query ergonomics gap:
-- `SQL` supports helper methods but no fluent builder for common CRUD patterns.
+1. Form workflow gap:
+- Form handling and validation primitives exist, but richer HTML/form-builder ergonomics are still intentionally out of scope.
 
-2. Schema lifecycle gap:
-- No native migration workflow and no versioned schema evolution primitives.
-
-3. Agent automation gap:
+2. Agent automation gap:
 - Machine-readable audit contract exists (`tools/agent-audit.php`), but broader snapshot and case-study proof contracts are still expanding.
 
-4. Interop gap:
-- No first-class PSR-7/11/15 bridge layer, limiting plug-and-play with broader PHP middleware and tooling.
+3. Interop gap:
+- Core ships PSR-like adapters, but not full package-level PSR-7/11/15 compliance contracts.
 
-5. Test workflow gap:
-- No built-in HTTP test harness and fixture utilities oriented to deterministic agent loops.
+4. Code generation depth gap:
+- Deterministic scaffold generation exists for class/doc/test skeletons, while richer generators (migration/resource bundles) remain future work.
 
 ---
 
@@ -156,6 +159,12 @@ Result: Core is currently rank #1 for this agentic-first model, but with clear p
 
 | Claim | Command | Expected Artifact | Last Verified |
 |---|---|---|---|
+| SQL query helper is available | `vendor/bin/phpunit --filter SQLBuilderTest` | Green test validating `SQL::selectFrom()->whereEq()->orderBy()->limit()->toSQL()` | 2026-02-18 |
+| Migration workflow is available | `vendor/bin/phpunit --filter MigrationTest` | Green test for apply/status/rollback and `core_migrations` tracking | 2026-02-18 |
+| Interop adapters are available | `vendor/bin/phpunit --filter InteropTest` | Green test for request/response/container/middleware adapters | 2026-02-18 |
+| HTTP harness utilities are available | `vendor/bin/phpunit --filter AgentHttpHarnessTest` | Green test validating deterministic dispatch envelope | 2026-02-18 |
+| Form handling is available | `vendor/bin/phpunit --filter FormTest` | Green tests for source binding, normalization, validation, CSRF, old-input flash | 2026-02-18 |
+| Code generation is available | `vendor/bin/phpunit --filter CodegenToolTest` | Green tests for scaffold create/skip/force + deterministic output envelope | 2026-02-18 |
 | Audit contract is machine-readable | `php tools/agent-audit.php --format=json --pretty` | JSON payload with `schema_version/framework/capabilities/counts` | 2026-02-16 |
 | Contract snapshot is deterministic | `php tools/agent-snapshot.php --type=contracts --fail-on-diff=tests/fixtures/snapshots/contracts.json` | Exit code `0` if unchanged | 2026-02-16 |
 | Case-study output is machine-readable | `php tools/agent-case-study.php --preset=baseline --out=docs/guides/agent-case-study.baseline.json` | `docs/guides/agent-case-study.baseline.json` | 2026-02-16 |
