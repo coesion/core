@@ -58,5 +58,65 @@
     "rule": "SEC002",
     "path": "classes/Job.php",
     "reason": "Legacy job payload deserialization path retained for compatibility."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tests/AgentSnapshotToolTest.php",
+    "line": 18,
+    "reason": "Test harness intentionally spawns subprocess."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tests/SecurityAuditToolTest.php",
+    "line": 18,
+    "reason": "Test harness intentionally spawns subprocess."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tests/fixtures/security-audit/allowlisted.php",
+    "line": 3,
+    "reason": "Fixture intentionally executes a process to verify SEC001 allowlist behavior."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tests/fixtures/security-audit/unsafe.php",
+    "line": 4,
+    "reason": "Fixture intentionally executes a process to verify SEC001 detection."
+  },
+  {
+    "rule": "SEC002",
+    "path": "tests/fixtures/security-audit/unsafe.php",
+    "line": 5,
+    "reason": "Fixture intentionally uses unsafe unserialize to verify SEC002 detection."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/dependency-audit.php",
+    "line_range": [11, 18],
+    "reason": "Dependency audit tool intentionally shells out to composer commands."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/marketing-weekly-cycle.php",
+    "line": 62,
+    "reason": "Weekly cycle tool intentionally runs proof report subprocess."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/marketing-weekly-cycle.php",
+    "line": 229,
+    "reason": "Weekly cycle tool intentionally reads git remote via shell command."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/proof-refresh.php",
+    "line_range": [20, 28],
+    "reason": "Proof refresh orchestrator intentionally executes subprocess tools."
+  },
+  {
+    "rule": "SEC001",
+    "path": "tools/security-audit.php",
+    "line": 171,
+    "reason": "Audit tool intentionally executes git ls-files to scope tracked PHP files."
   }
 ]
