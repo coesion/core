@@ -9,6 +9,7 @@ Use td usage -q for subsequent reads.
 - Changes not related to the main classes (docs, comments, metadata, or other non-core edits) do not require retesting.
 - Don't break any feature when you implement something new or you change something already there.
 - Avoid adding new external dependencies.
+- Treat dogfooding as a core development principle: in Core, always prioritize and leverage internal classes and functionalities.
 - Maximize the use of the already present classes in the Core collection.
 - Follow the existing code-style.
 - Start files with `<?php` followed by a blank line.
@@ -37,6 +38,7 @@ Use td usage -q for subsequent reads.
 - Changes not related to the main classes (docs, comments, metadata, or other non-core edits) do not require retesting.
 - Don't break any feature when you implement something new or you change something already there.
 - Avoid adding new external dependencies.
+- Treat dogfooding as a core development principle: in Core, always prioritize and leverage internal classes and functionalities.
 - Maximize the use of the already present classes in the Core collection.
 - Follow the existing code-style.
 - Start files with `<?php` followed by a blank line.
