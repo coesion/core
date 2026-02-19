@@ -696,4 +696,41 @@ class RouteTest extends TestCase {
       $group->remove($route);
       $this->assertFalse($group->has($route));
     }
+
+    public function testNonLoopOptimizedTreeOptionalPatternParity(): void {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.loop_mode', false);
+      Options::set('core.route.auto_optimize', true);
+      Response::clean();
+
+      Route::get('/items(/:id)', function ($id = '') {
+        return $id === '' ? 'NO-ID' : "ID-$id";
+      });
+
+      Route::dispatch('/items', 'get');
+      $this->assertEquals('NO-ID', Response::body());
+
+      Response::clean();
+      Route::dispatch('/items/9', 'get');
+      $this->assertEquals('ID-9', Response::body());
+    }
+
+    public function testRulesUpdateRetainsParamExtractionParity(): void {
+      Route::reset();
+      Options::set('core.response.autosend', false);
+      Options::set('core.route.loop_mode', false);
+      Response::clean();
+
+      Route::get('/price/:id', function ($id) {
+        return "P$id";
+      })->rules(['id' => '\\d+(\\.\\d+)?']);
+
+      Route::dispatch('/price/12.5', 'get');
+      $this->assertEquals('P12.5', Response::body());
+
+      Response::clean();
+      Route::dispatch('/price/nope', 'get');
+      $this->assertEquals('', Response::body());
+    }
 }

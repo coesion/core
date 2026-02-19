@@ -42,6 +42,13 @@ class Route {
                   $pattern            = '',
                   $matcher_pattern    = '',
                   $dynamic            = false,
+                  $segments           = [],
+                  $static_prefix      = [],
+                  $param_names        = [],
+                  $optimized_segments = [],
+                  $dynamic_bucket     = null,
+                  $dynamic_count      = 0,
+                  $specificity        = 0,
                   $callback           = null,
                   $methods            = [],
                   $befores            = [],
@@ -71,14 +78,15 @@ class Route {
       $this->URLPattern       = str_replace('//','/',str_replace('/(','(/', rtrim("{$prefix}{$pattern}","/")));
 
       $this->dynamic          = $this->isDynamic($this->URLPattern);
+      $this->optimized_segments = static::optimizedSegmentsFromPattern($this->URLPattern);
+      if ($this->dynamic) {
+        $this->param_names = static::paramNames($this->URLPattern);
+      } else {
+        $this->param_names = [];
+      }
 
-      $this->pattern          = $this->dynamic
-                                ? $this->compilePatternAsRegex($this->URLPattern, $this->rules)
-                                : $this->URLPattern;
-
-      $this->matcher_pattern  = $this->dynamic
-                                ? $this->compilePatternAsRegex($this->URLPattern, $this->rules, false)
-                                : '';
+      $this->pattern          = $this->dynamic ? '' : $this->URLPattern;
+      $this->matcher_pattern  = '';
 
       // We will use hash-checks, for O(1) complexity vs O(n)
       $this->methods[$method] = 1;
@@ -96,6 +104,8 @@ class Route {
 
       // * is an http method wildcard
       if (empty($this->methods[$method]) && empty($this->methods['*'])) return false;
+
+      if ($this->dynamic) static::ensureDynamicRegexCompiled($this);
 
       return (bool) (
         $this->dynamic
@@ -143,7 +153,7 @@ class Route {
 
       foreach ((array)static::$routes as $group => $list){
         foreach ((array)$list as $route) {
-          if (is_a($route, __CLASS__)) $routes[] = $route;
+          if ($route instanceof self) $routes[] = $route;
         }
       }
 
@@ -203,7 +213,7 @@ class Route {
       $count = 0;
       foreach ((array)static::$routes as $group => $list){
         foreach ((array)$list as $route) {
-          if (is_a($route, __CLASS__)) $count++;
+          if ($route instanceof self) $count++;
         }
       }
       return $count;
@@ -223,7 +233,7 @@ class Route {
     }
 
     protected static function insertStaticRoute(array &$root, $route){
-      $segments = array_filter(explode('/', trim($route->URLPattern,'/')), 'strlen');
+      $segments = $route->optimized_segments ?: array_filter(explode('/', trim($route->URLPattern,'/')), 'strlen');
       $node =& $root;
       foreach ($segments as $seg) {
         if (!isset($node['static'][$seg])) $node['static'][$seg] = static::compiledNode();
@@ -233,29 +243,19 @@ class Route {
     }
 
     protected static function insertDynamicRoute(array &$root, $route){
-      $segments = array_filter(explode('/', trim($route->URLPattern,'/')), 'strlen');
-      $prefix = [];
-      foreach ($segments as $seg) {
-        if (static::isDynamic($seg) || strpos($seg,'(') !== false) break;
-        $prefix[] = $seg;
-      }
+      static::ensureDynamicCompileMetadata($route);
+      $prefix = $route->static_prefix;
       $node =& $root;
       foreach ($prefix as $seg) {
         if (!isset($node['static'][$seg])) $node['static'][$seg] = static::compiledNode();
         $node =& $node['static'][$seg];
       }
 
-      $dynamic_count = 0;
-      foreach ($segments as $seg) {
-        if (static::isDynamic($seg) || strpos($seg,'(') !== false) $dynamic_count++;
-      }
-      $specificity = ((count($segments) - $dynamic_count) * 100) + strlen($route->URLPattern);
-
       $node['dynamic_routes'][] = [
         'route'       => $route,
         'matcher'     => $route->matcher_pattern,
         'methods'     => $route->methods,
-        'specificity' => $specificity,
+        'specificity' => $route->specificity,
       ];
     }
 
@@ -278,7 +278,9 @@ class Route {
     }
 
     protected static function collectDynamicRoute(array &$dynamic_list, $route){
-      $bucket = static::dynamicBucket($route->URLPattern);
+      static::ensureDynamicCompileMetadata($route);
+      static::ensureDynamicRegexCompiled($route);
+      $bucket = $route->dynamic_bucket;
       $prefix = $bucket['prefix'];
       $hint = $bucket['hint'];
       $hint_pos = $bucket['hint_pos'];
@@ -300,6 +302,10 @@ class Route {
 
     protected static function dynamicBucket($pattern){
       $segments = array_filter(explode('/', trim($pattern,'/')), 'strlen');
+      return static::dynamicBucketFromSegments($segments, $pattern);
+    }
+
+    protected static function dynamicBucketFromSegments(array $segments, $pattern){
       $prefix = [];
       $found_dynamic = false;
       $hint = '';
@@ -323,6 +329,27 @@ class Route {
         'hint' => $hint,
         'hint_pos' => $hint_pos,
       ];
+    }
+
+    protected static function ensureDynamicCompileMetadata(self $route){
+      if (!empty($route->segments)) {
+        if (empty($route->static_prefix)) $route->static_prefix = static::routeStaticPrefix($route->segments);
+        if ($route->specificity <= 0) $route->specificity = static::routeSpecificity($route->segments, $route->URLPattern);
+        if ($route->dynamic_bucket === null) $route->dynamic_bucket = static::dynamicBucketFromSegments($route->segments, $route->URLPattern);
+        return;
+      }
+
+      $route->segments = array_filter(explode('/', trim($route->URLPattern,'/')), 'strlen');
+      $route->static_prefix = static::routeStaticPrefix($route->segments);
+      $route->specificity = static::routeSpecificity($route->segments, $route->URLPattern);
+      $route->dynamic_bucket = static::dynamicBucketFromSegments($route->segments, $route->URLPattern);
+    }
+
+    protected static function ensureDynamicRegexCompiled(self $route){
+      if (!$route->dynamic) return;
+      if ($route->pattern !== '' && $route->matcher_pattern !== '') return;
+      $route->pattern = static::compilePatternAsRegex($route->URLPattern, $route->rules, true, $route->param_names);
+      $route->matcher_pattern = static::compilePatternAsRegex($route->URLPattern, $route->rules, false, $route->param_names);
     }
 
     protected static function buildDispatcher(array $static_map, array $dynamic_list){
@@ -376,11 +403,11 @@ class Route {
       $group_indexes = [];
       $group_index = 1;
       foreach ($routes as $idx => $route) {
-        $regex = static::compilePatternAsRegexNoNames($route->URLPattern, $route->rules);
+        $regex = static::compilePatternAsRegexNoNames($route->URLPattern, $route->rules, $route->param_names);
         $inner = static::regexInner($regex);
         $key = '__r' . $idx;
         $param_index = [];
-        $param_names = static::paramNames($route->URLPattern);
+        $param_names = $route->param_names;
         $index = $group_index + 1;
         foreach ($param_names as $param) {
           $param_index[$index] = $param;
@@ -469,7 +496,12 @@ class Route {
       return $m[1];
     }
 
-    protected static function compilePatternAsRegexNoNames($pattern, $rules=[]){
+    protected static function compilePatternAsRegexNoNames($pattern, $rules=[], $param_names=null){
+      $param_names = $param_names ?: static::paramNames($pattern);
+      $prepared = str_replace(['.',')','*'],['\.',')?','.+'],$pattern);
+      if (empty($param_names)) {
+        return '#^' . $prepared . '$#';
+      }
       return '#^'.preg_replace_callback(
         pattern: '#:([a-zA-Z]\\w*)#',
         callback: function($g) use (&$rules){
@@ -477,8 +509,46 @@ class Route {
           $rule = static::makeNonCapturing($rule);
           return '(' . '(?:' . $rule . ')' . ')';
         },
-        subject: str_replace(['.',')','*'],['\.',')?','.+'],$pattern)
+        subject: $prepared
       ).'$#';
+    }
+
+    protected static function splitPatternSegments($pattern){
+      return array_values(array_filter(explode('/', trim($pattern,'/')), function($segment){
+        return $segment !== '';
+      }));
+    }
+
+    protected static function routeStaticPrefix(array $segments){
+      $prefix = [];
+      foreach ($segments as $seg) {
+        if (static::isDynamic($seg) || strpos($seg,'(') !== false) break;
+        $prefix[] = $seg;
+      }
+      return $prefix;
+    }
+
+    protected static function optimizedSegmentsFromPattern($pattern){
+      $segments = [];
+      $raw = preg_replace('#^(.+?)\(?:.+$#','$1',$pattern);
+      foreach (explode('/', trim($raw,'/')) as $segment) {
+        $segment = trim($segment, '(');
+        if ($segment !== '') $segments[] = $segment;
+      }
+      return $segments;
+    }
+
+    protected static function countDynamicSegments(array $segments){
+      $count = 0;
+      foreach ($segments as $seg) {
+        if (static::isDynamic($seg) || strpos($seg,'(') !== false) $count++;
+      }
+      return $count;
+    }
+
+    protected static function routeSpecificity(array $segments, $pattern){
+      $dynamic_count = static::countDynamicSegments($segments);
+      return ((count($segments) - $dynamic_count) * 100) + strlen($pattern);
     }
 
     protected static function makeNonCapturing($pattern){
@@ -751,8 +821,10 @@ class Route {
       foreach ((array)$rules as $varname => $rule){
         $this->rules[$varname] = $rule;
       }
-      $this->pattern         = $this->compilePatternAsRegex( $this->URLPattern, $this->rules );
-      $this->matcher_pattern = $this->compilePatternAsRegex( $this->URLPattern, $this->rules, false );
+      if ($this->dynamic) {
+        $this->pattern = '';
+        $this->matcher_pattern = '';
+      }
       return $this;
     }
 
@@ -831,7 +903,12 @@ class Route {
      * @param  string $pattern The URL schema.
      * @return string The compiled PREG RegEx.
      */
-    protected static function compilePatternAsRegex($pattern, $rules=[], $extract_params=true){
+    protected static function compilePatternAsRegex($pattern, $rules=[], $extract_params=true, $param_names=null){
+      $param_names = $param_names ?: static::paramNames($pattern);
+      $prepared = str_replace(['.',')','*'],['\.',')?','.+'],$pattern);
+      if (empty($param_names)) {
+        return '#^' . $prepared . '$#';
+      }
 
       return '#^'.preg_replace_callback('#:([a-zA-Z]\w*)#',$extract_params
         // Extract named parameters
@@ -842,7 +919,7 @@ class Route {
         : function($g) use (&$rules){
             return isset($rules[$g[1]]) ? $rules[$g[1]] : '[^/]+';
           },
-      str_replace(['.',')','*'],['\.',')?','.+'],$pattern)).'$#';
+      $prepared).'$#';
     }
 
     /**
@@ -867,6 +944,7 @@ class Route {
     public function extractArgs($URL){
       $args = [];
       if ( $this->dynamic ) {
+        static::ensureDynamicRegexCompiled($this);
         preg_match($this->pattern, '/'.trim($URL,'/'), $args);
         foreach ($args as $key => $value) {
           if (false === is_string($key)) unset($args[$key]);
@@ -890,7 +968,7 @@ class Route {
      * @return Route
      */
     public static function add($route){
-      if (is_a($route, 'Route')){
+      if ($route instanceof self){
         static::$compiled = false;
         static::$compiled_tree = null;
         static::$compiled_dispatcher = null;
@@ -898,11 +976,10 @@ class Route {
         // Add to tag map
         if ($route->tag) static::$tags[$route->tag] =& $route;
 
-        // Optimize tree
-        if (Options::get('core.route.auto_optimize', true)){
+        // Optimize tree only for one-shot request mode.
+        if (Options::get('core.route.auto_optimize', true) && !Options::get('core.route.loop_mode', false)){
           $base =& static::$optimized_tree;
-          foreach (explode('/',trim(preg_replace('#^(.+?)\(?:.+$#','$1',$route->URLPattern),'/')) as $segment) {
-            $segment = trim($segment,'(');
+          foreach (($route->optimized_segments ?: static::optimizedSegmentsFromPattern($route->URLPattern)) as $segment) {
             if (!isset($base[$segment])) $base[$segment] = [];
             $base =& $base[$segment];
           }
@@ -996,137 +1073,138 @@ class Route {
 
         Event::trigger('core.log', 'route.dispatch', ['url' => $URL, 'method' => $method]);
 
-        $__deferred_send = new Deferred(function(){
-          if (Options::get('core.response.autosend',true)){
-            Response::send();
-          }
-        });
-
-        $loop_mode = Options::get('core.route.loop_mode', false);
-        if ($loop_mode) {
-          $dispatcher_mode = Options::get('core.route.loop_dispatcher', 'fast');
-          if ($dispatcher_mode === 'tree') {
-            return static::dispatchCompiledTree($URL, $method, $return_route, $debug);
-          }
-          if (!static::$compiled || empty(static::$compiled_dispatcher)) static::compile();
-          $dispatcher = static::$compiled_dispatcher;
-          $path = rtrim($URL, '/') ?: '/';
-
-          if ($debug) {
-            static::$stats['static_checks']++;
-          }
-          $static_effective = $dispatcher['static_effective'][$method] ?? ($dispatcher['static_effective']['*'] ?? ($dispatcher['static']['*'] ?? []));
-          $route = $static_effective[$path] ?? null;
-          if ($route) {
-            if ($return_route){
-              return $route;
-            } else {
-              $route->run($route->extractArgs($URL),$method);
-              if ($debug) {
-                static::$stats['matched']++;
-                static::$stats['static_hit']++;
-              }
-              return true;
+        $autosend = Options::get('core.response.autosend',true);
+        try {
+          $loop_mode = Options::get('core.route.loop_mode', false);
+          if ($loop_mode) {
+            $dispatcher_mode = Options::get('core.route.loop_dispatcher', 'fast');
+            if ($dispatcher_mode === 'tree') {
+              return static::dispatchCompiledTree($URL, $method, $return_route, $debug);
             }
-          }
+            if (!static::$compiled || empty(static::$compiled_dispatcher)) static::compile();
+            $dispatcher = static::$compiled_dispatcher;
+            $path = rtrim($URL, '/') ?: '/';
 
-          $method_dispatchers = $dispatcher['dynamic'][$method] ?? [];
-          $wildcard_dispatchers = $dispatcher['dynamic']['*'] ?? [];
-          $path_segments = null;
-
-          $dispatch_lists = [$method_dispatchers, $wildcard_dispatchers];
-          foreach ($dispatch_lists as $dispatchers) foreach ($dispatchers as $entry) {
-            $prefix = $entry['prefix'];
-            if ($prefix !== '' && $path !== $prefix && strpos($path, $prefix . '/') !== 0) {
-              continue;
-            }
-            $hint = $entry['hint'] ?? '';
-            if ($hint !== '') {
-              if ($path_segments === null) {
-                $path_segments = array_values(array_filter(explode('/', trim($path,'/')), static function($segment){
-                  return $segment !== '';
-                }));
-              }
-              $hint_pos = $entry['hint_pos'];
-              if (!isset($path_segments[$hint_pos]) || $path_segments[$hint_pos] !== $hint) {
-                continue;
-              }
-            }
             if ($debug) {
-              static::$stats['dynamic_checks']++;
-              static::$stats['regex_checks']++;
+              static::$stats['static_checks']++;
             }
-            if (!preg_match($entry['regex'], $path, $matches)) {
-              continue;
-            }
-            foreach ($entry['group_indexes'] as $group_index) {
-              if (!array_key_exists($group_index, $matches) || $matches[$group_index] === '') {
-                continue;
-              }
-              $meta = $entry['meta'][$group_index];
-              $route = $meta['route'];
+            $static_effective = $dispatcher['static_effective'][$method] ?? ($dispatcher['static_effective']['*'] ?? ($dispatcher['static']['*'] ?? []));
+            $route = $static_effective[$path] ?? null;
+            if ($route) {
               if ($return_route){
                 return $route;
               } else {
-                $args = [];
-                foreach ($meta['param_index'] as $index => $param) {
-                  if (isset($matches[$index])) $args[$param] = $matches[$index];
-                }
-                $route->run($args, $method);
+                $route->run($route->extractArgs($URL),$method);
                 if ($debug) {
                   static::$stats['matched']++;
-                  static::$stats['dynamic_hit']++;
+                  static::$stats['static_hit']++;
                 }
                 return true;
               }
             }
-          }
-        } else if (empty(static::$optimized_tree)) {
-          foreach ((array)static::$routes as $group => $routes){
-              foreach ($routes as $route) {
-                  if ($debug) static::$stats['static_checks']++;
-                  if (is_a($route, 'Route') && $route->match($URL,$method)){
-                    if ($return_route){
-                      return $route;
-                    } else {
-                      $route->run($route->extractArgs($URL),$method);
-                      if ($debug) static::$stats['matched']++;
-                      return true;
-                    }
-                  }
-              }
-          }
-        } else {
-          $routes =& static::$optimized_tree;
-          foreach (explode('/',trim($URL,'/')) as $segment) {
-            if (is_array($routes) && isset($routes[$segment])) $routes =& $routes[$segment];
-              // Root-level dynamic routes Ex: "/:param"
-              else if (is_array($routes) && isset($routes[''])) $routes =& $routes[''];
-            else break;
-          }
-          if (is_array($routes) && isset($routes[0]) && !is_array($routes[0])) foreach ((array)$routes as $route) {
-              if ($debug) static::$stats['static_checks']++;
-              if (is_a($route, __CLASS__) && $route->match($URL, $method)){
-                    if ($return_route){
-                      return $route;
-                    } else {
-                      $route->run($route->extractArgs($URL),$method);
-                      if ($debug) static::$stats['matched']++;
-                      return true;
-                    }
-              }
-          }
-        }
 
-        Response::status(404, '404 Resource not found.');
-        foreach (array_filter(array_merge(
-          (static::trigger(404)?:[]),
-          (Event::trigger(404)?:[])
-        )) as $res){
-           Response::add($res);
+            $method_dispatchers = $dispatcher['dynamic'][$method] ?? [];
+            $wildcard_dispatchers = $dispatcher['dynamic']['*'] ?? [];
+            $path_segments = null;
+
+            $dispatch_lists = [$method_dispatchers, $wildcard_dispatchers];
+            foreach ($dispatch_lists as $dispatchers) foreach ($dispatchers as $entry) {
+              $prefix = $entry['prefix'];
+              if ($prefix !== '' && $path !== $prefix && strpos($path, $prefix . '/') !== 0) {
+                continue;
+              }
+              $hint = $entry['hint'] ?? '';
+              if ($hint !== '') {
+                if ($path_segments === null) {
+                  $path_segments = array_values(array_filter(explode('/', trim($path,'/')), static function($segment){
+                    return $segment !== '';
+                  }));
+                }
+                $hint_pos = $entry['hint_pos'];
+                if (!isset($path_segments[$hint_pos]) || $path_segments[$hint_pos] !== $hint) {
+                  continue;
+                }
+              }
+              if ($debug) {
+                static::$stats['dynamic_checks']++;
+                static::$stats['regex_checks']++;
+              }
+              if (!preg_match($entry['regex'], $path, $matches)) {
+                continue;
+              }
+              foreach ($entry['group_indexes'] as $group_index) {
+                if (!array_key_exists($group_index, $matches) || $matches[$group_index] === '') {
+                  continue;
+                }
+                $meta = $entry['meta'][$group_index];
+                $route = $meta['route'];
+                if ($return_route){
+                  return $route;
+                } else {
+                  $args = [];
+                  foreach ($meta['param_index'] as $index => $param) {
+                    if (isset($matches[$index])) $args[$param] = $matches[$index];
+                  }
+                  $route->run($args, $method);
+                  if ($debug) {
+                    static::$stats['matched']++;
+                    static::$stats['dynamic_hit']++;
+                  }
+                  return true;
+                }
+              }
+            }
+          } else if (empty(static::$optimized_tree)) {
+            foreach ((array)static::$routes as $group => $routes){
+                foreach ($routes as $route) {
+                    if ($debug) static::$stats['static_checks']++;
+                    if ($route instanceof self && $route->match($URL,$method)){
+                      if ($return_route){
+                        return $route;
+                      } else {
+                        $route->run($route->extractArgs($URL),$method);
+                        if ($debug) static::$stats['matched']++;
+                        return true;
+                      }
+                    }
+                }
+            }
+          } else {
+            $routes =& static::$optimized_tree;
+            foreach (explode('/',trim($URL,'/')) as $segment) {
+              if (is_array($routes) && isset($routes[$segment])) $routes =& $routes[$segment];
+                // Root-level dynamic routes Ex: "/:param"
+                else if (is_array($routes) && isset($routes[''])) $routes =& $routes[''];
+              else break;
+            }
+            if (is_array($routes) && isset($routes[0]) && !is_array($routes[0])) foreach ((array)$routes as $route) {
+                if ($debug) static::$stats['static_checks']++;
+                if ($route instanceof self && $route->match($URL, $method)){
+                      if ($return_route){
+                        return $route;
+                      } else {
+                        $route->run($route->extractArgs($URL),$method);
+                        if ($debug) static::$stats['matched']++;
+                        return true;
+                      }
+                }
+            }
+          }
+
+          Response::status(404, '404 Resource not found.');
+          foreach (array_filter(array_merge(
+            (static::trigger(404)?:[]),
+            (Event::trigger(404)?:[])
+          )) as $res){
+             Response::add($res);
+          }
+          if ($debug) static::$stats['unmatched']++;
+          return false;
+        } finally {
+          if ($autosend){
+            Response::send();
+          }
         }
-        if ($debug) static::$stats['unmatched']++;
-        return false;
     }
 
     protected static function dispatchCompiledTree($URL, $method, $return_route, $debug){
@@ -1150,7 +1228,7 @@ class Route {
 
       foreach ((array)$node['routes'] as $route) {
         if ($debug) static::$stats['static_checks']++;
-        if (is_a($route, __CLASS__) && $route->match($URL, $method)){
+        if ($route instanceof self && $route->match($URL, $method)){
           if ($return_route){
             return $route;
           } else {
@@ -1164,7 +1242,7 @@ class Route {
       foreach ((array)$node['dynamic_routes'] as $entry) {
         if ($debug) static::$stats['dynamic_checks']++;
         $route = $entry['route'];
-        if (is_a($route, __CLASS__) && $route->match($URL, $method)){
+        if ($route instanceof self && $route->match($URL, $method)){
           if ($return_route){
             return $route;
           } else {
