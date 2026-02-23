@@ -37,7 +37,7 @@ class AgentAuditTool {
 
         $flags = JSON_UNESCAPED_SLASHES;
         if (!empty($opts['pretty'])) $flags |= JSON_PRETTY_PRINT;
-        $json = json_encode($report, $flags);
+        $json = json_encode(value: $report, flags: $flags);
         if ($json === false) {
             fwrite(STDERR, "[agent-audit] cannot encode JSON\n");
             return 1;
@@ -52,8 +52,6 @@ class AgentAuditTool {
      * @return void
      */
     protected static function configureRuntime() {
-        $level = error_reporting();
-        error_reporting($level & ~E_DEPRECATED & ~E_USER_DEPRECATED);
         ini_set('display_errors', '0');
     }
 
@@ -210,7 +208,7 @@ class AgentAuditTool {
         $md[] = '## Capabilities JSON';
         $md[] = '';
         $md[] = '```json';
-        $md[] = json_encode($report['capabilities'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $md[] = json_encode(value: $report['capabilities'], flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $md[] = '```';
         $md[] = '';
         return implode("\n", $md);

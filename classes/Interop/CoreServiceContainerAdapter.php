@@ -14,13 +14,13 @@ namespace Interop;
 
 class CoreServiceContainerAdapter implements ContainerLike {
     public function get($id) {
-        return call_user_func(['Service', $id]);
+        $method = (string) $id;
+        return \Service::$method();
     }
 
     public function has($id) {
         $ref = new \ReflectionClass('Service');
         $prop = $ref->getProperty('services');
-        $prop->setAccessible(true);
         $services = (array) $prop->getValue();
         return array_key_exists((string) $id, $services);
     }

@@ -15,7 +15,7 @@ try {
   }
 
   $composerPath = $root . DIRECTORY_SEPARATOR . 'composer.json';
-  $composer = json_decode((string)file_get_contents($composerPath), true);
+  $composer = json_decode(json: (string)file_get_contents(filename: $composerPath), associative: true);
   if (!is_array($composer)) {
     $errors[] = 'composer.json is not valid JSON.';
   } elseif (array_key_exists('version', $composer)) {

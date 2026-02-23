@@ -34,7 +34,7 @@ class Map implements JsonSerializable {
             return $ptr;
         } else {
             if ($default !== null){
-                return $this->set($key, is_callable($default) ? call_user_func($default) : $default);
+                return $this->set($key, is_callable($default) ? $default() : $default);
             } else {
                 return null;
             }

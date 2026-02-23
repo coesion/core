@@ -4,8 +4,6 @@ use PHPUnit\Framework\TestCase;
 
 class ErrorsTest extends TestCase {
   public function testErrorAliasAndMode(): void {
-    $this->assertTrue(class_exists('Error'));
-
     Errors::mode(Errors::JSON);
     $this->assertSame(Errors::JSON, Errors::mode());
 

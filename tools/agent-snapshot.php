@@ -37,7 +37,7 @@ class AgentSnapshotTool {
 
         $flags = JSON_UNESCAPED_SLASHES;
         if (!empty($opts['pretty'])) $flags |= JSON_PRETTY_PRINT;
-        $json = json_encode($snapshot, $flags);
+        $json = json_encode(value: $snapshot, flags: $flags);
         if ($json === false) {
             fwrite(STDERR, "[agent-snapshot] cannot encode JSON\n");
             return 1;
@@ -50,8 +50,6 @@ class AgentSnapshotTool {
      * @return void
      */
     protected static function configureRuntime() {
-        $level = error_reporting();
-        error_reporting($level & ~E_DEPRECATED & ~E_USER_DEPRECATED);
         ini_set('display_errors', '0');
     }
 
@@ -144,7 +142,7 @@ class AgentSnapshotTool {
      * @return int
      */
     protected static function checkDiff($path, array $snapshot) {
-        $actual = json_encode($snapshot, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        $actual = json_encode(value: $snapshot, flags: JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         if ($actual === false) {
             fwrite(STDERR, "[agent-snapshot] cannot encode snapshot\n");
             return 1;
@@ -155,7 +153,7 @@ class AgentSnapshotTool {
             return 1;
         }
 
-        $expected = trim((string) file_get_contents($path));
+        $expected = trim((string) file_get_contents(filename: $path));
         if (trim($actual) !== $expected) {
             fwrite(STDERR, "[agent-snapshot] snapshot differs from baseline: {$path}\n");
             return 1;
@@ -177,7 +175,7 @@ class AgentSnapshotTool {
         $md[] = '- Schema version: `' . $snapshot['schema_version'] . '`';
         $md[] = '';
         $md[] = '```json';
-        $md[] = json_encode($snapshot['items'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $md[] = json_encode(value: $snapshot['items'], flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         $md[] = '```';
         $md[] = '';
         return implode("\n", $md);

@@ -80,7 +80,10 @@ class i18n {
         $ext = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
 
         if ($ext === 'json') {
-            $data = json_decode(file_get_contents($filepath), true);
+            $data = json_decode(
+                json: file_get_contents(filename: $filepath),
+                associative: true
+            );
         } else {
             ob_start();
             $data = include $filepath;

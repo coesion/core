@@ -92,14 +92,14 @@ class View {
      * Propagate the call to the handler
      */
     public function __call($n,$p){
-      return call_user_func_array([static::$handler,$n],$p);
+      return static::$handler->$n(...$p);
     }
 
     /**
      * Propagate the static call to the handler
      */
     public static function __callStatic($n,$p){
-      return forward_static_call_array([static::$handler,$n],$p);
+      return static::$handler::$n(...$p);
     }
 
 }

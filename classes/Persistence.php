@@ -84,7 +84,7 @@ trait Persistence {
    * @param  callable $callback The callback to use on model save
    * @return callable           Current save callback
    */
-  protected static function persistenceSave(callable $callback=null){
+  protected static function persistenceSave(?callable $callback = null){
     static $save_cb = null;
     return $callback ? $save_cb = $callback : $save_cb;
   }
@@ -97,7 +97,7 @@ trait Persistence {
    * @param  callable $callback The callback to use on model load
    * @return callable           Current load callback
    */
-  protected static function persistenceLoad(callable $callback=null){
+  protected static function persistenceLoad(?callable $callback = null){
     static $retrieve_cb = null;
     return $callback ? $retrieve_cb = $callback : $retrieve_cb;
   }

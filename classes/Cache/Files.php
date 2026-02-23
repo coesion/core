@@ -33,7 +33,7 @@ class Files implements Adapter {
 
     public function get($key){
         $cache_file_name = $this->options->cache_dir.$key.'.cache.php';
-        if(is_file($cache_file_name) && $data = @unserialize(file_get_contents($cache_file_name))){
+        if(is_file($cache_file_name) && $data = @unserialize(file_get_contents(filename: $cache_file_name))){
             if($data[0] && (time() > $data[0])) {
                 unlink($cache_file_name);
                 return null;
@@ -46,7 +46,7 @@ class Files implements Adapter {
 
     public function set($key,$value,$expire=0){
         $cache_file_name = $this->options->cache_dir.$key.'.cache.php';
-        file_put_contents($cache_file_name,serialize([$expire?time()+$expire:0,$value]));
+        file_put_contents(filename: $cache_file_name, data: serialize([$expire?time()+$expire:0,$value]));
     }
 
     public function delete($key){
@@ -57,7 +57,7 @@ class Files implements Adapter {
     public function exists($key){
         $cache_file_name = $this->options->cache_dir.$key.'.cache.php';
         if(false === is_file($cache_file_name)) return false;
-        $raw = file_get_contents($cache_file_name);
+        $raw = file_get_contents(filename: $cache_file_name);
         if ($raw === false) return false;
         $data = @unserialize($raw);
         if (!is_array($data) || count($data) < 2) {

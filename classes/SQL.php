@@ -114,7 +114,7 @@ class SQL {
    */
   public static function __callStatic($method, $args){
     if (empty(self::$connections[self::$current])) throw new \Exception("[SQL] No default connection defined.");
-    return call_user_func_array([self::$connections[self::$current],$method],$args);
+    return self::$connections[self::$current]->$method(...$args);
   }
 
 }
@@ -295,7 +295,7 @@ class SQLConnection {
     $sql_sep  = Options::get('database.sql.separator',';');
     if (is_file($f = "$sql_path/$script.sql")){
         $result = true;
-        foreach(explode($sql_sep,file_get_contents($f)) as $statement) {
+        foreach(explode($sql_sep, file_get_contents(filename: $f)) as $statement) {
             $result = $this->exec($statement);
         }
         return $result;
@@ -398,7 +398,11 @@ class SQLConnection {
   public function whereEq($filters=[]){
     if (!$this->builder) return $this;
     foreach ((array) $filters as $key => $value) {
-      $param = '__w_' . preg_replace('/[^a-z0-9_]+/i', '_', (string) $key) . '_' . count($this->builder['params']);
+      $param = '__w_' . preg_replace(
+        pattern: '/[^a-z0-9_]+/i',
+        replacement: '_',
+        subject: (string) $key
+      ) . '_' . count($this->builder['params']);
       $this->builder['where'][] = "`{$key}` = :{$param}";
       $this->builder['params'][$param] = $value;
     }

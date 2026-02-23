@@ -22,9 +22,13 @@ class ZIP {
   }
 
   public function __construct($name=''){
-    $this->name = preg_replace('/\.zip$/','',($name?:tempnam(sys_get_temp_dir(), 'ZExp').'-archive'));
+    $this->name = preg_replace(
+      pattern: '/\.zip$/',
+      replacement: '',
+      subject: ($name?:tempnam(sys_get_temp_dir(), 'ZExp').'-archive')
+    );
     $this->file = $this->name . '.zip';
-    if (!preg_match('~^(?:/|\\\\\\\\|[A-Za-z]:[\\\\/]|\\./|\\.\\./)~', $this->file)) {
+    if (!preg_match(pattern: '~^(?:/|\\\\\\\\|[A-Za-z]:[\\\\/]|\\./|\\.\\./)~', subject: $this->file)) {
       $this->file = './' . $this->file;
     }
     $this->zip  = new \ZipArchive;

@@ -79,11 +79,10 @@ class Introspect {
         $ref = new \ReflectionClass($class);
         $traits = static::allTraits($ref);
 
-        if (!in_array('Module', $traits, true)) return [];
+        if (!in_array(needle: 'Module', haystack: $traits, strict: true)) return [];
 
         try {
             $prop = $ref->getProperty('__PROTOTYPE__');
-            $prop->setAccessible(true);
             $proto = $prop->getValue();
             return is_array($proto) ? array_keys($proto) : [];
         } catch (\ReflectionException $e) {
@@ -108,7 +107,6 @@ class Introspect {
                 foreach (['URLPattern', 'methods', 'tag', 'dynamic'] as $prop) {
                     if ($ref->hasProperty($prop)) {
                         $p = $ref->getProperty($prop);
-                        $p->setAccessible(true);
                         $data[$prop] = $p->getValue($route);
                     }
                 }
@@ -250,10 +248,10 @@ class Introspect {
      */
     protected static function runtimeDependencyCount() {
         $path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'composer.json';
-        $json = @file_get_contents($path);
+        $json = @file_get_contents(filename: $path);
         if (!$json) return 0;
 
-        $composer = json_decode($json, true);
+        $composer = json_decode(json: $json, associative: true);
         if (!is_array($composer)) return 0;
 
         $requires = isset($composer['require']) && is_array($composer['require'])
@@ -277,7 +275,7 @@ class Introspect {
      * @return bool
      */
     protected static function hasRouteExtension($method) {
-        return in_array($method, static::extensions('Route'), true);
+        return in_array(needle: $method, haystack: static::extensions('Route'), strict: true);
     }
 
     /**
@@ -293,7 +291,6 @@ class Introspect {
             if (!$ref->hasProperty('driver')) return '';
 
             $prop = $ref->getProperty('driver');
-            $prop->setAccessible(true);
             $driver = $prop->getValue();
 
             if (!is_object($driver)) return '';

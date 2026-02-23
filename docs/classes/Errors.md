@@ -14,7 +14,7 @@ Public API:
 - `Errors::mode($mode = null)` gets or sets output mode.
 - `Errors::traceError(...)` and `Errors::traceException(...)` implement handlers.
 - `Errors::structuredException(Throwable $e)` builds a structured error payload.
-- Deprecated convenience event methods: `onFatal`, `onWarning`, `onNotice`, `onAny`.
+- Event hooks are exposed through `Errors::on('fatal'|'warning'|'notice'|'any', $listener)`.
 
 Modes:
 - `Errors::SIMPLE`, `Errors::HTML`, `Errors::SILENT`, `Errors::JSON`, `Errors::JSON_VERBOSE`.
@@ -38,7 +38,7 @@ Errors::capture();
 
 From now on errors are converted to `ErrorExceptions` and routed to the handler which dispatches them in `core.error.*` events, filtered by kind.
 
-You can bind directly to these events via the special `Errors::on*` methods.
+You can bind directly to these events via `Errors::on(...)`.
 
 ```php
 Event::on('core.error.warning',function($exception){
@@ -46,10 +46,10 @@ Event::on('core.error.warning',function($exception){
 });
 ```
 
-Preferred shortcut :
+Preferred shortcut:
 
 ```php
-Errors::onWarning(function($exception){
+Errors::on('warning', function($exception){
   syslog(LOG_WARNING,$exception->getMessage());
 });
 ```
@@ -58,14 +58,14 @@ These are the error mapping rules:
 
 ErrorType | Gravity | Event | Method
 ----|------|----|----
-`E_NOTICE` | Informational  | `core.error.notice` | `Errors::onNotice`
-`E_USER_NOTICE ` | Informational  | `core.error.notice` | `Errors::onNotice`
-`E_STRICT ` | Informational  | `core.error.notice` | `Errors::onNotice`
-`E_WARNING ` | Warning  | `core.error.warning` | `Errors::onWarning`
-`E_USER_WARNING ` | Warning  | `core.error.warning` | `Errors::onWarning`
-`E_USER_ERROR ` | Fatal  | `core.error.fatal` | `Errors::onFatal`
+`E_NOTICE` | Informational  | `core.error.notice` | `Errors::on('notice', $listener)`
+`E_USER_NOTICE ` | Informational  | `core.error.notice` | `Errors::on('notice', $listener)`
+`E_STRICT ` | Informational  | `core.error.notice` | `Errors::on('notice', $listener)`
+`E_WARNING ` | Warning  | `core.error.warning` | `Errors::on('warning', $listener)`
+`E_USER_WARNING ` | Warning  | `core.error.warning` | `Errors::on('warning', $listener)`
+`E_USER_ERROR ` | Fatal  | `core.error.fatal` | `Errors::on('fatal', $listener)`
 
-Every error will be **also** dispatched via the `core.error` event. You can bind directly to this event via the `Errors::onAny` method.
+Every error will be **also** dispatched via the `core.error` event. You can bind directly with `Errors::on('any', $listener)`.
 
 > If a single error handler returns `true`, the current error will be silenced and not propagated any more.
 

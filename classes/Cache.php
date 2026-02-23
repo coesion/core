@@ -22,13 +22,13 @@ class Cache {
         if(static::$driver->exists($hash) && $results = static::$driver->get($hash)){
             return $results;
         } else {
-            if($data = is_callable($default)?call_user_func($default):$default){
+            if($data = is_callable($default) ? $default() : $default){
                 static::$driver->set($hash,$data,$expire);
             }
             return $data;
         }
       } else {
-        return is_callable($default) ? call_user_func($default) : $default;
+        return is_callable($default) ? $default() : $default;
       }
     }
 

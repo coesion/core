@@ -67,7 +67,11 @@ class Smtp implements Driver {
   }
 
   protected function cleanAddr($email){
-    return preg_replace('((.*?)<([\w.@-]+)>(.*?))','$2',$email);
+    return preg_replace(
+      pattern: '((.*?)<([\w.@-]+)>(.*?))',
+      replacement: '$2',
+      subject: $email
+    );
   }
 
   protected function SMTPmail($from,$to,$body){

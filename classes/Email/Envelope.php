@@ -166,7 +166,7 @@ class Envelope {
 
         if (is_string($file)) {
           $name = basename($file);
-          $data = file_get_contents($file);
+          $data = file_get_contents(filename: $file);
         } else {
           $name = isset($file['name'])    ? $file['name']    : 'untitled';
           $data = isset($file['content']) ? $file['content'] : '';

@@ -70,10 +70,10 @@ class Pusher implements Adapter {
      * @return bool
      */
     protected function trigger($channel, $event, $data) {
-        $body = json_encode([
+        $body = json_encode(value: [
             'name'     => $event,
             'channel'  => $channel,
-            'data'     => json_encode($data),
+            'data'     => json_encode(value: $data),
         ]);
 
         $path = '/apps/' . $this->options->app_id . '/events';
@@ -87,7 +87,7 @@ class Pusher implements Adapter {
         ];
 
         ksort($params);
-        $queryString = http_build_query($params);
+        $queryString = http_build_query(data: $params);
         $signString = "POST\n{$path}\n{$queryString}";
         $signature = hash_hmac('sha256', $signString, $this->options->secret);
 

@@ -29,7 +29,7 @@ class CoreMiddlewarePipelineAdapter implements RequestHandlerLike {
 
     protected function dispatch($index, HttpRequestLike $request) {
         if (!isset($this->stack[$index])) {
-            return call_user_func($this->terminal, $request);
+            return ($this->terminal)($request);
         }
 
         $current = $this->stack[$index];

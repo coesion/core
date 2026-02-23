@@ -55,7 +55,7 @@ class CLI {
     public static function help(?callable $callback = null){
         $callback
           ? is_callable($callback) && static::$help = $callback
-          : static::$help && call_user_func(static::$help);
+          : static::$help && (static::$help)();
     }
 
     /**
@@ -65,7 +65,7 @@ class CLI {
     public static function error(?callable $callback = null){
         $callback
           ? is_callable($callback) && static::$error = $callback
-          : static::$error && call_user_func(static::$error);
+          : static::$error && (static::$error)();
     }
 
     /**
@@ -81,7 +81,7 @@ class CLI {
      * @param string $message
      */
     protected static function triggerError($message){
-        is_callable(static::$error) && call_user_func(static::$error,$message);
+        is_callable(static::$error) && (static::$error)($message);
         exit -1;
     }
 
@@ -92,7 +92,7 @@ class CLI {
      * @return mixed
      */
     public static function input($key=null,$default=null){
-      return $key ? (isset(static::$options[$key]) ? static::$options[$key] : (is_callable($default)?call_user_func($default):$default)) : static::$options;
+      return $key ? (isset(static::$options[$key]) ? static::$options[$key] : (is_callable($default) ? $default() : $default)) : static::$options;
     }
 
     /**
@@ -107,7 +107,11 @@ class CLI {
        foreach(static::$commands as $name => $cmd){
           $results[] = [
             'name'        => $name,
-            'params'      => preg_replace('/:(\w+)/','[$1]',implode(' ',$cmd[0])),
+            'params'      => preg_replace(
+              pattern: '/:(\w+)/',
+              replacement: '[$1]',
+              subject: implode(' ', $cmd[0])
+            ),
             'description' => $cmd[2],
           ];
        }
@@ -153,8 +157,8 @@ class CLI {
               return static::triggerError("Command [".$command."] is incomplete.");
           }
         }
-        $returns = call_user_func_array($cmd[1], $pars_vector);
-        echo is_scalar($returns) ? "$returns" : json_encode($returns, JSON_PRETTY_PRINT);
+        $returns = ($cmd[1])(...$pars_vector);
+        echo is_scalar($returns) ? "$returns" : json_encode(value: $returns, flags: JSON_PRETTY_PRINT);
         return true;
       } else {
         static::help();
@@ -168,9 +172,9 @@ class CLI {
     * @return void
     */
    public static function write($message){
-      if( preg_match('~<[^>]+>~',$message)) {
+      if( preg_match(pattern: '~<[^>]+>~', subject: $message)) {
          // Use preg_replace_callback for fast regex matches navigation
-         echo strtr(preg_replace_callback('~^(.*)<([^>]+)>(.+)</\2>(.*)$~USm',function($m){
+         echo strtr(preg_replace_callback(pattern: '~^(.*)<([^>]+)>(.+)</\2>(.*)$~USm', callback: function($m){
             static::write($m[1]);
             $color = strtoupper(trim($m[2]));
             if( isset(static::$shell_colors[$color]) ) echo static::$shell_colors[$color];
@@ -180,7 +184,8 @@ class CLI {
             $back_color = array_pop(static::$color_stack) ?: static::$color_stack[]='NORMAL';
             if( isset(static::$shell_colors[$back_color]) ) echo static::$shell_colors[$back_color];
             static::write($m[4]);
-         },strtr($message,["\n"=>"&BR;"])),["&BR;"=>PHP_EOL]);
+            return '';
+         }, subject: strtr($message,["\n"=>"&BR;"])),["&BR;"=>PHP_EOL]);
       } else {
          echo strtr($message,["&BR;"=>PHP_EOL]);
       }
@@ -213,9 +218,9 @@ class CLI {
     public static function edit($text,$filename=''){
       $EDITOR = getenv('EDITOR')?:'nano';
       $tmp = tempnam(sys_get_temp_dir(), "E-").strtr($filename,'/','_');
-      file_put_contents($tmp, $text);
+      file_put_contents(filename: $tmp, data: $text);
       passthru("$EDITOR $tmp");
-      $result = file_get_contents($tmp);
+      $result = file_get_contents(filename: $tmp);
       unlink($tmp);
       return $result;
   }

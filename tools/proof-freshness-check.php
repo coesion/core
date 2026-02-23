@@ -36,11 +36,11 @@ class ProofFreshnessCheckTool {
             if ($ageDays > $opts['max_days']) $failed = true;
         }
 
-        fwrite(STDOUT, json_encode([
+        fwrite(STDOUT, json_encode(value: [
             'schema_version' => 1,
             'max_days' => $opts['max_days'],
             'report' => $report,
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        ], flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
 
         return $failed ? 1 : 0;
     }

@@ -106,7 +106,7 @@ class Style {
   }
 
   private function stripAnsi(string $text): string {
-    return preg_replace('/\x1b\[[0-9;]*m/', '', $text);
+    return preg_replace(pattern: '/\x1b\[[0-9;]*m/', replacement: '', subject: $text);
   }
 
   private function visibleWidth(string $text): int {
@@ -145,7 +145,7 @@ class Style {
     $profile = $this->terminal->colorProfile();
     $value = strtolower($value);
 
-    if ($profile === 'truecolor' && preg_match('/^#?([0-9a-f]{6})$/i', $value, $m)) {
+    if ($profile === 'truecolor' && preg_match(pattern: '/^#?([0-9a-f]{6})$/i', subject: $value, matches: $m)) {
       $hex = $m[1];
       $r = hexdec(substr($hex, 0, 2));
       $g = hexdec(substr($hex, 2, 2));

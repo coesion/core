@@ -37,7 +37,7 @@ class File {
             list($mount, $path) = $file_location;
             array_unshift($params, static::resolvePath($path));
             if (empty(static::$mount_points[$mount])) return false;
-            return call_user_func_array([static::$mount_points[$mount],$name],$params);
+            return static::$mount_points[$mount]->$name(...$params);
         } else return false;
     }
 

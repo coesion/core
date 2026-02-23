@@ -39,12 +39,12 @@ copyAssetsAndStaticFiles($docsDir, $outDir);
 $nav = buildNavigation($map);
 foreach ($map as $sourceRel => $outputRel) {
   $sourcePath = $docsDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $sourceRel);
-  $raw = file_get_contents($sourcePath);
+  $raw = file_get_contents(filename: $sourcePath);
   [$content, $toc, $title] = renderMarkdown($raw, $sourceRel, $outputRel, $map);
   $page = renderPageHtml($title, $content, $toc, $nav, $outputRel, $sourceRel);
   $targetPath = $outDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $outputRel);
   ensureDir(dirname($targetPath));
-  file_put_contents($targetPath, $page);
+  file_put_contents(filename: $targetPath, data: $page);
 }
 
 if (isset($map['guides/README.md'])) {
@@ -55,7 +55,7 @@ if (isset($map['guides/README.md'])) {
     . '"><title>Docs</title></head><body>Redirecting to <a href="'
     . htmlspecialchars($target, ENT_QUOTES, 'UTF-8')
     . '">documentation</a>.</body></html>';
-  file_put_contents($indexPath, $redirect);
+  file_put_contents(filename: $indexPath, data: $redirect);
 }
 
 fwrite(STDOUT, "Static docs site generated in $outDir\n");
@@ -87,7 +87,7 @@ function copyAssetsAndStaticFiles(string $docsDir, string $outDir): void {
     $rel = normalizeRelPath($docsDir, $src);
     $dst = $outDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $rel);
     ensureDir(dirname($dst));
-    copy($src, $dst);
+    copy(from: $src, to: $dst);
   }
 }
 
@@ -124,18 +124,18 @@ function labelFromSource(string $sourceRel): string {
     $dir = basename(dirname($sourceRel));
     return $dir !== '.' ? ucfirst($dir) . ' Home' : 'Home';
   }
-  return preg_replace('/\.md$/i', '', $base);
+  return preg_replace(pattern: '/\.md$/i', replacement: '', subject: $base);
 }
 
 function outputPathForMarkdown(string $rel): string {
-  if (preg_match('#(^|/)README\.md$#i', $rel)) {
+  if (preg_match(pattern: '#(^|/)README\.md$#i', subject: $rel)) {
     $dir = dirname($rel);
     if ($dir === '.' || $dir === '') {
       return 'index.html';
     }
     return normalizePath($dir . '/index.html');
   }
-  return preg_replace('/\.md$/i', '.html', $rel);
+  return preg_replace(pattern: '/\.md$/i', replacement: '.html', subject: $rel);
 }
 
 function renderPageHtml(string $title, string $content, array $toc, array $nav, string $currentOutputRel, string $sourceRel): string {
@@ -203,7 +203,11 @@ function renderMarkdown(string $text, string $sourceRel, string $currentOutputRe
   $lines = explode("\n", $text);
   $html = '';
   $toc = [];
-  $title = preg_replace('/\.md$/i', '', basename($sourceRel));
+  $title = preg_replace(
+    pattern: '/\.md$/i',
+    replacement: '',
+    subject: basename($sourceRel)
+  );
   $inCode = false;
   $inList = false;
   $inQuote = false;
@@ -212,7 +216,7 @@ function renderMarkdown(string $text, string $sourceRel, string $currentOutputRe
 
   for ($i = 0; $i < $count; $i++) {
     $line = $lines[$i];
-    if (preg_match('/^```(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^```(.*)$/', subject: $line, matches: $m)) {
       if ($inCode) {
         $html .= '</code></pre>';
         $inCode = false;
@@ -241,12 +245,12 @@ function renderMarkdown(string $text, string $sourceRel, string $currentOutputRe
       continue;
     }
 
-    if (preg_match('/^(#{1,6})\s+(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^(#{1,6})\s+(.*)$/', subject: $line, matches: $m)) {
       if ($inList) { $html .= '</ul>'; $inList = false; }
       if ($inQuote) { $html .= '</blockquote>'; $inQuote = false; }
       $level = strlen($m[1]);
       $heading = trim($m[2]);
-      if ($title === preg_replace('/\.md$/i', '', basename($sourceRel))) {
+      if ($title === preg_replace(pattern: '/\.md$/i', replacement: '', subject: basename($sourceRel))) {
         $title = strip_tags($heading);
       }
       $id = slugify($heading);
@@ -260,7 +264,7 @@ function renderMarkdown(string $text, string $sourceRel, string $currentOutputRe
       continue;
     }
 
-    if (preg_match('/^\s*[-*+]\s+(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^\s*[-*+]\s+(.*)$/', subject: $line, matches: $m)) {
       if (!$inList) $html .= '<ul>';
       if ($inQuote) { $html .= '</blockquote>'; $inQuote = false; }
       $inList = true;
@@ -268,7 +272,7 @@ function renderMarkdown(string $text, string $sourceRel, string $currentOutputRe
       continue;
     }
 
-    if (preg_match('/^\s*>\s?(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^\s*>\s?(.*)$/', subject: $line, matches: $m)) {
       if ($inList) { $html .= '</ul>'; $inList = false; }
       if (!$inQuote) $html .= '<blockquote>';
       $inQuote = true;
@@ -301,7 +305,7 @@ function isTableHeader(string $line, string $next): bool {
   if (strpos($line, '|') === false) return false;
   $next = trim($next);
   if ($next === '') return false;
-  return (bool)preg_match('/^[\s\|\-:]+$/', $next) && strpos($next, '-') !== false;
+  return (bool)preg_match(pattern: '/^[\s\|\-:]+$/', subject: $next) && strpos($next, '-') !== false;
 }
 
 function renderTable(array $lines, int $start, string $sourceRel, string $currentOutputRel, array $map): array {
@@ -338,18 +342,18 @@ function splitTableRow(string $line): array {
 
 function inlineMarkdown(string $text, string $sourceRel, string $currentOutputRel, array $map): string {
   $text = htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-  $text = preg_replace('/`([^`]+)`/', '<code>$1</code>', $text);
-  $text = preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $text);
-  $text = preg_replace('/\*(.+?)\*/', '<em>$1</em>', $text);
-  $text = preg_replace('/~~(.+?)~~/', '<del>$1</del>', $text);
-  $text = preg_replace('/__(.+?)__/', '<u>$1</u>', $text);
-  $text = preg_replace_callback('/\[([^\]]+)\]\(([^\)]+)\)/', function ($m) use ($sourceRel, $currentOutputRel, $map) {
+  $text = preg_replace(pattern: '/`([^`]+)`/', replacement: '<code>$1</code>', subject: $text);
+  $text = preg_replace(pattern: '/\*\*(.+?)\*\*/', replacement: '<strong>$1</strong>', subject: $text);
+  $text = preg_replace(pattern: '/\*(.+?)\*/', replacement: '<em>$1</em>', subject: $text);
+  $text = preg_replace(pattern: '/~~(.+?)~~/', replacement: '<del>$1</del>', subject: $text);
+  $text = preg_replace(pattern: '/__(.+?)__/', replacement: '<u>$1</u>', subject: $text);
+  $text = preg_replace_callback(pattern: '/\[([^\]]+)\]\(([^\)]+)\)/', callback: function ($m) use ($sourceRel, $currentOutputRel, $map) {
     $label = $m[1];
     $href = trim($m[2]);
     if ($href === '') {
       return '<a href="#">' . $label . '</a>';
     }
-    if (preg_match('/^(https?:\/\/|mailto:)/i', $href)) {
+    if (preg_match(pattern: '/^(https?:\/\/|mailto:)/i', subject: $href)) {
       return '<a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener">' . $label . '</a>';
     }
     if (str_starts_with($href, '#')) {
@@ -367,7 +371,7 @@ function inlineMarkdown(string $text, string $sourceRel, string $currentOutputRe
     $target = relativePath($currentOutputRel, $resolvedOutput);
     if ($anchor !== '') $target .= '#' . rawurlencode($anchor);
     return '<a href="' . htmlspecialchars($target, ENT_QUOTES, 'UTF-8') . '">' . $label . '</a>';
-  }, $text);
+  }, subject: $text);
   return $text;
 }
 
@@ -419,8 +423,8 @@ function normalizeRelPath(string $baseDir, string $path): string {
 
 function slugify(string $text): string {
   $text = strtolower(trim($text));
-  $text = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $text);
-  $text = preg_replace('/\s+/', '-', $text);
+  $text = preg_replace(pattern: '/[^\p{L}\p{N}\s-]/u', replacement: '', subject: $text);
+  $text = preg_replace(pattern: '/\s+/', replacement: '-', subject: $text);
   $text = trim($text, '-');
   return $text !== '' ? $text : 'section';
 }

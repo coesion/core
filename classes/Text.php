@@ -38,7 +38,11 @@ class Text {
       };
     }
 
-    return preg_replace_callback("(\{\{([^}]+)\}\})S",$replacer,$t);
+    return preg_replace_callback(
+      pattern: "(\{\{([^}]+)\}\})S",
+      callback: $replacer,
+      subject: $t
+    );
   }
 
   /**
@@ -55,8 +59,10 @@ class Text {
    */
   public static function slugify($text){
     return preg_replace(
-      ['(\s+)','([^a-z0-9-])i','(-+)'],['-','','-'],
-      strtolower(self::removeAccents($text)));
+      pattern: ['(\s+)', '([^a-z0-9-])i', '(-+)'],
+      replacement: ['-', '', '-'],
+      subject: strtolower(self::removeAccents($text))
+    );
   }
 
   /**

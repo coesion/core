@@ -15,7 +15,7 @@ function artifactReadJsonFile($path){
     throw new RuntimeException("Missing file: $path");
   }
 
-  $decoded = json_decode((string)file_get_contents($path), true);
+  $decoded = json_decode(json: (string)file_get_contents(filename: $path), associative: true);
   if (!is_array($decoded)) {
     throw new RuntimeException("Invalid JSON in $path");
   }
@@ -121,7 +121,7 @@ function artifactReadJsVersion(){
     throw new RuntimeException("Missing JS version file at $path");
   }
 
-  $version = trim((string)file_get_contents($path));
+  $version = trim((string)file_get_contents(filename: $path));
   artifactValidateSemver($version, 'js/VERSION');
   return $version;
 }
@@ -132,7 +132,7 @@ function artifactReadRootVersion(){
     throw new RuntimeException("Missing VERSION file at $path");
   }
 
-  $version = trim((string)file_get_contents($path));
+  $version = trim((string)file_get_contents(filename: $path));
   artifactValidateSemver($version, 'VERSION');
   return $version;
 }
@@ -143,11 +143,11 @@ function artifactReadJsPackage(){
 }
 
 function artifactWriteJsonFile($path, array $payload){
-  $json = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+  $json = json_encode(value: $payload, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
   if ($json === false) {
     throw new RuntimeException("Failed encoding JSON for $path");
   }
-  if (file_put_contents($path, $json . "\n") === false) {
+  if (file_put_contents(filename: $path, data: $json . "\n") === false) {
     throw new RuntimeException("Failed writing $path");
   }
 }

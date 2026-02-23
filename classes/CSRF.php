@@ -54,7 +54,11 @@ class CSRF {
 
   public static function shouldVerify(){
     $methods = Options::get('core.csrf.methods', ['post','put','patch','delete']);
-    return in_array(strtolower(Request::method()), (array)$methods, true);
+    return in_array(
+      needle: strtolower(Request::method()),
+      haystack: (array)$methods,
+      strict: true
+    );
   }
 
   protected static function generateToken(){

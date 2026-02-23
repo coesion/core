@@ -68,7 +68,7 @@ class Schema {
      * @return bool
      */
     public static function hasTable($table) {
-        return in_array($table, static::tables(), true);
+        return in_array(needle: $table, haystack: static::tables(), strict: true);
     }
 
     /**

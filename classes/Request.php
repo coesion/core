@@ -48,7 +48,7 @@ class Request {
    * @return Structure The returned value or $default.
    */
   public static function input($key=null,$default=null){
-    return $key ? (isset($_REQUEST[$key]) ? new Structure($_REQUEST[$key]) : (is_callable($default)?call_user_func($default):$default))  : new Structure($_REQUEST);
+    return $key ? (isset($_REQUEST[$key]) ? new Structure($_REQUEST[$key]) : (is_callable($default) ? $default() : $default))  : new Structure($_REQUEST);
   }
 
   /**
@@ -60,7 +60,7 @@ class Request {
    * @return Object The returned value or $default.
    */
   public static function env($key=null,$default=null){
-    return $key ? (filter_input(INPUT_ENV,$key) ?: (is_callable($default)?call_user_func($default):$default))  : $_ENV;
+    return $key ? (filter_input(INPUT_ENV,$key) ?: (is_callable($default) ? $default() : $default))  : $_ENV;
   }
 
   /**
@@ -72,7 +72,7 @@ class Request {
    * @return Object The returned value or $default.
    */
   public static function server($key=null,$default=null){
-    return $key ? (isset($_SERVER[$key]) ? $_SERVER[$key] : (is_callable($default)?call_user_func($default):$default)) : $_SERVER;
+    return $key ? (isset($_SERVER[$key]) ? $_SERVER[$key] : (is_callable($default) ? $default() : $default)) : $_SERVER;
   }
 
   /**
@@ -84,7 +84,7 @@ class Request {
    * @return Object The returned value or $default.
    */
   public static function post($key=null,$default=null){
-    return $key ? (filter_input(INPUT_POST,$key) ?: (is_callable($default)?call_user_func($default):$default)) : $_POST;
+    return $key ? (filter_input(INPUT_POST,$key) ?: (is_callable($default) ? $default() : $default)) : $_POST;
   }
 
   /**
@@ -96,7 +96,7 @@ class Request {
    * @return Object The returned value or $default.
    */
   public static function get($key=null,$default=null){
-    return $key ? (filter_input(INPUT_GET,$key) ?: (is_callable($default)?call_user_func($default):$default)) : $_GET;
+    return $key ? (filter_input(INPUT_GET,$key) ?: (is_callable($default) ? $default() : $default)) : $_GET;
   }
 
   /**
@@ -108,7 +108,7 @@ class Request {
    * @return Object The returned value or $default.
    */
   public static function files($key=null,$default=null){
-    return $key ? (isset($_FILES[$key]) ? $_FILES[$key] : (is_callable($default)?call_user_func($default):$default))  : $_FILES;
+    return $key ? (isset($_FILES[$key]) ? $_FILES[$key] : (is_callable($default) ? $default() : $default))  : $_FILES;
   }
 
   /**
@@ -120,7 +120,7 @@ class Request {
    * @return Object The returned value or $default.
    */
   public static function cookie($key=null,$default=null){
-    return $key ? (filter_input(INPUT_COOKIE,$key) ?: (is_callable($default)?call_user_func($default):$default))  : $_COOKIE;
+    return $key ? (filter_input(INPUT_COOKIE,$key) ?: (is_callable($default) ? $default() : $default))  : $_COOKIE;
   }
 
   /**
@@ -167,7 +167,7 @@ class Request {
    */
   public static function header($key=null,$default=null){
     if ($key) $key = 'HTTP_'.strtr(strtoupper($key),'-','_');
-    return $key ? (isset($_SERVER[$key])? $_SERVER[$key] : (is_callable($default)?call_user_func($default):$default)) : array_filter($_SERVER, function($k) {
+    return $key ? (isset($_SERVER[$key])? $_SERVER[$key] : (is_callable($default) ? $default() : $default)) : array_filter($_SERVER, function($k) {
        return strrpos($k, "HTTP_") === 0;
     }, ARRAY_FILTER_USE_KEY);
   }
@@ -248,16 +248,16 @@ class Request {
       $json = (false !== stripos(empty($_SERVER['HTTP_CONTENT_TYPE'])?'':$_SERVER['HTTP_CONTENT_TYPE'],'json'))
            || (false !== stripos(empty($_SERVER['CONTENT_TYPE'])?'':$_SERVER['CONTENT_TYPE'],'json'));
       if ($json) {
-        static::$body = json_decode(file_get_contents("php://input"));
+        static::$body = json_decode(json: file_get_contents(filename: "php://input"));
       } else {
        if (empty($_POST)) {
-          static::$body = file_get_contents("php://input");
+          static::$body = file_get_contents(filename: "php://input");
         } else {
           static::$body = (object)$_POST;
         }
       }
     }
-    return $key ? (isset(static::$body->$key) ? static::$body->$key : (is_callable($default)?call_user_func($default):$default))  : static::$body;
+    return $key ? (isset(static::$body->$key) ? static::$body->$key : (is_callable($default) ? $default() : $default))  : static::$body;
   }
 
 }

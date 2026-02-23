@@ -35,7 +35,7 @@ class Facade {
       'scripted_value' => (string)$scriptedValue,
     ])));
     if ($line === '') return (bool)$default;
-    return in_array($line[0], ['y', '1', 't'], true);
+    return in_array(needle: $line[0], haystack: ['y', '1', 't'], strict: true);
   }
 
   public function select(string $prompt, array $items, array $opts = []) {

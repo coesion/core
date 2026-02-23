@@ -47,8 +47,8 @@ class Options extends Dictionary {
    * @param  string $prefix_path You can insert/update the loaded array to a specific key path, if omitted it will be merged with the whole dictionary
    */
   public static function loadJSON($filepath,$prefix_path=null){
-    $data = file_get_contents($filepath);
-    $results = $data?json_decode($data,true):[];
+    $data = file_get_contents(filename: $filepath);
+    $results = $data ? json_decode(json: $data, associative: true) : [];
     if($results) {
       $results = static::filterWith(["load.json", "load"], $results);
       static::loadArray($results,$prefix_path);
@@ -85,9 +85,13 @@ class Options extends Dictionary {
       list($key,$value) = explode('=',$line,2);
       $key   = trim(str_replace(['export ', "'", '"'], '', $key));
       $value = stripslashes(trim($value,'"\''));
-      $results[$key] = preg_replace_callback('/\${([a-zA-Z0-9_]+)}/',function($m) use (&$results){
-        return isset($results[$m[1]]) ? $results[$m[1]] : '';
-      },$value);
+      $results[$key] = preg_replace_callback(
+        pattern: '/\${([a-zA-Z0-9_]+)}/',
+        callback: function($m) use (&$results){
+          return isset($results[$m[1]]) ? $results[$m[1]] : '';
+        },
+        subject: $value
+      );
       putenv("$key={$results[$key]}");
       $_ENV[$key] = $results[$key];
     }

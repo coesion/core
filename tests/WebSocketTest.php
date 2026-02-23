@@ -34,7 +34,6 @@ class WebSocketTest extends TestCase {
         // Reset by creating a fresh state
         $ref = new ReflectionClass('WebSocket');
         $prop = $ref->getProperty('driver');
-        $prop->setAccessible(true);
         $prop->setValue(null, null);
 
         $this->assertFalse(WebSocket::send('test', 'data'));
@@ -43,7 +42,6 @@ class WebSocketTest extends TestCase {
     public function testReadyReturnsFalseWithoutDriver(): void {
         $ref = new ReflectionClass('WebSocket');
         $prop = $ref->getProperty('driver');
-        $prop->setAccessible(true);
         $prop->setValue(null, null);
 
         $this->assertFalse(WebSocket::ready());

@@ -138,8 +138,8 @@ if (!$input || !is_file($input)) {
   exit(1);
 }
 
-$raw = file_get_contents($input);
-$data = json_decode($raw, true);
+$raw = file_get_contents(filename: $input);
+$data = json_decode(json: $raw, associative: true);
 if (!is_array($data)) {
   fwrite(STDERR, "Invalid json file: $input\n");
   exit(1);
@@ -269,5 +269,5 @@ $lines[] = 'php tools/benchmark_report.php';
 $lines[] = '```';
 $lines[] = '';
 
-file_put_contents($output, implode("\n", $lines));
+file_put_contents(filename: $output, data: implode("\n", $lines));
 fwrite(STDOUT, "Report written to $output\n");

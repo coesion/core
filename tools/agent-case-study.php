@@ -19,14 +19,14 @@ class AgentCaseStudyTool {
         }
 
         $payload = static::buildPayload($opts);
-        $json = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $json = json_encode(value: $payload, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($json === false) {
             fwrite(STDERR, "[agent-case-study] cannot encode JSON\n");
             return 1;
         }
 
         if (!empty($opts['out'])) {
-            file_put_contents($opts['out'], $json . "\n");
+            file_put_contents(filename: $opts['out'], data: $json . "\n");
             fwrite(STDOUT, "Wrote {$opts['out']}\n");
             return 0;
         }

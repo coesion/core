@@ -48,13 +48,13 @@ if (PHP_SAPI === 'cli') {
 }
 
 // Router mode
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
+$path = parse_url(url: $_SERVER['REQUEST_URI'], component: PHP_URL_PATH) ?? '/';
 
 // Serve static assets from docs/assets
 if (strpos($path, '/assets/') === 0) {
   $assetPath = realpath($docsDir . $path);
   if ($assetPath && str_starts_with($assetPath, realpath($docsDir)) && is_file($assetPath)) {
-    $mime = mime_content_type($assetPath) ?: 'application/octet-stream';
+    $mime = mime_content_type(filename: $assetPath) ?: 'application/octet-stream';
     header('Content-Type: ' . $mime);
     readfile($assetPath);
     exit;
@@ -79,7 +79,7 @@ if (!$filePath) {
   $contentHtml = '<p>Document not found.</p>';
 } else {
   $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-  $raw = file_get_contents($filePath);
+  $raw = file_get_contents(filename: $filePath);
   if ($ext === 'md') {
     [$contentHtml, $toc] = renderMarkdown($raw, $requested);
   } else {
@@ -232,11 +232,11 @@ function getTraitBaseNames(string $classesDir): array {
     return $traits;
   }
   foreach (glob($classesDir . DIRECTORY_SEPARATOR . '*.php') as $file) {
-    $content = @file_get_contents($file);
+    $content = @file_get_contents(filename: $file);
     if ($content === false) {
       continue;
     }
-    if (preg_match('/^\s*trait\s+([A-Za-z_][A-Za-z0-9_]*)/m', $content, $m)) {
+    if (preg_match(pattern: '/^\s*trait\s+([A-Za-z_][A-Za-z0-9_]*)/m', subject: $content, matches: $m)) {
       $traits[$m[1]] = true;
     }
   }
@@ -249,11 +249,11 @@ function getClassAliasMap(string $classesDir): array {
     return $aliases;
   }
   foreach (glob($classesDir . DIRECTORY_SEPARATOR . '*.php') as $file) {
-    $content = @file_get_contents($file);
+    $content = @file_get_contents(filename: $file);
     if ($content === false) {
       continue;
     }
-    if (preg_match_all('/class_alias\\(\\s*[\'"]([^\'"]+)[\'"]\\s*,\\s*[\'"]([^\'"]+)[\'"]\\s*/i', $content, $matches, PREG_SET_ORDER)) {
+    if (preg_match_all(pattern: '/class_alias\\(\\s*[\'"]([^\'"]+)[\'"]\\s*,\\s*[\'"]([^\'"]+)[\'"]\\s*/i', subject: $content, matches: $matches, flags: PREG_SET_ORDER)) {
       foreach ($matches as $m) {
         $origin = $m[1];
         $alias = $m[2];
@@ -464,7 +464,7 @@ function renderMarkdown(string $text, string $currentPath): array {
   $count = count($lines);
   for ($i = 0; $i < $count; $i++) {
     $line = $lines[$i];
-    if (preg_match('/^```(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^```(.*)$/', subject: $line, matches: $m)) {
       if ($inCode) {
         $html .= '</code></pre>';
         $inCode = false;
@@ -492,7 +492,7 @@ function renderMarkdown(string $text, string $currentPath): array {
       continue;
     }
 
-    if (preg_match('/^(#{1,6})\s+(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^(#{1,6})\s+(.*)$/', subject: $line, matches: $m)) {
       if ($inList) { $html .= '</ul>'; $inList = false; }
       if ($inQuote) { $html .= '</blockquote>'; $inQuote = false; }
       $level = strlen($m[1]);
@@ -508,21 +508,21 @@ function renderMarkdown(string $text, string $currentPath): array {
       continue;
     }
 
-    if (preg_match('/^\s*[-*+]\s+(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^\s*[-*+]\s+(.*)$/', subject: $line, matches: $m)) {
       if (!$inList) { $html .= '<ul>'; $inList = true; }
       if ($inQuote) { $html .= '</blockquote>'; $inQuote = false; }
       $html .= '<li>' . inlineMarkdown($m[1], $currentPath) . '</li>';
       continue;
     }
 
-    if (preg_match('/^\s*(\*{3,}|-{3,}|_{3,})\s*$/', $line)) {
+    if (preg_match(pattern: '/^\s*(\*{3,}|-{3,}|_{3,})\s*$/', subject: $line)) {
       if ($inList) { $html .= '</ul>'; $inList = false; }
       if ($inQuote) { $html .= '</blockquote>'; $inQuote = false; }
       $html .= '<hr>';
       continue;
     }
 
-    if (preg_match('/^\s*>\s?(.*)$/', $line, $m)) {
+    if (preg_match(pattern: '/^\s*>\s?(.*)$/', subject: $line, matches: $m)) {
       if ($inList) { $html .= '</ul>'; $inList = false; }
       if (!$inQuote) { $html .= '<blockquote>'; $inQuote = true; }
       $html .= '<p>' . inlineMarkdown($m[1], $currentPath) . '</p>';
@@ -562,7 +562,7 @@ function isTableHeader(string $line, string $next): bool {
   $next = trim($next);
   if ($next === '') return false;
   // Separator: pipes + dashes + colons + spaces
-  return (bool)preg_match('/^[\s\|\-:]+$/', $next) && strpos($next, '-') !== false;
+  return (bool)preg_match(pattern: '/^[\s\|\-:]+$/', subject: $next) && strpos($next, '-') !== false;
 }
 
 function splitTableRow(string $line): array {
@@ -603,17 +603,17 @@ function renderTable(array $lines, int $startIndex, string $currentPath = ''): a
 function inlineMarkdown(string $text, string $currentPath = ''): string {
   $text = htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
   // Underline
-  $text = preg_replace('/__(.+?)__/', '<u>$1</u>', $text);
+  $text = preg_replace(pattern: '/__(.+?)__/', replacement: '<u>$1</u>', subject: $text);
   // Strikethrough
-  $text = preg_replace('/~~(.+?)~~/', '<del>$1</del>', $text);
+  $text = preg_replace(pattern: '/~~(.+?)~~/', replacement: '<del>$1</del>', subject: $text);
   // Bold (strong)
-  $text = preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $text);
+  $text = preg_replace(pattern: '/\*\*(.+?)\*\*/', replacement: '<strong>$1</strong>', subject: $text);
   // Italic (em)
-  $text = preg_replace('/\*(.+?)\*/', '<em>$1</em>', $text);
+  $text = preg_replace(pattern: '/\*(.+?)\*/', replacement: '<em>$1</em>', subject: $text);
   // Inline code
-  $text = preg_replace('/`([^`]+)`/', '<code class="hljs inline">$1</code>', $text);
+  $text = preg_replace(pattern: '/`([^`]+)`/', replacement: '<code class="hljs inline">$1</code>', subject: $text);
   // Links
-  $text = preg_replace_callback('/\[([^\]]+)\]\(([^\)]+)\)/', function ($m) use ($currentPath) {
+  $text = preg_replace_callback(pattern: '/\[([^\]]+)\]\(([^\)]+)\)/', callback: function ($m) use ($currentPath) {
     $label = $m[1];
     $href = $m[2];
     [$cleanHref, $targetBlank, $isClassLink] = normalizeDocLink($href, $currentPath);
@@ -622,7 +622,7 @@ function inlineMarkdown(string $text, string $currentPath = ''): string {
     }
     $attrs = $targetBlank ? ' target="_blank" rel="noopener"' : '';
     return '<a href="' . htmlspecialchars($cleanHref, ENT_QUOTES, 'UTF-8') . '"' . $attrs . '>' . $label . '</a>';
-  }, $text);
+  }, subject: $text);
   return $text;
 }
 
@@ -643,8 +643,8 @@ function renderToc(array $toc): string {
 
 function slugifyHeading(string $text): string {
   $text = strtolower(trim($text));
-  $text = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $text);
-  $text = preg_replace('/\s+/', '-', $text);
+  $text = preg_replace(pattern: '/[^\p{L}\p{N}\s-]/u', replacement: '', subject: $text);
+  $text = preg_replace(pattern: '/\s+/', replacement: '-', subject: $text);
   $text = trim($text, '-');
   return $text !== '' ? $text : 'section';
 }
@@ -750,7 +750,7 @@ function normalizeDocLink(string $href, string $currentPath): array {
   if ($href === '') {
     return ['#', false, false];
   }
-  if (preg_match('/^(https?:\/\/|mailto:)/i', $href)) {
+  if (preg_match(pattern: '/^(https?:\/\/|mailto:)/i', subject: $href)) {
     return [$href, true, false];
   }
   if (str_starts_with($href, '#')) {

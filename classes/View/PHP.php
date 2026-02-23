@@ -54,7 +54,7 @@ class PHP implements Adapter {
           array_merge(self::$globals, $data),
           self::$templatePath
       );
-      return call_user_func($sandbox->bindTo($context, $context));
+      return ($sandbox->bindTo($context, $context))();
   }
 }
 

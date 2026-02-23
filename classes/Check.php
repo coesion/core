@@ -27,7 +27,7 @@ class Check {
       $current = isset($data[$field_name]) ? $data[$field_name] : null;
 
       if (is_callable($rule)){
-        static::$errors[$field_name] = call_user_func($rule,$current);
+        static::$errors[$field_name] = $rule($current);
         continue;
       } elseif (is_string($rule)) {
         $current_rules = array_flip(preg_split('/\s*\|\s*/', $rule));
@@ -41,7 +41,7 @@ class Check {
 
         $meth_name = strtok($method, ':');
         $opts      = strtok(':') ?: '';
-        $opts      = $opts ? json_decode("[$opts]") : [];
+        $opts      = $opts ? json_decode(json: "[$opts]") : [];
         $meth_opts = $opts ? array_merge([$current], $opts) : [$current];
 
         if ( static::$errors[$field_name] !== true ) continue 2;
@@ -49,7 +49,7 @@ class Check {
         if (empty(static::$methods[$meth_name])) {
           static::$errors[$field_name] = true;
         } else {
-          if (call_user_func_array(static::$methods[$meth_name]->validate,$meth_opts)){
+          if ((static::$methods[$meth_name]->validate)(...$meth_opts)){
             static::$errors[$field_name] = true;
           } else {
             $arg = [];
@@ -107,14 +107,14 @@ Check::on('init',function(){
 
     'alphanumeric' => [
       'validate' => function($value) {
-         return (bool)preg_match('/^[0-9a-zA-Z]+$/',$value);
+         return (bool)preg_match(pattern: '/^[0-9a-zA-Z]+$/', subject: $value);
       },
       'message' => "Value must be alphanumeric.",
     ],
 
     'numeric' => [
       'validate' => function($value) {
-         return (bool)preg_match('/^\d+$/',$value);
+         return (bool)preg_match(pattern: '/^\d+$/', subject: $value);
       },
       'message' => "Value must be numeric.",
     ],
@@ -206,7 +206,7 @@ Check::on('init',function(){
 
     'in_array' => [
       'validate' => function($value,$array_values) {
-         return  in_array($value, $array_values);
+         return in_array(needle: $value, haystack: $array_values);
       },
       'message' => "This value is forbidden.",
     ],

@@ -25,17 +25,17 @@ class Native implements Adapter {
   }
 
   public function read($path){
-      return $this->exists($path) ? file_get_contents($this->realPath($path)) : false;
+      return $this->exists($path) ? file_get_contents(filename: $this->realPath($path)) : false;
   }
 
   public function write($path, $data){
       $r_path = $this->realPath($path);
       if ( ! is_dir($r_dir = dirname($r_path)) ) @mkdir($r_dir,0775,true);
-      return file_put_contents($r_path, $data);
+      return file_put_contents(filename: $r_path, data: $data);
   }
 
   public function append($path, $data){
-      return file_put_contents($this->realPath($path), $data, FILE_APPEND);
+      return file_put_contents(filename: $this->realPath($path), data: $data, flags: FILE_APPEND);
   }
 
   public function move($old, $new){
@@ -72,7 +72,7 @@ class Native implements Adapter {
                   $stack[] = $path;
               }
 
-              if (preg_match($rx_pattern, $path)) {
+              if (preg_match(pattern: $rx_pattern, subject: $path)) {
                   $results[] = trim(substr($path, $root_len),'/');
               }
           }

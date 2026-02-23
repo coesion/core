@@ -162,7 +162,7 @@ try {
         'js' => $jsVersion,
       ],
     ];
-    echo json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+    echo json_encode(value: $payload, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
     exit(0);
   }
 

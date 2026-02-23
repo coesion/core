@@ -14,11 +14,11 @@
 class Token {
 
   public static function encode($payload, $secret, $algo = 'HS256') {
-    $encoded_payload = implode('.', [rtrim(strtr(base64_encode(json_encode([
+    $encoded_payload = implode('.', [rtrim(strtr(base64_encode(json_encode(value: [
         'typ' => 'JWT',
         'alg' => $algo,
       ])), '+/', '-_'),'='),
-      rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'),'='),
+      rtrim(strtr(base64_encode(json_encode(value: $payload)), '+/', '-_'),'='),
     ]);
     return $encoded_payload . '.' . static::sign($encoded_payload, $secret, $algo);
   }
@@ -29,12 +29,12 @@ class Token {
 
     list($encoded_header, $encoded_payload, $client_sig) = explode('.', $jwt);
 
-    if (null === ($payload = json_decode(base64_decode(strtr($encoded_payload, '-_', '+/')))))
+    if (null === ($payload = json_decode(json: base64_decode(strtr($encoded_payload, '-_', '+/')))))
       throw new \Exception('Invalid encoding');
 
 
     if ($verify) {
-      if (null === ($header = json_decode(base64_decode(strtr($encoded_header, '-_', '+/')))))
+      if (null === ($header = json_decode(json: base64_decode(strtr($encoded_header, '-_', '+/')))))
         throw new \Exception('Invalid encoding');
 
       if (empty($header->alg)) throw new \Exception('Invalid encoding');

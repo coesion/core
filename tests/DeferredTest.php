@@ -8,12 +8,12 @@ class DeferredTest extends TestCase {
 		$self = $this;
 		$flag = false;
 
-		call_user_func(function () use (&$flag, &$self) {
+		(function () use (&$flag, &$self) {
 			$_ = new Deferred(function () use (&$flag) {
 				$flag = true;
 			});
 			$self->assertFalse($flag);
-		});
+		})();
 
 		$self->assertTrue($flag);
 	}

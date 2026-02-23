@@ -17,7 +17,7 @@ foreach (array_slice($argv, 1) as $arg) {
     continue;
   }
 
-  if (in_array($arg, ['patch', 'minor', 'major'], true)) {
+  if (in_array(needle: $arg, haystack: ['patch', 'minor', 'major'], strict: true)) {
     $bump = $arg;
     continue;
   }

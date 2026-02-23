@@ -46,13 +46,13 @@ try {
     'generated_at_utc' => gmdate('c'),
   ];
 
-  $json = json_encode($planData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-  if ($json === false || file_put_contents($planPath, $json . "\n") === false) {
+  $json = json_encode(value: $planData, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+  if ($json === false || file_put_contents(filename: $planPath, data: $json . "\n") === false) {
     throw new RuntimeException("Failed writing release plan $planPath");
   }
 
   $notesPath = $releaseDir . DIRECTORY_SEPARATOR . 'next.md';
-  if (file_put_contents($notesPath, $entry) === false) {
+  if (file_put_contents(filename: $notesPath, data: $entry) === false) {
     throw new RuntimeException("Failed writing release notes $notesPath");
   }
 

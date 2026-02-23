@@ -161,7 +161,7 @@ class CSV {
 
   public function asString(){
     $this->flush();
-    return file_get_contents($this->file->getPathname());
+    return file_get_contents(filename: $this->file->getPathname());
   }
 
   public function __toString(){

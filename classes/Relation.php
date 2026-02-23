@@ -37,7 +37,11 @@ trait Relation {
   private static function relationAddRelationshipTo($link, $plurality, $extra=[]){
     $options = static::relationOptions();
 
-    preg_match('((?<FOREIGN_CLASS>\w+)(\.(?<FOREIGN_KEY>\w+))?(:(?<LOCAL_KEY>\w+))?)', $link, $parts);
+    preg_match(
+      pattern: '((?<FOREIGN_CLASS>\w+)(\.(?<FOREIGN_KEY>\w+))?(:(?<LOCAL_KEY>\w+))?)',
+      subject: $link,
+      matches: $parts
+    );
 
     $foreign_class = isset($parts['FOREIGN_CLASS']) ? $parts['FOREIGN_CLASS'] : false;
     $foreign_key   = isset($parts['FOREIGN_KEY'])   ? $parts['FOREIGN_KEY']   : false;
@@ -61,9 +65,13 @@ trait Relation {
 
     $single = $plurality == 'single';
 
-    $method = preg_replace_callback('([A-Z])', function($m){
-      return "_" . strtolower($m[0]);
-    }, lcfirst($foreign_class) . ($single ? '' : 's'));
+    $method = preg_replace_callback(
+      pattern: '([A-Z])',
+      callback: function($m){
+        return "_" . strtolower($m[0]);
+      },
+      subject: lcfirst($foreign_class) . ($single ? '' : 's')
+    );
 
     $hh = [$foreign_class,$foreign_key,$local_key];
     sort($hh);
@@ -101,13 +109,13 @@ trait Relation {
   public function __get($name){
     $options = static::relationOptions();
     if (isset($options->relations->$name))
-      return call_user_func($options->relations->$name->get, $this);
+      return ($options->relations->$name->get)($this);
   }
 
   public function __set($name, $value){
     $options = static::relationOptions();
     if (isset($options->relations->$name))
-      call_user_func($options->relations->$name->set, $value, $this);
+      ($options->relations->$name->set)($value, $this);
   }
 
   public function __isset($name){

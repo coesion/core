@@ -22,7 +22,7 @@ class Structure extends ArrayObject {
      * @param boolean $deep  Wrap also deep branches as Objects
      */
     public function __construct($input=[], $deep=true){
-        $data = is_string($input) ? json_decode($input,true) : (array)$input;
+        $data = is_string($input) ? json_decode(json: $input, associative: true) : (array)$input;
         if (is_array($data)){
             if ($deep) {
                 foreach ($data as $key => &$value) {
@@ -54,7 +54,7 @@ class Structure extends ArrayObject {
      */
     public function offsetGet(mixed $key): mixed{
         $raw = parent::offsetGet($key);
-        return is_callable($raw) ? call_user_func($raw) : $raw;
+        return is_callable($raw) ? $raw() : $raw;
     }
 
     /**
@@ -63,8 +63,8 @@ class Structure extends ArrayObject {
     public function __call($method, $args){
         $raw = parent::offsetGet($method);
         if (is_callable($raw)) {
-            if ($raw instanceof \Closure) $raw->bindTo($this);
-            return call_user_func_array($raw, $args);
+            if ($raw instanceof \Closure) $raw = $raw->bindTo($this, $this);
+            return $raw(...$args);
         }
     }
 
@@ -73,7 +73,7 @@ class Structure extends ArrayObject {
      * @return string
      */
     public function __toString(){
-        return json_encode($this,JSON_NUMERIC_CHECK);
+        return json_encode(value: $this, flags: JSON_NUMERIC_CHECK);
     }
 
     /**

@@ -24,7 +24,7 @@ class HTTP {
                    $timeout               = 30;
 
   protected static function request($method, $url, $data=[], array $headers=[], $data_as_json=false, $username=null, $password = null){
-    preg_match('/.+(?::([0-9]+))\/?/i', $url, $match);
+    preg_match(pattern: '/.+(?::([0-9]+))\/?/i', subject: $url, matches: $match);
     $port = count($match) > 1 ? $match[1] : 80;
     $http_method = strtoupper($method);
     $ch  = curl_init($url);
@@ -66,9 +66,9 @@ class HTTP {
         $opt[CURLOPT_CUSTOMREQUEST]  = $http_method;
         if($data_as_json or is_object($data)){
           $headers['Content-Type']   = 'application/json';
-          $opt[CURLOPT_POSTFIELDS]   = json_encode($data);
+          $opt[CURLOPT_POSTFIELDS]   = json_encode(value: $data);
         } else {
-          $opt[CURLOPT_POSTFIELDS]   = http_build_query($data);
+          $opt[CURLOPT_POSTFIELDS]   = http_build_query(data: $data);
         }
     }
 
@@ -82,7 +82,7 @@ class HTTP {
     static::$last_response_header = substr($result, 0, $header_size);
     $result = substr($result, $header_size);
     static::$last_info = curl_getinfo($ch);
-    if(false !== strpos($contentType,'json')) $result = json_decode($result);
+    if(false !== strpos($contentType,'json')) $result = json_decode(json: $result);
     curl_close($ch);
     static::trigger("request", $result, static::$last_info);
     Event::trigger("core.http.request", $url, $http_method, static::$last_info, $result);
@@ -201,9 +201,9 @@ class HTTP_Request {
     $this->headers  = (array)$headers;
     if ($data) {
       if (isset($this->headers["Content-Type"]) && $this->headers["Content-Type"]=='application/json')
-        $this->body = json_encode($data);
+        $this->body = json_encode(value: $data);
       else
-        $this->body = http_build_query($data);
+        $this->body = http_build_query(data: $data);
     }
   }
 
@@ -213,7 +213,7 @@ class HTTP_Request {
 
     $query = $this->url->query;
     if (is_array($query)) {
-      $query = $query ? ('?' . http_build_query($query)) : '';
+      $query = $query ? ('?' . http_build_query(data: $query)) : '';
     } else {
       $query = $query ? (str_starts_with($query, '?') ? $query : '?' . $query) : '';
     }

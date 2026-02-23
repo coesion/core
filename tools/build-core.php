@@ -16,13 +16,13 @@ if (!is_file($versionPath)) {
   exit(1);
 }
 
-$version = trim((string)file_get_contents($versionPath));
-if (!preg_match('/^\d+\.\d+\.\d+$/', $version)) {
+$version = trim((string)file_get_contents(filename: $versionPath));
+if (!preg_match(pattern: '/^\d+\.\d+\.\d+$/', subject: $version)) {
   fwrite(STDERR, "Invalid VERSION value '$version'. Expected X.Y.Z\n");
   exit(1);
 }
 
-if ($sourceEpoch !== false && preg_match('/^\d+$/', $sourceEpoch)) {
+if ($sourceEpoch !== false && preg_match(pattern: '/^\d+$/', subject: $sourceEpoch)) {
   $sourceBuiltAt = gmdate('c', (int)$sourceEpoch);
 }
 
@@ -62,7 +62,7 @@ $metadata = [];
 $symbolToFile = [];
 
 foreach ($files as $file) {
-  $code = file_get_contents($file);
+  $code = file_get_contents(filename: $file);
   if ($code === false) {
     fwrite(STDERR, "Failed to read file: $file\n");
     exit(1);
@@ -151,13 +151,13 @@ foreach ($ordered as $file) {
     continue;
   }
 
-  $min = preg_replace('/^\s*<\?php\s*/', '', $min, 1);
+  $min = preg_replace(pattern: '/^\s*<\?php\s*/', replacement: '', subject: $min, limit: 1);
   if ($min === null) {
     fwrite(STDERR, "Regex error while processing: $file\n");
     exit(1);
   }
 
-  $min = preg_replace('/\?>\s*$/', '', $min, 1);
+  $min = preg_replace(pattern: '/\?>\s*$/', replacement: '', subject: $min, limit: 1);
   if ($min === null) {
     fwrite(STDERR, "Regex error while processing: $file\n");
     exit(1);
@@ -166,7 +166,7 @@ foreach ($ordered as $file) {
   $namespace = $metadata[$file]['namespace'];
   if ($namespace !== '') {
     $nsPattern = '/^namespace\s+' . preg_quote($namespace, '/') . '\s*;\s*/';
-    $min = preg_replace($nsPattern, '', $min, 1);
+    $min = preg_replace(pattern: $nsPattern, replacement: '', subject: $min, limit: 1);
     if ($min === null) {
       fwrite(STDERR, "Regex error while stripping namespace in: $file\n");
       exit(1);
@@ -176,7 +176,7 @@ foreach ($ordered as $file) {
   $min = trim($min);
   if ($min !== '') {
     if (basename($file) === 'Core.php') {
-      $min = preg_replace("/public\\s+const\\s+VERSION\\s*=\\s*'[^']*';/", "public const VERSION = '$version';", $min, 1);
+      $min = preg_replace(pattern: "/public\\s+const\\s+VERSION\\s*=\\s*'[^']*';/", replacement: "public const VERSION = '$version';", subject: $min, limit: 1);
       if ($min === null) {
         fwrite(STDERR, "Regex error while injecting version in: $file\n");
         exit(1);
@@ -213,7 +213,7 @@ $output .= " * @repository " . ($meta['source'] ?? 'unknown') . "\n";
 $output .= " * @license MIT (LICENSE.md)\n";
 $output .= " * @copyright Coesion - 2026\n";
 $output .= " */\n";
-$output .= '// Coesion Core artifact metadata: ' . json_encode($meta, JSON_UNESCAPED_SLASHES) . "\n";
+$output .= '// Coesion Core artifact metadata: ' . json_encode(value: $meta, flags: JSON_UNESCAPED_SLASHES) . "\n";
 
 $guard = "if (defined('COESION_CORE_LOADED')) { return; } define('COESION_CORE_LOADED', true);";
 if (!isset($chunksByNamespace[''])) {
@@ -236,7 +236,7 @@ foreach ($namedNamespaces as $namespace) {
 
 $output .= implode("\n", $mergedBlocks) . "\n";
 
-if (file_put_contents($corePath, $output) === false) {
+if (file_put_contents(filename: $corePath, data: $output) === false) {
   fwrite(STDERR, "Failed to write file: $corePath\n");
   exit(1);
 }

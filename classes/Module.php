@@ -15,7 +15,7 @@ trait Module {
 
     final public function __call($name, $args){
       if (isset(static::$__PROTOTYPE__[$name]) && static::$__PROTOTYPE__[$name] instanceof \Closure)
-        return call_user_func_array(static::$__PROTOTYPE__[$name]->bindTo($this, $this), $args);
+        return (static::$__PROTOTYPE__[$name]->bindTo($this, $this))(...$args);
       if (get_parent_class())
         // @phpstan-ignore-next-line Parent magic call is valid for inheriting classes.
         return parent::__call($name, $args);
@@ -24,7 +24,7 @@ trait Module {
 
     final public static function __callStatic($name, $args){
       if (isset(static::$__PROTOTYPE__[$name]) && static::$__PROTOTYPE__[$name] instanceof \Closure)
-        return forward_static_call_array(static::$__PROTOTYPE__[$name], $args);
+        return (static::$__PROTOTYPE__[$name])(...$args);
       // @phpstan-ignore-next-line Parent magic static call is valid for inheriting classes.
       if (get_parent_class()) return parent::__callStatic($name, $args);
       else throw new \BadMethodCallException;

@@ -222,7 +222,7 @@ class Auth {
             static::$source = 'bearer';
             $user = null;
             if (static::$tokenResolver) {
-              $user = call_user_func(static::$tokenResolver, $token, $payload);
+              $user = (static::$tokenResolver)($token, $payload);
             }
             static::$user = $user !== null ? $user : static::resolveUser($identity, 'bearer', $context);
             return;
@@ -234,9 +234,8 @@ class Auth {
 
   protected static function resolveUser($identity, $source, array $context){
     if (static::$resolver) {
-      return call_user_func(static::$resolver, $identity, $source, $context);
+      return (static::$resolver)($identity, $source, $context);
     }
     return $identity;
   }
 }
-

@@ -75,13 +75,13 @@ class MarketingWeeklyCycleTool {
             return 1;
         }
 
-        $content = (string) file_get_contents($path);
+        $content = (string) file_get_contents(filename: $path);
         $row = static::kpiRow($weekStart, $opts);
         $pattern = '/^\| ' . preg_quote($weekStart, '/') . ' \|.*$/m';
 
-        if (preg_match($pattern, $content)) {
-            $updated = preg_replace($pattern, $row, $content, 1);
-            file_put_contents($path, $updated);
+        if (preg_match(pattern: $pattern, subject: $content)) {
+            $updated = preg_replace(pattern: $pattern, replacement: $row, subject: $content, limit: 1);
+            file_put_contents(filename: $path, data: $updated);
             return 0;
         }
 
@@ -95,7 +95,7 @@ class MarketingWeeklyCycleTool {
         $updated = substr($content, 0, $needlePos);
         if (substr($updated, -1) !== "\n") $updated .= "\n";
         $updated .= $row . substr($content, $needlePos);
-        file_put_contents($path, $updated);
+        file_put_contents(filename: $path, data: $updated);
         return 0;
     }
 
@@ -139,7 +139,7 @@ class MarketingWeeklyCycleTool {
             return 1;
         }
 
-        $report = (string) file_get_contents($reportPath);
+        $report = (string) file_get_contents(filename: $reportPath);
         $claim = static::captureValue($report, '/^- Claim:\s+(.+)$/m');
         $command = static::captureValue($report, '/^- Command:\s+`(.+)`$/m');
         $artifact = static::captureValue($report, '/^- Artifact path:\s+`(.+)`$/m');
@@ -159,7 +159,7 @@ class MarketingWeeklyCycleTool {
         $lines[] = 'https://github.com/coesion/core/blob/master/docs/AUDIT.md#71-proof-table-reproducible-claims';
         $lines[] = '';
 
-        file_put_contents($postPath, implode("\n", $lines));
+        file_put_contents(filename: $postPath, data: implode("\n", $lines));
         return 0;
     }
 
@@ -229,7 +229,7 @@ class MarketingWeeklyCycleTool {
         $remote = trim((string) shell_exec('git config --get remote.origin.url 2>/dev/null'));
         if ($remote === '') return;
 
-        if (preg_match('#github\.com[:/]+([^/]+)/([^/]+?)(?:\.git)?$#', $remote, $m)) {
+        if (preg_match(pattern: '#github\.com[:/]+([^/]+)/([^/]+?)(?:\.git)?$#', subject: $remote, matches: $m)) {
             if ($opts['github_owner'] === '') $opts['github_owner'] = trim($m[1]);
             if ($opts['github_repo'] === '') $opts['github_repo'] = trim($m[2]);
         }
@@ -339,11 +339,11 @@ class MarketingWeeklyCycleTool {
             ],
         ]);
 
-        $body = @file_get_contents($url, false, $ctx);
+        $body = @file_get_contents(filename: $url, use_include_path: false, context: $ctx);
         $status = static::httpStatus($http_response_header ?? []);
         $data = null;
         if (is_string($body) && $body !== '') {
-            $parsed = json_decode($body, true);
+            $parsed = json_decode(json: $body, associative: true);
             if (is_array($parsed)) $data = $parsed;
         }
 
@@ -357,7 +357,7 @@ class MarketingWeeklyCycleTool {
     protected static function httpStatus(array $headers) {
         if (!$headers) return 0;
         $first = (string) ($headers[0] ?? '');
-        if (preg_match('/\s(\d{3})\s/', $first, $m)) return (int) $m[1];
+        if (preg_match(pattern: '/\s(\d{3})\s/', subject: $first, matches: $m)) return (int) $m[1];
         return 0;
     }
 
@@ -367,9 +367,9 @@ class MarketingWeeklyCycleTool {
      */
     protected static function countProofCommands($reportPath) {
         if (!is_file($reportPath)) return 0;
-        $content = (string) file_get_contents($reportPath);
+        $content = (string) file_get_contents(filename: $reportPath);
         if ($content === '') return 0;
-        return (int) preg_match_all('/^- Command:\s+`.+`$/m', $content);
+        return (int) preg_match_all(pattern: '/^- Command:\s+`.+`$/m', subject: $content);
     }
 
     /**
@@ -378,7 +378,7 @@ class MarketingWeeklyCycleTool {
      * @return string
      */
     protected static function captureValue($source, $pattern) {
-        if (preg_match($pattern, $source, $m)) return trim($m[1]);
+        if (preg_match(pattern: $pattern, subject: $source, matches: $m)) return trim($m[1]);
         return '';
     }
 
@@ -478,7 +478,7 @@ class MarketingWeeklyCycleTool {
      * @return bool
      */
     protected static function validDate($value) {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) return false;
+        if (!preg_match(pattern: '/^\d{4}-\d{2}-\d{2}$/', subject: $value)) return false;
         $parts = explode('-', $value);
         return checkdate((int) $parts[1], (int) $parts[2], (int) $parts[0]);
     }

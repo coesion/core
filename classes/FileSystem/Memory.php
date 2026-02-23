@@ -49,7 +49,7 @@ class Memory implements Adapter {
     $results = [];
     $rx_pattern = '('.strtr($pattern,['.'=>'\.','*'=>'.*','?'=>'.']).')Ai';
     foreach (array_keys($this->storage) as $path) {
-      if (preg_match($rx_pattern,$path)) $results[] = $path;
+      if (preg_match(pattern: $rx_pattern, subject: $path)) $results[] = $path;
     }
     return $results;
   }

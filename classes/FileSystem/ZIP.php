@@ -62,7 +62,7 @@ class ZIP implements Adapter {
 
       for( $i = 0, $c = $this->zipfile->numFiles; $i < $c; $i++ ){
           $stat = $this->zipfile->statIndex( $i );
-          if (preg_match($rx_pattern,$stat['name'])) $results[] = $stat['name'];
+          if (preg_match(pattern: $rx_pattern, subject: $stat['name'])) $results[] = $stat['name'];
       }
 
       return $results;

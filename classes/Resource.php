@@ -23,7 +23,7 @@ abstract class Resource implements JsonSerializable {
   }
 
   public function jsonSerialize(): mixed{
-    return call_user_func($this->projector,$this->expose($this->fields, static::$exposureMode));
+    return ($this->projector)($this->expose($this->fields, static::$exposureMode));
   }
 
   abstract public function expose($fields, $mode);

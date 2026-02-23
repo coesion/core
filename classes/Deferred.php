@@ -28,7 +28,7 @@ class Deferred {
   }
 
 	public function __destruct() {
-		if ( $this->enabled ) call_user_func( $this->callback );
+		if ( $this->enabled ) ($this->callback)();
 	}
 
 }

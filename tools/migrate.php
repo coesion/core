@@ -93,11 +93,11 @@ class MigrateTool {
      */
     protected static function print(array $payload, $format) {
         if ($format === 'md') {
-            fwrite(STDOUT, "# Migration Output\n\n```json\n" . json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n```\n");
+            fwrite(STDOUT, "# Migration Output\n\n```json\n" . json_encode(value: $payload, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n```\n");
             return 0;
         }
 
-        fwrite(STDOUT, json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . "\n");
+        fwrite(STDOUT, json_encode(value: $payload, flags: JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . "\n");
         return 0;
     }
 

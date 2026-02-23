@@ -23,8 +23,8 @@ class Errors {
 
     public static function capture($tracing_level=null){
       if($tracing_level!==null) error_reporting($tracing_level);
-      set_error_handler(__CLASS__.'::traceError');
-      set_exception_handler(__CLASS__.'::traceException');
+      set_error_handler(callback: [self::class, 'traceError']);
+      set_exception_handler(callback: [self::class, 'traceException']);
     }
 
     public static function mode($mode=null){
@@ -71,10 +71,10 @@ class Errors {
               echo '<pre class="app error"><code>',$e->getMessage(),'</code></pre>',PHP_EOL;
               break;
           case self::JSON :
-              echo json_encode(['error' => $e->getMessage()]);
+              echo json_encode(value: ['error' => $e->getMessage()]);
               break;
           case self::JSON_VERBOSE :
-              echo json_encode(static::structuredException($e));
+              echo json_encode(value: static::structuredException($e));
               break;
           case self::SILENT :
               // Don't echo anything.
@@ -114,34 +114,6 @@ class Errors {
             $data['previous'] = static::structuredException($e->getPrevious());
         }
         return $data;
-    }
-
-    /**
-     * @deprecated Use Errors::on('fatal', $listener)
-     */
-    public static function onFatal(callable $listener){
-      Event::on('core.error.fatal',$listener);
-    }
-
-    /**
-     * @deprecated Use Errors::on('warning', $listener)
-     */
-    public static function onWarning(callable $listener){
-      Event::on('core.error.warning',$listener);
-    }
-
-    /**
-     * @deprecated Use Errors::on('notice', $listener)
-     */
-    public static function onNotice(callable $listener){
-      Event::on('core.error.notice',$listener);
-    }
-
-    /**
-     * @deprecated Use Errors::on('any', $listener)
-     */
-    public static function onAny(callable $listener){
-      Event::on('core.error',$listener);
     }
 
 }

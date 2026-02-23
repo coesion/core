@@ -104,9 +104,9 @@ class Session {
                 if (($active = static::active()) && isset($_SESSION[$key])) {
 			return $_SESSION[$key];
                 } else if ($active) {
-                	return $_SESSION[$key] = (is_callable($default)?call_user_func($default):$default);
+                	return $_SESSION[$key] = (is_callable($default) ? $default() : $default);
                 } else {
-                 	return (is_callable($default)?call_user_func($default):$default);
+                 	return (is_callable($default) ? $default() : $default);
                 }
 	}
 

@@ -31,7 +31,7 @@ class URL {
   private function parse(){
     $url          = $this->_origin;
     $tmp_url      = (strpos($url, '://') === false) ? "..N..://$url" : $url;
-    if (mb_detect_encoding($tmp_url, 'UTF-8', true) || ($parsed = parse_url($tmp_url)) === false) {
+    if (mb_detect_encoding($tmp_url, 'UTF-8', true) || ($parsed = parse_url(url: $tmp_url)) === false) {
       preg_match(
         pattern: '(^((?P<scheme>[^:/?#]+):(//))?((\\3|//)?(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^/?:#]*))(:(?P<port>\\d+))?(?P<path>[^?#]*)(\\?(?P<query>[^#]*))?(#(?P<fragment>.*))?)u',
         subject: $tmp_url,
@@ -65,7 +65,7 @@ class URL {
       if ($this->host)           $d[] = "{$this->host}";
       if ($this->port)           $d[] = ":{$this->port}";
       if ($this->path)           $d[] = "/" . ltrim($this->path,"/");
-      if (!empty($this->query))  $d[] = "?" . http_build_query($this->query);
+      if (!empty($this->query))  $d[] = "?" . http_build_query(data: $this->query);
       if ($this->fragment)       $d[] = "#{$this->fragment}";
       return implode('', $d);
     } else {

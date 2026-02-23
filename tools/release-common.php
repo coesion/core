@@ -32,7 +32,7 @@ function releaseReadVersion(){
     throw new RuntimeException("Missing VERSION file at $path");
   }
 
-  $version = trim((string)file_get_contents($path));
+  $version = trim((string)file_get_contents(filename: $path));
   if (!releaseIsSemver($version)) {
     throw new RuntimeException("Invalid VERSION value '$version'. Expected X.Y.Z");
   }
@@ -46,13 +46,13 @@ function releaseWriteVersion($version){
   }
 
   $path = releaseVersionPath();
-  if (file_put_contents($path, $version . "\n") === false) {
+  if (file_put_contents(filename: $path, data: $version . "\n") === false) {
     throw new RuntimeException("Failed writing VERSION file at $path");
   }
 }
 
 function releaseIsSemver($version){
-  return is_string($version) && preg_match('/^\d+\.\d+\.\d+$/', $version);
+  return is_string($version) && preg_match(pattern: '/^\d+\.\d+\.\d+$/', subject: $version);
 }
 
 function releaseReadCoreConstVersion(){
@@ -61,8 +61,8 @@ function releaseReadCoreConstVersion(){
     throw new RuntimeException("Missing Core class file at $path");
   }
 
-  $code = (string)file_get_contents($path);
-  if (!preg_match("/public\\s+const\\s+VERSION\\s*=\\s*'([^']+)';/", $code, $m)) {
+  $code = (string)file_get_contents(filename: $path);
+  if (!preg_match(pattern: "/public\\s+const\\s+VERSION\\s*=\\s*'([^']+)';/", subject: $code, matches: $m)) {
     throw new RuntimeException("Could not read Core::VERSION from $path");
   }
 
@@ -71,14 +71,14 @@ function releaseReadCoreConstVersion(){
 
 function releaseWriteCoreConstVersion($version){
   $path = releaseCorePath();
-  $code = (string)file_get_contents($path);
-  $updated = preg_replace("/public\\s+const\\s+VERSION\\s*=\\s*'[^']+';/", "public const VERSION = '$version';", $code, 1);
+  $code = (string)file_get_contents(filename: $path);
+  $updated = preg_replace(pattern: "/public\\s+const\\s+VERSION\\s*=\\s*'[^']+';/", replacement: "public const VERSION = '$version';", subject: $code, limit: 1);
 
   if ($updated === null || $updated === $code) {
     throw new RuntimeException("Failed updating Core::VERSION in $path");
   }
 
-  if (file_put_contents($path, $updated) === false) {
+  if (file_put_contents(filename: $path, data: $updated) === false) {
     throw new RuntimeException("Failed writing $path");
   }
 }
@@ -189,7 +189,7 @@ function releaseAnalyzeCommits(array $commits){
     $summary = $subject;
     $breaking = false;
 
-    if (preg_match('/^([a-z]+)(\([^)]+\))?(!)?:\s+(.+)$/i', $subject, $m)) {
+    if (preg_match(pattern: '/^([a-z]+)(\([^)]+\))?(!)?:\s+(.+)$/i', subject: $subject, matches: $m)) {
       $type = strtolower($m[1]);
       $summary = trim($m[4]);
       $breaking = !empty($m[3]);
@@ -283,8 +283,8 @@ function releaseTopChangelogVersion(){
     return null;
   }
 
-  $content = (string)file_get_contents($path);
-  if (preg_match('/^##\s+v?(\d+\.\d+\.\d+)/m', $content, $m)) {
+  $content = (string)file_get_contents(filename: $path);
+  if (preg_match(pattern: '/^##\s+v?(\d+\.\d+\.\d+)/m', subject: $content, matches: $m)) {
     return $m[1];
   }
 
@@ -339,7 +339,7 @@ function releasePrependChangelogEntry($entry){
   $path = releaseChangelogPath();
   $header = "# Changelog\n\n";
 
-  $existing = is_file($path) ? (string)file_get_contents($path) : '';
+  $existing = is_file($path) ? (string)file_get_contents(filename: $path) : '';
   if ($existing === '' || strpos($existing, '# Changelog') !== 0) {
     $content = $header . $entry;
   } else {
@@ -347,7 +347,7 @@ function releasePrependChangelogEntry($entry){
     $content = "# Changelog\n\n" . $entry . "\n" . $rest;
   }
 
-  if (file_put_contents($path, $content) === false) {
+  if (file_put_contents(filename: $path, data: $content) === false) {
     throw new RuntimeException("Failed to write changelog at $path");
   }
 }

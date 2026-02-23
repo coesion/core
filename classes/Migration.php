@@ -100,7 +100,7 @@ class Migration {
         foreach (static::plan($to) as $id) {
             $migration = static::$migrations[$id] ?? null;
             if (!$migration || !is_callable($migration['up'])) continue;
-            call_user_func($migration['up']);
+            ($migration['up'])();
             SQL::exec('INSERT INTO core_migrations(id, applied_at) VALUES(?, ?)', [$id, gmdate('c')]);
             $appliedNow[] = $id;
         }
@@ -124,7 +124,7 @@ class Migration {
             if (count($rolled) >= $steps) break;
             $migration = static::$migrations[$id] ?? null;
             if ($migration && is_callable($migration['down'])) {
-                call_user_func($migration['down']);
+                ($migration['down'])();
             }
             SQL::exec('DELETE FROM core_migrations WHERE id = ?', [$id]);
             $rolled[] = $id;

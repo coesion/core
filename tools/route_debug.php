@@ -17,10 +17,10 @@ if ($cmd === null) {
 switch ($cmd) {
   case 'tree':
     Route::compile();
-    echo json_encode(Route::debugTree(), JSON_PRETTY_PRINT), "\n";
+    echo json_encode(value: Route::debugTree(), flags: JSON_PRETTY_PRINT), "\n";
     break;
   case 'stats':
-    echo json_encode(Route::stats(), JSON_PRETTY_PRINT), "\n";
+    echo json_encode(value: Route::stats(), flags: JSON_PRETTY_PRINT), "\n";
     break;
   default:
     usage();

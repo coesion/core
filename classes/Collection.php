@@ -4,18 +4,18 @@ class Collection {
 
   public static function fromSQL($resource, $sql, $params=[]){
     $count = SQL::value(preg_replace(
-      [
+      pattern: [
         '(SELECT(.+)FROM)i',
         '(LIMIT\s+\d+\s+)i',
         '(OFFSET\s+\d+\s+)i'
       ],
-      [
+      replacement: [
         'SELECT COUNT(1) FROM',
         '',
         '',
       ],
     // Lo spazio appeso permette regex più semplici
-    $sql.' '), $params, 0);
+    subject: $sql.' '), $params, 0);
 
     $page       = Filter::with(["api.$resource.page", "api.page"], max(1,Request::get('page',1)));
     $limit      = Filter::with(["api.$resource.limit", "api.limit"], max(1,Request::get('limit',10)));
