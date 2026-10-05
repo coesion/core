@@ -37,6 +37,7 @@ Rolling weekly KPI table for GitHub-first distribution.
 | 2026-09-14 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | Weekly KPI refresh from GitHub Actions |
 | 2026-09-21 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | Weekly KPI refresh from GitHub Actions |
 | 2026-09-28 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | Weekly KPI refresh from GitHub Actions |
+| 2026-10-05 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | Weekly KPI refresh from GitHub Actions |
 ## Collection Notes
 - Use GitHub traffic and issue template counts as primary weekly signal.
 - Keep values numeric to simplify month-over-month comparisons.
